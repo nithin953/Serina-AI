@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Serina - Face Mode</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #000000;
+            font-family: 'Orbitron', monospace;
+            color: #ffffff;
+            overflow: hidden;
+            height: 100vh;
+            position: relative;
+        }
+        
+        /* Dark grid overlay */
+        .grid-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(138, 43, 226, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(138, 43, 226, 0.05) 1px, transparent 1px);
+            background-size: 40px 40px;
+            animation: gridMove 25s linear infinite;
+            z-index: 1;
+        }
+        
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(40px, 40px); }
+        }
+        
+        /* Neon glow effects */
+        .neon-purple {
+            color: #8a2be2;
+            text-shadow: 0 0 5px #8a2be2, 0 0 10px #8a2be2, 0 0 15px #8a2be2, 0 0 20px #8a2be2;
+        }
+        
+        .neon-pink {
+            color: #ff1493;
+            text-shadow: 0 0 5px #ff1493, 0 0 10px #ff1493, 0 0 15px #ff1493, 0 0 20px #ff1493;
+        }
+        
+        .neon-blue {
+            color: #00bfff;
+            text-shadow: 0 0 5px #00bfff, 0 0 10px #00bfff, 0 0 15px #00bfff, 0 0 20px #00bfff;
+        }
+        
+        /* Main container */
+        .container {
+            position: relative;
+            z-index: 2;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Holographic avatar container */
+        .avatar-container {
+            position: relative;
+            width: 320px;
+            height: 320px;
+            margin-bottom: 50px;
+        }
+        
+        /* Main avatar circle - dark with neon border */
+        .avatar-face {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: radial-gradient(circle at 30% 30%, rgba(138, 43, 226, 0.1), rgba(0, 0, 0, 0.9));
+            border: 2px solid #8a2be2;
+            box-shadow: 
+                0 0 20px rgba(138, 43, 226, 0.8),
+                0 0 40px rgba(138, 43, 226, 0.4),
+                inset 0 0 20px rgba(138, 43, 226, 0.1);
+            animation: avatarPulse 4s ease-in-out infinite;
+            transition: all 0.6s ease;
+        }
+        
+        @keyframes avatarPulse {
+            0%, 100% { 
+                transform: translate(-50%, -50%) scale(1);
+                box-shadow: 0 0 20px rgba(138, 43, 226, 0.8), 0 0 40px rgba(138, 43, 226, 0.4), inset 0 0 20px rgba(138, 43, 226, 0.1);
+            }
+            50% { 
+                transform: translate(-50%, -50%) scale(1.08);
+                box-shadow: 0 0 30px rgba(138, 43, 226, 1), 0 0 60px rgba(138, 43, 226, 0.6), inset 0 0 30px rgba(138, 43, 226, 0.2);
+            }
+        }
+        
+        /* Neon mood rings */
+        .mood-ring {
+            position: absolute;
+            border-radius: 50%;
+            border: 1px solid;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: ringRotate 10s linear infinite;
+        }
+        
+        .mood-ring:nth-child(1) {
+            width: 240px;
+            height: 240px;
+            border-color: rgba(138, 43, 226, 0.4);
+            box-shadow: 0 0 15px rgba(138, 43, 226, 0.3);
+            animation-duration: 8s;
+        }
+        
+        .mood-ring:nth-child(2) {
+            width: 280px;
+            height: 280px;
+            border-color: rgba(138, 43, 226, 0.25);
+            box-shadow: 0 0 20px rgba(138, 43, 226, 0.2);
+            animation-duration: 12s;
+            animation-direction: reverse;
+        }
+        
+        .mood-ring:nth-child(3) {
+            width: 320px;
+            height: 320px;
+            border-color: rgba(138, 43, 226, 0.15);
+            box-shadow: 0 0 25px rgba(138, 43, 226, 0.1);
+            animation-duration: 16s;
+        }
+        
+        @keyframes ringRotate {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        
+        /* Status display */
+        .status-container {
+            text-align: center;
+            margin-bottom: 40px;
+            min-height: 70px;
+        }
+        
+        .status-text {
+            font-size: 20px;
+            font-weight: 600;
+            color: #8a2be2;
+            text-shadow: 0 0 10px rgba(138, 43, 226, 0.8), 0 0 20px rgba(138, 43, 226, 0.4);
+            margin-bottom: 15px;
+            animation: textGlow 3s ease-in-out infinite alternate;
+            letter-spacing: 1px;
+        }
+        
+        @keyframes textGlow {
+            0% { 
+                text-shadow: 0 0 10px rgba(138, 43, 226, 0.8), 0 0 20px rgba(138, 43, 226, 0.4);
+                transform: scale(1);
+            }
+            100% { 
+                text-shadow: 0 0 15px rgba(138, 43, 226, 1), 0 0 30px rgba(138, 43, 226, 0.6), 0 0 40px rgba(138, 43, 226, 0.3);
+                transform: scale(1.02);
+            }
+        }
+        
+        .status-dot {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #8a2be2;
+            box-shadow: 0 0 10px rgba(138, 43, 226, 0.8), 0 0 20px rgba(138, 43, 226, 0.4);
+            animation: dotPulse 1.8s ease-in-out infinite;
+            margin-left: 12px;
+        }
+        
+        @keyframes dotPulse {
+            0%, 100% { 
+                opacity: 1; 
+                transform: scale(1);
+                box-shadow: 0 0 10px rgba(138, 43, 226, 0.8), 0 0 20px rgba(138, 43, 226, 0.4);
+            }
+            50% { 
+                opacity: 0.8; 
+                transform: scale(1.4);
+                box-shadow: 0 0 15px rgba(138, 43, 226, 1), 0 0 30px rgba(138, 43, 226, 0.6);
+            }
+        }
+        
+        /* Subtitle display - dark with neon border */
+        .subtitle-container {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.95);
+            padding: 20px 35px;
+            border-radius: 30px;
+            border: 2px solid rgba(138, 43, 226, 0.5);
+            box-shadow: 0 0 20px rgba(138, 43, 226, 0.3), inset 0 0 20px rgba(138, 43, 226, 0.05);
+            backdrop-filter: blur(15px);
+            max-width: 85%;
+            text-align: center;
+            opacity: 0;
+            transition: all 0.6s ease;
+        }
+        
+        .subtitle-container.visible {
+            opacity: 1;
+            transform: translateX(-50%) translateY(-5px);
+        }
+        
+        .subtitle-text {
+            font-size: 16px;
+            color: #ffffff;
+            text-shadow: 0 0 8px rgba(138, 43, 226, 0.4);
+            font-weight: 400;
+        }
+        
+        /* Happy mood - Pink neon */
+        .mood-happy .avatar-face {
+            border-color: #ff1493;
+            background: radial-gradient(circle at 30% 30%, rgba(255, 20, 147, 0.1), rgba(0, 0, 0, 0.9));
+            box-shadow: 
+                0 0 20px rgba(255, 20, 147, 0.8),
+                0 0 40px rgba(255, 20, 147, 0.4),
+                inset 0 0 20px rgba(255, 20, 147, 0.1);
+        }
+        
+        .mood-happy .mood-ring:nth-child(1) {
+            border-color: rgba(255, 20, 147, 0.4);
+            box-shadow: 0 0 15px rgba(255, 20, 147, 0.3);
+        }
+        
+        .mood-happy .mood-ring:nth-child(2) {
+            border-color: rgba(255, 20, 147, 0.25);
+            box-shadow: 0 0 20px rgba(255, 20, 147, 0.2);
+        }
+        
+        .mood-happy .mood-ring:nth-child(3) {
+            border-color: rgba(255, 20, 147, 0.15);
+            box-shadow: 0 0 25px rgba(255, 20, 147, 0.1);
+        }
+        
+        .mood-happy .status-text {
+            color: #ff1493;
+            text-shadow: 0 0 10px rgba(255, 20, 147, 0.8), 0 0 20px rgba(255, 20, 147, 0.4);
+        }
+        
+        .mood-happy .status-dot {
+            background: #ff1493;
+            box-shadow: 0 0 10px rgba(255, 20, 147, 0.8), 0 0 20px rgba(255, 20, 147, 0.4);
+        }
+        
+        .mood-happy .subtitle-container {
+            border-color: rgba(255, 20, 147, 0.5);
+            box-shadow: 0 0 20px rgba(255, 20, 147, 0.3), inset 0 0 20px rgba(255, 20, 147, 0.05);
+        }
+        
+        /* Sad mood - Blue neon */
+        .mood-sad .avatar-face {
+            border-color: #00bfff;
+            background: radial-gradient(circle at 30% 30%, rgba(0, 191, 255, 0.1), rgba(0, 0, 0, 0.9));
+            box-shadow: 
+                0 0 20px rgba(0, 191, 255, 0.8),
+                0 0 40px rgba(0, 191, 255, 0.4),
+                inset 0 0 20px rgba(0, 191, 255, 0.1);
+        }
+        
+        .mood-sad .mood-ring:nth-child(1) {
+            border-color: rgba(0, 191, 255, 0.4);
+            box-shadow: 0 0 15px rgba(0, 191, 255, 0.3);
+        }
+        
+        .mood-sad .mood-ring:nth-child(2) {
+            border-color: rgba(0, 191, 255, 0.25);
+            box-shadow: 0 0 20px rgba(0, 191, 255, 0.2);
+        }
+        
+        .mood-sad .mood-ring:nth-child(3) {
+            border-color: rgba(0, 191, 255, 0.15);
+            box-shadow: 0 0 25px rgba(0, 191, 255, 0.1);
+        }
+        
+        .mood-sad .status-text {
+            color: #00bfff;
+            text-shadow: 0 0 10px rgba(0, 191, 255, 0.8), 0 0 20px rgba(0, 191, 255, 0.4);
+        }
+        
+        .mood-sad .status-dot {
+            background: #00bfff;
+            box-shadow: 0 0 10px rgba(0, 191, 255, 0.8), 0 0 20px rgba(0, 191, 255, 0.4);
+        }
+        
+        .mood-sad .subtitle-container {
+            border-color: rgba(0, 191, 255, 0.5);
+            box-shadow: 0 0 20px rgba(0, 191, 255, 0.3), inset 0 0 20px rgba(0, 191, 255, 0.05);
+        }
+        
+        /* Angry mood - Red-purple neon */
+        .mood-angry .avatar-face {
+            border-color: #dc143c;
+            background: radial-gradient(circle at 30% 30%, rgba(220, 20, 60, 0.1), rgba(0, 0, 0, 0.9));
+            box-shadow: 
+                0 0 20px rgba(220, 20, 60, 0.8),
+                0 0 40px rgba(220, 20, 60, 0.4),
+                inset 0 0 20px rgba(220, 20, 60, 0.1);
+        }
+        
+        .mood-angry .mood-ring:nth-child(1) {
+            border-color: rgba(220, 20, 60, 0.4);
+            box-shadow: 0 0 15px rgba(220, 20, 60, 0.3);
+        }
+        
+        .mood-angry .mood-ring:nth-child(2) {
+            border-color: rgba(220, 20, 60, 0.25);
+            box-shadow: 0 0 20px rgba(220, 20, 60, 0.2);
+        }
+        
+        .mood-angry .mood-ring:nth-child(3) {
+            border-color: rgba(220, 20, 60, 0.15);
+            box-shadow: 0 0 25px rgba(220, 20, 60, 0.1);
+        }
+        
+        .mood-angry .status-text {
+            color: #dc143c;
+            text-shadow: 0 0 10px rgba(220, 20, 60, 0.8), 0 0 20px rgba(220, 20, 60, 0.4);
+        }
+        
+        .mood-angry .status-dot {
+            background: #dc143c;
+            box-shadow: 0 0 10px rgba(220, 20, 60, 0.8), 0 0 20px rgba(220, 20, 60, 0.4);
+        }
+        
+        .mood-angry .subtitle-container {
+            border-color: rgba(220, 20, 60, 0.5);
+            box-shadow: 0 0 20px rgba(220, 20, 60, 0.3), inset 0 0 20px rgba(220, 20, 60, 0.05);
+        }
+        
+        /* Neon scan lines */
+        .scan-line {
+            position: absolute;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(138, 43, 226, 0.8), transparent);
+            animation: scanMove 4s linear infinite;
+            opacity: 0.7;
+        }
+        
+        @keyframes scanMove {
+            0% { top: 0%; opacity: 0; }
+            10% { opacity: 0.7; }
+            90% { opacity: 0.7; }
+            100% { top: 100%; opacity: 0; }
+        }
+        
+        /* Floating neon particles */
+        .particle {
+            position: absolute;
+            width: 3px,
+            height: 3px;
+            background: #8a2be2;
+            border-radius: 50%;
+            box-shadow: 0 0 6px rgba(138, 43, 226, 0.8);
+            opacity: 0.8;
+            animation: particleFloat 8s linear infinite;
+        }
+        
+        @keyframes particleFloat {
+            0% { transform: translateY(100vh) scale(0); opacity: 0; }
+            5% { opacity: 0.8; }
+            95% { opacity: 0.8; }
+            100% { transform: translateY(-50px) scale(1); opacity: 0; }
+        }
+        
+        /* Header title - neon effect */
+        .header-title {
+            position: fixed;
+            top: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 28px;
+            font-weight: 900;
+            color: #8a2be2;
+            text-shadow: 
+                0 0 5px rgba(138, 43, 226, 1),
+                0 0 10px rgba(138, 43, 226, 0.8),
+                0 0 15px rgba(138, 43, 226, 0.6),
+                0 0 20px rgba(138, 43, 226, 0.4);
+            z-index: 10;
+            letter-spacing: 2px;
+        }
+        
+        /* Corner accent lights */
+        .corner-light {
+            position: fixed;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(138, 43, 226, 0.3), transparent 70%);
+            animation: cornerPulse 6s ease-in-out infinite alternate;
+        }
+        
+        .corner-light.top-left { top: -50px; left: -50px; }
+        .corner-light.top-right { top: -50px; right: -50px; animation-delay: 2s; }
+        .corner-light.bottom-left { bottom: -50px; left: -50px; animation-delay: 4s; }
+        .corner-light.bottom-right { bottom: -50px; right: -50px; animation-delay: 6s; }
+        
+        @keyframes cornerPulse {
+            0% { opacity: 0.2; transform: scale(0.8); }
+            100% { opacity: 0.6; transform: scale(1.2); }
+        }
+        
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .avatar-container {
+                width: 280px;
+                height: 280px;
+            }
+            
+            .avatar-face {
+                width: 160px;
+                height: 160px;
+            }
+            
+            .mood-ring:nth-child(1) { width: 200px; height: 200px; }
+            .mood-ring:nth-child(2) { width: 240px; height: 240px; }
+            .mood-ring:nth-child(3) { width: 280px; height: 280px; }
+            
+            .header-title {
+                font-size: 22px;
+                top: 30px;
+            }
+            
+            .status-text {
+                font-size: 18px;
+            }
+            
+            .subtitle-text {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="grid-bg"></div>
+    
+    <!-- Corner accent lights -->
+    <div class="corner-light top-left"></div>
+    <div class="corner-light top-right"></div>
+    <div class="corner-light bottom-left"></div>
+    <div class="corner-light bottom-right"></div>
+    
+    <div class="header-title">SERINA • FACE MODE</div>
+    
+    <div class="container" id="mainContainer">
+        <!-- Avatar with neon mood rings -->
+        <div class="avatar-container">
+            <div class="mood-ring"></div>
+            <div class="mood-ring"></div>
+            <div class="mood-ring"></div>
+            <div class="avatar-face"></div>
+            <div class="scan-line"></div>
+        </div>
+        
+        <!-- Status display -->
+        <div class="status-container">
+            <div class="status-text" id="statusText">Initializing Serina...</div>
+            <div class="status-dot" id="statusDot"></div>
+        </div>
+        
+        <!-- Subtitle display -->
+        <div class="subtitle-container" id="subtitleContainer">
+            <div class="subtitle-text" id="subtitleText"></div>
+        </div>
+    </div>
+
+    <script>
+        let subtitleTimeout;
+        let lastMood = '';
+        
+        // Create floating neon particles
+        function createParticle() {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 8 + 's';
+            particle.style.animationDuration = (8 + Math.random() * 4) + 's';
+            
+            // Random neon colors for particles
+            const colors = ['#8a2be2', '#ff1493', '#00bfff'];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            particle.style.background = color;
+            particle.style.boxShadow = `0 0 6px ${color}`;
+            
+            document.body.appendChild(particle);
+            
+            setTimeout(() => {
+                particle.remove();
+            }, 12000);
+        }
+        
+        // Generate particles periodically
+        setInterval(createParticle, 800);
+        
+        // Poll status function
+        async function pollStatus() {
+            try {
+                const response = await fetch('/serina-status');
+                if (response.ok) {
+                    const data = await response.json();
+                    updateInterface(data);
+                }
+            } catch (error) {
+                console.log('Status polling error:', error);
+                // Keep trying even if there's an error
+            }
+        }
+        
+        // Update interface based on status
+        function updateInterface(data) {
+            const statusText = document.getElementById('statusText');
+            const subtitleContainer = document.getElementById('subtitleContainer');
+            const subtitleText = document.getElementById('subtitleText');
+            const mainContainer = document.getElementById('mainContainer');
+            
+            // Update status text
+            if (data.statusText) {
+                statusText.textContent = data.statusText;
+            }
+            
+            // Update mood/theme
+            if (data.statusType && data.statusType !== lastMood) {
+                // Remove old mood classes
+                mainContainer.classList.remove('mood-happy', 'mood-sad', 'mood-angry');
+                
+                // Add new mood class
+                if (data.statusType === 'happy') {
+                    mainContainer.classList.add('mood-happy');
+                } else if (data.statusType === 'sad') {
+                    mainContainer.classList.add('mood-sad');
+                } else if (data.statusType === 'angry') {
+                    mainContainer.classList.add('mood-angry');
+                }
+                
+                lastMood = data.statusType;
+            }
+            
+            // Update subtitle
+            if (data.subtitle) {
+                subtitleText.textContent = data.subtitle;
+                subtitleContainer.classList.add('visible');
+                
+                // Clear existing timeout
+                if (subtitleTimeout) {
+                    clearTimeout(subtitleTimeout);
+                }
+                
+                // Auto-hide after 5 seconds
+                subtitleTimeout = setTimeout(() => {
+                    subtitleContainer.classList.remove('visible');
+                }, 5000);
+            }
+        }
+        
+        // Start polling immediately and then every second
+        pollStatus();
+        setInterval(pollStatus, 1000);
+        
+        // Initial particle burst
+        for (let i = 0; i < 15; i++) {
+            setTimeout(createParticle, i * 150);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Serina - Interstellar Command Deck</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #000000;
+            color: #ffffff;
+            font-family: 'Courier New', 'Segoe UI', monospace;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Starfield Background */
+        .starfield {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -3;
+            background: 
+                radial-gradient(2px 2px at 20px 30px, #eee, transparent),
+                radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.8), transparent),
+                radial-gradient(1px 1px at 90px 40px, #fff, transparent),
+                radial-gradient(1px 1px at 130px 80px, rgba(255,255,255,0.6), transparent),
+                radial-gradient(2px 2px at 160px 30px, #ddd, transparent);
+            background-repeat: repeat;
+            background-size: 200px 100px;
+            animation: starMove 120s linear infinite;
+        }
+
+        @keyframes starMove {
+            from { transform: translateX(0); }
+            to { transform: translateX(-200px); }
+        }
+
+        /* Nebula overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(ellipse at 30% 20%, rgba(0, 150, 255, 0.1) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 80%, rgba(255, 0, 150, 0.08) 0%, transparent 60%),
+                radial-gradient(ellipse at 20% 80%, rgba(0, 255, 100, 0.06) 0%, transparent 50%);
+            animation: nebulaShift 45s ease-in-out infinite;
+            z-index: -2;
+        }
+
+        @keyframes nebulaShift {
+            0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.3; }
+            50% { transform: scale(1.2) rotate(180deg); opacity: 0.6; }
+        }
+
+        /* Floating ship debris */
+        .space-debris {
+            position: absolute;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.4);
+            animation: debrisFloat 20s linear infinite;
+            z-index: -1;
+        }
+
+        .space-debris:nth-child(1) {
+            top: 20%;
+            left: -50px;
+            animation-delay: 0s;
+        }
+
+        .space-debris:nth-child(2) {
+            top: 60%;
+            left: -80px;
+            animation-delay: 8s;
+        }
+
+        .space-debris:nth-child(3) {
+            top: 80%;
+            left: -60px;
+            animation-delay: 15s;
+        }
+
+        @keyframes debrisFloat {
+            0% { transform: translateX(0) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
+            100% { transform: translateX(calc(100vw + 100px)) rotate(360deg); opacity: 0; }
+        }
+
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            padding: 20px;
+            gap: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* HUD Top Bar */
+        .command-hud {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, rgba(0, 100, 200, 0.15), rgba(0, 50, 100, 0.2));
+            border: 1px solid rgba(0, 150, 255, 0.4);
+            border-radius: 8px;
+            padding: 15px 25px;
+            backdrop-filter: blur(15px);
+            box-shadow: 
+                0 0 20px rgba(0, 150, 255, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .command-hud::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 150, 255, 0.2), transparent);
+            animation: hudScan 6s linear infinite;
+        }
+
+        @keyframes hudScan {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .ship-id {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .ship-logo {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(45deg, #00aaff, #0066cc);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            animation: logoPulse 3s ease-in-out infinite;
+        }
+
+        .ship-logo::after {
+            content: '🛰️';
+        }
+
+        @keyframes logoPulse {
+            0%, 100% { box-shadow: 0 0 10px rgba(0, 150, 255, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(0, 150, 255, 0.8); }
+        }
+
+        .ship-info h1 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #00ccff;
+            margin-bottom: 2px;
+            text-shadow: 0 0 10px rgba(0, 200, 255, 0.5);
+        }
+
+        .ship-info p {
+            font-size: 11px;
+            color: #66aaff;
+            opacity: 0.8;
+        }
+
+        .system-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 15px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 15px;
+            border: 1px solid rgba(0, 150, 255, 0.3);
+        }
+
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #0088ff;
+            position: relative;
+            animation: statusFlicker 0.5s ease-in-out infinite;
+        }
+
+        .status-indicator.online {
+            background: #00ff88;
+            animation: statusPulse 2s ease-in-out infinite;
+        }
+
+        .status-indicator.offline {
+            background: #ff4444;
+            animation: statusPulse 1s ease-in-out infinite;
+        }
+
+        @keyframes statusPulse {
+            0%, 100% { 
+                opacity: 1; 
+                box-shadow: 0 0 0 0 currentColor; 
+            }
+            50% { 
+                opacity: 0.4; 
+                box-shadow: 0 0 0 8px transparent; 
+            }
+        }
+
+        @keyframes statusFlicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .main-deck {
+            display: grid;
+            grid-template-columns: 280px 1fr 280px;
+            gap: 25px;
+            flex: 1;
+        }
+
+        .hud-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .console-panel {
+            background: linear-gradient(135deg, rgba(0, 50, 100, 0.3), rgba(0, 30, 60, 0.5));
+            border: 1px solid rgba(0, 150, 255, 0.4);
+            border-radius: 12px;
+            padding: 20px;
+            backdrop-filter: blur(15px);
+            box-shadow: 
+                0 5px 20px rgba(0, 150, 255, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .console-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(0, 150, 255, 0.8), transparent);
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            font-weight: 700;
+            color: #00ccff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .panel-icon {
+            font-size: 16px;
+            filter: drop-shadow(0 0 5px rgba(0, 200, 255, 0.6));
+        }
+
+        .central-command {
+            background: linear-gradient(135deg, rgba(0, 50, 100, 0.4), rgba(0, 30, 60, 0.6));
+            border: 2px solid rgba(0, 150, 255, 0.5);
+            border-radius: 20px;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(20px);
+            box-shadow: 
+                0 20px 40px rgba(0, 150, 255, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+            min-height: 600px;
+        }
+
+        .central-command::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, transparent, rgba(0, 150, 255, 0.1), transparent);
+            animation: radarSweep 8s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes radarSweep {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* AI Orb */
+        .ai-orb {
+            width: 200px;
+            height: 200px;
+            border: 3px solid #00aaff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 80px;
+            margin-bottom: 30px;
+            position: relative;
+            background: radial-gradient(circle, rgba(0, 150, 255, 0.15) 0%, transparent 70%);
+            transition: all 0.4s ease;
+            cursor: pointer;
+        }
+
+        .ai-orb.happy {
+            border-color: #00ffcc;
+            color: #00ffcc;
+            background: radial-gradient(circle, rgba(0, 255, 200, 0.2) 0%, transparent 70%);
+            animation: orbHappy 3s ease-in-out infinite;
+        }
+
+        .ai-orb.sad {
+            border-color: #4488ff;
+            color: #4488ff;
+            background: radial-gradient(circle, rgba(100, 150, 255, 0.15) 0%, transparent 70%);
+            animation: orbSad 2s ease-in-out infinite;
+        }
+
+        .ai-orb.angry {
+            border-color: #ff4444;
+            color: #ff4444;
+            background: radial-gradient(circle, rgba(255, 100, 100, 0.2) 0%, transparent 70%);
+            animation: orbAngry 1s ease-in-out infinite;
+        }
+
+        .ai-orb.scanning {
+            border-color: #00ff88;
+            color: #00ff88;
+            background: radial-gradient(circle, rgba(0, 255, 150, 0.2) 0%, transparent 70%);
+            animation: orbScan 2s ease-in-out infinite;
+        }
+
+        .ai-orb.error-state {
+            border-color: #ff4444;
+            color: #ff4444;
+            background: radial-gradient(circle, rgba(255, 68, 68, 0.2) 0%, transparent 70%);
+            animation: orbError 1s ease-in-out infinite;
+        }
+
+        @keyframes orbHappy {
+            0%, 100% { 
+                box-shadow: 0 0 0 0 rgba(0, 255, 200, 0.4);
+                transform: scale(1);
+            }
+            50% { 
+                box-shadow: 0 0 0 20px rgba(0, 255, 200, 0);
+                transform: scale(1.05);
+            }
+        }
+
+        @keyframes orbSad {
+            0%, 100% { 
+                box-shadow: 0 0 0 0 rgba(100, 150, 255, 0.3);
+                transform: scale(0.98);
+            }
+            50% { 
+                box-shadow: 0 0 0 15px rgba(100, 150, 255, 0);
+                transform: scale(1);
+            }
+        }
+
+        @keyframes orbAngry {
+            0%, 100% { 
+                box-shadow: 0 0 0 0 rgba(255, 100, 100, 0.6);
+                transform: scale(1) rotate(0deg);
+            }
+            25% { 
+                transform: scale(1.02) rotate(-2deg);
+            }
+            75% { 
+                transform: scale(1.02) rotate(2deg);
+            }
+            50% { 
+                box-shadow: 0 0 0 25px rgba(255, 100, 100, 0);
+            }
+        }
+
+        @keyframes orbScan {
+            0%, 100% { 
+                box-shadow: 0 0 0 0 rgba(0, 255, 150, 0.5);
+                transform: scale(1);
+            }
+            50% { 
+                box-shadow: 0 0 0 25px rgba(0, 255, 150, 0);
+                transform: scale(1.08);
+            }
+        }
+
+        @keyframes orbError {
+            0%, 100% { 
+                box-shadow: 0 0 0 0 rgba(255, 68, 68, 0.6); 
+            }
+            50% { 
+                box-shadow: 0 0 0 20px rgba(255, 68, 68, 0); 
+            }
+        }
+
+        .energy-field {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .energy-ring {
+            position: absolute;
+            border: 1px solid rgba(0, 150, 255, 0.3);
+            border-radius: 50%;
+            animation: energyPulse 6s ease-out infinite;
+        }
+
+        .energy-ring:nth-child(1) {
+            width: 120%;
+            height: 120%;
+            top: -10%;
+            left: -10%;
+            animation-delay: 0s;
+        }
+
+        .energy-ring:nth-child(2) {
+            width: 150%;
+            height: 150%;
+            top: -25%;
+            left: -25%;
+            animation-delay: 2s;
+        }
+
+        .energy-ring:nth-child(3) {
+            width: 180%;
+            height: 180%;
+            top: -40%;
+            left: -40%;
+            animation-delay: 4s;
+        }
+
+        @keyframes energyPulse {
+            0% { opacity: 0.6; transform: scale(0.8); }
+            100% { opacity: 0; transform: scale(1.2); }
+        }
+
+        .command-status {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .main-readout {
+            font-size: 28px;
+            font-weight: 700;
+            color: #00ccff;
+            margin-bottom: 8px;
+            text-shadow: 0 0 10px rgba(0, 200, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .sub-readout {
+            font-size: 14px;
+            color: #66aaff;
+            line-height: 1.4;
+            opacity: 0.9;
+        }
+
+        .command-input {
+            margin-bottom: 20px;
+        }
+
+        .console-input {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid rgba(0, 150, 255, 0.4);
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.6);
+            color: #00ccff;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            outline: none;
+            transition: all 0.3s ease;
+            margin-bottom: 12px;
+        }
+
+        .console-input::placeholder {
+            color: rgba(100, 170, 255, 0.6);
+        }
+
+        .console-input:focus {
+            border-color: #00aaff;
+            box-shadow: 0 0 0 2px rgba(0, 150, 255, 0.3);
+            background: rgba(0, 0, 0, 0.8);
+        }
+
+        .control-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .hud-button {
+            padding: 15px 20px;
+            border: 1px solid rgba(0, 150, 255, 0.4);
+            border-radius: 8px;
+            background: linear-gradient(135deg, rgba(0, 100, 200, 0.1), rgba(0, 50, 100, 0.2));
+            color: #00ccff;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .hud-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 150, 255, 0.3), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .hud-button:hover::before {
+            left: 100%;
+        }
+
+        .hud-button:hover {
+            border-color: #00aaff;
+            background: linear-gradient(135deg, rgba(0, 150, 255, 0.2), rgba(0, 100, 200, 0.3));
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 150, 255, 0.3);
+            text-shadow: 0 0 8px rgba(0, 200, 255, 0.8);
+        }
+
+        .hud-button:active {
+            transform: translateY(0);
+        }
+
+        .hud-button.danger {
+            border-color: rgba(255, 68, 68, 0.4);
+            background: linear-gradient(135deg, rgba(255, 68, 68, 0.1), rgba(200, 50, 50, 0.2));
+            color: #ff6666;
+        }
+
+        .hud-button.danger:hover {
+            border-color: #ff4444;
+            background: linear-gradient(135deg, rgba(255, 68, 68, 0.2), rgba(255, 100, 100, 0.3));
+            box-shadow: 0 8px 20px rgba(255, 68, 68, 0.3);
+            text-shadow: 0 0 8px rgba(255, 100, 100, 0.8);
+        }
+
+        .system-readouts {
+            font-size: 11px;
+            color: #66aaff;
+        }
+
+        .readout-line {
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .readout-value {
+            color: #00ff88;
+            font-weight: 700;
+        }
+
+        /* Activity Log Panel */
+        .activity-log {
+            height: 200px;
+            overflow-y: auto;
+            font-size: 11px;
+            color: #66aaff;
+            border-top: 1px solid rgba(0, 150, 255, 0.2);
+            padding-top: 10px;
+            margin-top: 15px;
+        }
+
+        .log-entry {
+            margin-bottom: 5px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .log-time {
+            color: #00ccff;
+            flex-shrink: 0;
+        }
+
+        .log-message {
+            flex-grow: 1;
+            word-break: break-word;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .main-deck {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto auto;
+                gap: 15px;
+            }
+            
+            .hud-panel:first-child {
+                order: 2;
+            }
+            
+            .central-command {
+                order: 1;
+                min-height: 500px;
+                padding: 30px;
+            }
+            
+            .hud-panel:last-child {
+                order: 3;
+            }
+            
+            .ai-orb {
+                width: 160px;
+                height: 160px;
+                font-size: 65px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .app-container {
+                padding: 15px;
+            }
+            
+            .command-hud {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .ai-orb {
+                width: 130px;
+                height: 130px;
+                font-size: 50px;
+            }
+            
+            .main-readout {
+                font-size: 22px;
+            }
+        }
+
+        /* Accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation: none !important;
+                transition: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="starfield"></div>
+    <div class="space-debris">🛸</div>
+    <div class="space-debris">🚀</div>
+    <div class="space-debris">⭐</div>
+
+    <div class="app-container">
+        <header class="command-hud">
+            <div class="ship-id">
+                <div class="ship-logo"></div>
+                <div class="ship-info">
+                    <h1>ISS Serina Command</h1>
+                    <p>Neural Interface AI Core v4.7</p>
+                </div>
+            </div>
+            <div class="system-status">
+                <span class="status-indicator" id="systemIndicator"></span>
+                <span id="systemReadout">Initializing</span>
+            </div>
+        </header>
+
+        <div class="main-deck">
+            <aside class="hud-panel">
+                <div class="console-panel">
+                    <div class="panel-header">
+                        <span class="panel-icon">🛰️</span>
+                        <span>System Status</span>
+                    </div>
+                    <div class="system-readouts">
+                        <div class="readout-line">
+                            <span>AI Core:</span>
+                            <span class="readout-value">Online</span>
+                        </div>
+                        <div class="readout-line">
+                            <span>Vision Array:</span>
+                            <span class="readout-value">Active</span>
+                        </div>
+                        <div class="readout-line">
+                            <span>Neural Link:</span>
+                            <span class="readout-value">Synchronized</span>
+                        </div>
+                        <div class="readout-line">
+                            <span>Power Level:</span>
+                            <span class="readout-value">98.7%</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="console-panel">
+                    <div class="panel-header">
+                        <span class="panel-icon">📡</span>
+                        <span>Sensor Data</span>
+                    </div>
+                    <div style="font-size: 11px; color: #66aaff; line-height: 1.5;">
+                        Advanced quantum neural networks analyzing facial recognition patterns with interstellar precision algorithms.
+                    </div>
+                </div>
+
+                <!-- Added Activity Log Panel -->
+                <div class="console-panel">
+                    <div class="panel-header">
+                        <span class="panel-icon">📝</span>
+                        <span>Activity Log</span>
+                    </div>
+                    <div class="activity-log" id="activityLog">
+                        <div class="log-entry">
+                            <span class="log-time">[System]</span>
+                            <span class="log-message">Initializing quantum interface...</span>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <main class="central-command">
+                <div class="ai-orb" id="aiOrb">
+                    <div class="energy-field">
+                        <div class="energy-ring"></div>
+                        <div class="energy-ring"></div>
+                        <div class="energy-ring"></div>
+                    </div>
+                    🤖
+                </div>
+                
+                <div class="command-status">
+                    <div class="main-readout" id="mainReadout">Initializing...</div>
+                    <div class="sub-readout" id="subReadout">Quantum systems coming online...</div>
+                </div>
+            </main>
+
+            <aside class="hud-panel">
+                <div class="console-panel">
+                    <div class="panel-header">
+                        <span class="panel-icon">💬</span>
+                        <span>Comm Channel</span>
+                    </div>
+                    <div class="command-input">
+                        <input type="text" class="console-input" id="commandInput" placeholder="Type your command, Commander..." onkeypress="handleKeyPress(event)">
+                        <button class="hud-button" onclick="sendFaceChat()">Transmit</button>
+                    </div>
+                </div>
+                
+                <div class="console-panel">
+                    <div class="panel-header">
+                        <span class="panel-icon">🎛️</span>
+                        <span>Control Matrix</span>
+                    </div>
+                    <div class="control-grid">
+                        <button class="hud-button" onclick="startFaceMode()">Activate Vision</button>
+                        <button class="hud-button danger" onclick="goBack()">← End Session</button>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <script>
+        let isActive = true;
+        const activityLog = document.getElementById('activityLog');
+
+        // Start face mode automatically when page loads
+        window.addEventListener('load', function() {
+            startFaceMode();
+            startStatusPolling();
+            logActivity("System", "Quantum interface initialized");
+        });
+
+        function startStatusPolling() {
+            setInterval(() => {
+                if (isActive) {
+                    fetch('/face-status')
+                        .then(res => res.json())
+                        .then(data => {
+                            updateCommandStatus(
+                                data.statusText || "ACTIVE",
+                                data.subtitle || "System nominal",
+                                data.mood || "scanning"
+                            );
+                            logActivity("System", `Status update: ${data.statusText || "Active"}`);
+                        })
+                        .catch(err => {
+                            updateCommandStatus("Connection Lost", "Unable to reach command deck", "error-state");
+                            logActivity("Error", "Connection to AI core lost");
+                        });
+                }
+            }, 1000);
+        }
+
+        function logActivity(source, message) {
+            const now = new Date();
+            const timeString = `[${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}]`;
+            
+            const logEntry = document.createElement('div');
+            logEntry.className = 'log-entry';
+            logEntry.innerHTML = `
+                <span class="log-time">${source === "System" ? "[System]" : timeString}</span>
+                <span class="log-message">${message}</span>
+            `;
+            
+            activityLog.appendChild(logEntry);
+            
+            // Keep only the last 20 log entries
+            while (activityLog.children.length > 20) {
+                activityLog.removeChild(activityLog.firstChild);
+            }
+            
+            // Auto-scroll to bottom
+            activityLog.scrollTop = activityLog.scrollHeight;
+        }
+
+        function startFaceMode() {
+            fetch('/start-face', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Face mode started:', data);
+                    updateCommandStatus('Scanning...', 'Quantum matrix active...', 'scanning');
+                    logActivity("System", "Facial recognition activated");
+                })
+                .catch(error => {
+                    console.error('Error starting face mode:', error);
+                    updateCommandStatus('Error', 'Failed to initialize AI core', 'error-state');
+                    logActivity("Error", "Failed to activate vision array");
+                });
+        }
+
+        function goBack() {
+            isActive = false;
+            fetch('/stop-face', { method: 'POST' })
+                .then(() => {
+                    updateCommandStatus("Disconnecting...", "Ending session...", "scanning");
+                    logActivity("System", "Ending session and returning to main menu");
+                    
+                    setTimeout(() => {
+                        const lastMenu = localStorage.getItem("lastMenuSkin");
+                        if (lastMenu) {
+                            window.location.href = lastMenu;
+                        } else {
+                            window.location.href = "/holo";
+                        }
+                    }, 1000);
+                })
+                .catch(error => {
+                    console.error('Error stopping face mode:', error);
+                    logActivity("Error", "Failed to properly end session");
+                    const lastMenu = localStorage.getItem("lastMenuSkin");
+                    if (lastMenu) {
+                        window.location.href = lastMenu;
+                    } else {
+                        window.location.href = "/holo";
+                    }
+                });
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendFaceChat();
+            }
+        }
+
+        function sendFaceChat() {
+            const input = document.getElementById('commandInput').value.trim();
+            if (!input) return;
+
+            logActivity("User", input);
+            
+            fetch('/face-chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ user_input: input })
+            })
+            .then(res => res.json())
+            .then(data => {
+                // Use backend mood if provided, otherwise detect from text
+                let mood = data.mood || detectMoodFromText(data.reply);
+                
+                updateCommandStatus("Serina", data.reply || "No response received", mood);
+                logActivity("Serina", data.reply || "No response received");
+            })
+            .catch(err => {
+                updateCommandStatus("Connection Error", "Failed to communicate with AI core 💥", 'error-state');
+                logActivity("Error", "Communication failure with AI core");
+                console.error(err);
+            });
+
+            document.getElementById('commandInput').value = '';
+        }
+
+        function detectMoodFromText(text) {
+            if (!text) return 'scanning';
+            const lowerText = text.toLowerCase();
+            
+            if (lowerText.includes('sad') || lowerText.includes('sorry') || lowerText.includes('unhappy')) {
+                return 'sad';
+            } else if (lowerText.includes('angry') || lowerText.includes('mad') || lowerText.includes('frustrated')) {
+                return 'angry';
+            } else if (lowerText.includes('happy') || lowerText.includes('great') || lowerText.includes('wonderful')) {
+                return 'happy';
+            }
+            return 'scanning';
+        }
+
+        function updateCommandStatus(status, subtitle, state) {
+            const mainReadout = document.getElementById('mainReadout');
+            const subReadout = document.getElementById('subReadout');
+            const systemReadout = document.getElementById('systemReadout');
+            const systemIndicator = document.getElementById('systemIndicator');
+            const aiOrb = document.getElementById('aiOrb');
+
+            mainReadout.textContent = status;
+            subReadout.textContent = subtitle || "Awaiting AI core analysis...";
+            systemReadout.textContent = status;
+
+            // Reset classes
+            systemIndicator.className = 'status-indicator';
+            aiOrb.className = 'ai-orb';
+
+            // Update status based on state
+            if (state === 'scanning') {
+                systemIndicator.classList.add('online');
+                aiOrb.classList.add('scanning');
+            } else if (state === 'error-state') {
+                systemIndicator.classList.add('offline');
+                aiOrb.classList.add('error-state');
+            } else if (state === 'happy') {
+                systemIndicator.classList.add('online');
+                aiOrb.classList.add('happy');
+            } else if (state === 'sad') {
+                systemIndicator.classList.add('online');
+                aiOrb.classList.add('sad');
+            } else if (state === 'angry') {
+                systemIndicator.classList.add('online');
+                aiOrb.classList.add('angry');
+            } else {
+                systemIndicator.classList.add('online');
+                aiOrb.classList.add('scanning');
+            }
+        }
+    </script>
+</body>
+</html>

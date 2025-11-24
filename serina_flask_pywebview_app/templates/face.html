@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FACE MODE :: BIOMETRIC ENGAGED</title>
+    <style>
+        /* DARK CYBERPUNK THEME - ENHANCED */
+        body {
+            background: #050510;
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Rajdhani', 'Orbitron', sans-serif;
+            color: #f0f;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 1000px;
+        }
+
+        /* HOLOGRAPHIC SCANLINES */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(rgba(255, 0, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 0, 255, 0.03) 1px, transparent 1px);
+            background-size: 4px 4px;
+            pointer-events: none;
+            z-index: 10;
+            animation: scanline 8s linear infinite;
+        }
+
+        @keyframes scanline {
+            0% { background-position: 0 0; }
+            100% { background-position: 0 100px; }
+        }
+
+        /* MAIN CONTAINER (HOLO-PANEL) */
+        .container {
+            position: relative;
+            width: 85%;
+            max-width: 650px;
+            padding: 2.5rem;
+            border: 1px solid #f0f;
+            box-shadow: 
+                0 0 15px #f0f,
+                0 0 30px rgba(255, 0, 255, 0.6),
+                inset 0 0 15px #f0f;
+            background: rgba(10, 5, 20, 0.8);
+            text-align: center;
+            animation: hologram 6s infinite alternate;
+            backdrop-filter: blur(2px);
+            border-radius: 2px;
+        }
+
+        @keyframes hologram {
+            0%, 100% { opacity: 1; transform: translateY(0); }
+            50% { opacity: 0.9; transform: translateY(-5px); }
+        }
+
+        /* TITLE (GLITCHING NEON) */
+        h1 {
+            font-size: 3rem;
+            margin: 0 0 1.5rem 0;
+            text-transform: uppercase;
+            letter-spacing: 0.3rem;
+            text-shadow: 
+                0 0 10px #f0f,
+                0 0 20px #f0f,
+                0 0 40px #ff00ff;
+            position: relative;
+            animation: glitch 8s infinite alternate;
+        }
+
+        @keyframes glitch {
+            0%, 100% { text-shadow: 0 0 10px #f0f, 0 0 20px #f0f, 0 0 40px #ff00ff; }
+            5% { text-shadow: -5px 0 10px #0ff, 5px 0 20px #f0f; }
+            10% { text-shadow: 5px 0 10px #0ff, -5px 0 20px #f0f; }
+        }
+
+        /* SUBTITLE (BIOMETRIC FONT) */
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 2.5rem;
+            color: #0ff;
+            text-shadow: 0 0 8px #0ff;
+            font-weight: 300;
+            letter-spacing: 0.1rem;
+        }
+
+        /* PROGRESS BAR (DNA-HELIX STYLE) */
+        .progress-container {
+            width: 100%;
+            height: 12px;
+            background: rgba(255, 0, 255, 0.1);
+            margin: 2.5rem 0;
+            position: relative;
+            overflow: hidden;
+            border-radius: 6px;
+        }
+
+        .progress-bar {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #f0f, #0ff);
+            box-shadow: 
+                0 0 10px #f0f,
+                0 0 20px #0ff;
+            animation: load 3.5s forwards cubic-bezier(0.65, 0, 0.35, 1);
+            position: relative;
+        }
+
+        .progress-bar::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.3),
+                transparent
+            );
+            animation: shine 2s infinite;
+        }
+
+        @keyframes load {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* STATUS LINES (BINARY RAIN EFFECT) */
+        .status {
+            font-size: 1rem;
+            opacity: 0.8;
+            margin-top: 1.5rem;
+            text-align: left;
+            border-left: 2px solid #f0f;
+            padding-left: 1.2rem;
+            height: 80px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .status-line {
+            display: block;
+            margin: 0.4rem 0;
+            animation: fadeIn 0.6s forwards;
+            font-family: 'Courier New', monospace;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(-15px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* BINARY RAIN BACKGROUND */
+        .binary-rain {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.15;
+        }
+
+        .binary-digit {
+            position: absolute;
+            color: #0ff;
+            font-size: 0.9rem;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            to { transform: translateY(100vh); }
+        }
+
+        /* CORNER BRACKETS (ANIMATED) */
+        .corner {
+            position: absolute;
+            width: 25px;
+            height: 25px;
+            border-color: #f0f;
+            border-style: solid;
+            border-width: 0;
+            animation: cornerPulse 4s infinite;
+        }
+
+        @keyframes cornerPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .top-left {
+            top: 0;
+            left: 0;
+            border-top-width: 2px;
+            border-left-width: 2px;
+        }
+
+        .top-right {
+            top: 0;
+            right: 0;
+            border-top-width: 2px;
+            border-right-width: 2px;
+        }
+
+        .bottom-left {
+            bottom: 0;
+            left: 0;
+            border-bottom-width: 2px;
+            border-left-width: 2px;
+        }
+
+        .bottom-right {
+            bottom: 0;
+            right: 0;
+            border-bottom-width: 2px;
+            border-right-width: 2px;
+        }
+    </style>
+</head>
+<body>
+    <!-- BINARY RAIN EFFECT -->
+    <div class="binary-rain" id="binaryRain"></div>
+
+    <!-- MAIN CONTAINER -->
+    <div class="container">
+        <!-- ANIMATED CORNERS -->
+        <div class="corner top-left"></div>
+        <div class="corner top-right"></div>
+        <div class="corner bottom-left"></div>
+        <div class="corner bottom-right"></div>
+
+        <!-- TITLE -->
+        <h1>FACE MODE</h1>
+        <div class="subtitle">BIOMETRIC SCAN INITIATED</div>
+
+        <!-- PROGRESS BAR -->
+        <div class="progress-container">
+            <div class="progress-bar"></div>
+        </div>
+
+        <!-- STATUS LINES -->
+        <div class="status">
+            <span class="status-line" style="animation-delay: 0.5s;">> RETINAL SCAN: [███████ 90%]</span>
+            <span class="status-line" style="animation-delay: 1s;">> FACIAL MAPPING: [█████ 75%]</span>
+            <span class="status-line" style="animation-delay: 1.5s;">> NEURAL SYNC: [██████ 85%]</span>
+            <span class="status-line" style="animation-delay: 2s;">> SYSTEMS GREEN: [██████████ 100%]</span>
+        </div>
+    </div>
+
+    <!-- REDIRECT TO FACE MODE BAT -->
+    <script>
+        // Generate binary rain
+        const binaryRain = document.getElementById('binaryRain');
+        for (let i = 0; i < 50; i++) {
+            const digit = document.createElement('div');
+            digit.className = 'binary-digit';
+            digit.textContent = Math.random() > 0.5 ? '1' : '0';
+            digit.style.left = `${Math.random() * 100}%`;
+            digit.style.animationDuration = `${5 + Math.random() * 10}s`;
+            digit.style.animationDelay = `${Math.random() * 5}s`;
+            binaryRain.appendChild(digit);
+        }
+
+        // Launch BAT after delay
+        setTimeout(() => {
+            window.location.href = "file:///C:/Users/nithin.000/Downloads/serina/serina_face_mode.bat";
+        }, 3500);
+    </script>
+</body>
+</html>

@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Serina - Straw Hat Voice Navigator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pirata+One&family=Fredericka+the+Great&family=Creepster&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Fredericka the Great', cursive;
+            background: #8B4513;
+            color: #2F1B14;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Parchment background with wood texture */
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(139, 69, 19, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(160, 82, 45, 0.3) 0%, transparent 50%),
+                linear-gradient(45deg, #D2B48C 0%, #F5DEB3 25%, #DEB887 50%, #D2B48C 75%, #CD853F 100%);
+            background-size: 300px 300px, 250px 250px, 100% 100%;
+            z-index: -3;
+        }
+
+        /* Wood grain texture overlay */
+        .wood-texture {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                90deg,
+                rgba(139, 69, 19, 0.1) 0px,
+                rgba(160, 82, 45, 0.1) 2px,
+                rgba(139, 69, 19, 0.1) 4px
+            );
+            z-index: -2;
+        }
+
+        /* Rope border decoration */
+        .rope-border {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            border: 8px solid #8B4513;
+            border-image: repeating-linear-gradient(
+                45deg,
+                #654321 0px,
+                #8B4513 10px,
+                #A0522D 20px,
+                #8B4513 30px
+            ) 8;
+            border-radius: 20px;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Main pirate ship layout */
+        .pirate-deck {
+            display: grid;
+            grid-template-areas: 
+                "flag flag flag"
+                "controls compass logbook"
+                "treasure-bar treasure-bar treasure-bar";
+            grid-template-columns: 280px 1fr 320px;
+            grid-template-rows: 100px 1fr 80px;
+            min-height: 100vh;
+            gap: 15px;
+            padding: 25px;
+        }
+
+        /* Flag header */
+        .jolly-roger {
+            grid-area: flag;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+            border: 4px solid #8B4513;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            position: relative;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .crew-name {
+            font-family: 'Pirata One', cursive;
+            font-size: 36px;
+            color: #FF6B6B;
+            text-shadow: 
+                2px 2px 0px #000,
+                -2px -2px 0px #000,
+                2px -2px 0px #000,
+                -2px 2px 0px #000;
+            animation: pirateFlag 3s ease-in-out infinite;
+        }
+
+        @keyframes pirateFlag {
+            0%, 100% { transform: rotate(-2deg); }
+            50% { transform: rotate(2deg); }
+        }
+
+        .skull-icon {
+            font-size: 48px;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            animation: skullBob 2s ease-in-out infinite;
+        }
+
+        @keyframes skullBob {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .exit-button {
+            background: linear-gradient(45deg, #8B0000, #CD5C5C);
+            border: 3px solid #654321;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-family: 'Pirata One', cursive;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .exit-button:hover {
+            transform: scale(1.1) rotate(-2deg);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Left Panel - Ship Controls */
+        .ship-controls {
+            grid-area: controls;
+            background: linear-gradient(135deg, #DEB887 0%, #D2B48C 100%);
+            border: 4px solid #8B4513;
+            border-radius: 20px;
+            padding: 25px;
+            position: relative;
+            box-shadow: inset 0 0 20px rgba(139, 69, 19, 0.2);
+        }
+
+        .ship-controls::before {
+            content: '⚓';
+            position: absolute;
+            top: -15px;
+            left: 20px;
+            font-size: 30px;
+            background: #8B4513;
+            color: #DEB887;
+            padding: 5px 10px;
+            border-radius: 50%;
+        }
+
+        .control-section {
+            margin-bottom: 25px;
+        }
+
+        .section-header {
+            font-family: 'Pirata One', cursive;
+            font-size: 22px;
+            color: #8B0000;
+            margin-bottom: 15px;
+            text-align: center;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+            border-bottom: 2px dashed #8B4513;
+            padding-bottom: 8px;
+        }
+
+        .pirate-btn {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 12px;
+            background: linear-gradient(45deg, #CD853F, #D2B48C);
+            border: 3px solid #8B4513;
+            color: #2F1B14;
+            font-family: 'Fredericka the Great', cursive;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .pirate-btn:hover {
+            background: linear-gradient(45deg, #DAA520, #F0E68C);
+            transform: translateY(-3px) rotate(1deg);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .pirate-btn::before {
+            content: ⚔️';
+            margin-right: 8px;
+        }
+
+        .pirate-btn.sleep::before {
+            content: '😴';
+        }
+
+        /* Wheel spokes */
+        .wheel-spoke {
+            position: absolute;
+            width: 6px;
+            height: 45%;
+            background: linear-gradient(to bottom, #FFD700, #8B4513, #FFD700);
+            left: 50%;
+            top: 0;
+            transform-origin: 3px 100%;
+            border-radius: 3px;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        /* Center Panel - Ship's Wheel & Avatar */
+        .ship-compass {
+            grid-area: compass;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: 20px;
+        }
+
+        .status-scroll {
+            background: linear-gradient(135deg, #F5DEB3, #DEB887);
+            border: 3px solid #8B4513;
+            border-radius: 20px;
+            padding: 15px 25px;
+            margin-bottom: 25px;
+            font-family: 'Pirata One', cursive;
+            font-size: 24px;
+            color: #8B0000;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .status-scroll::before {
+            content: '📜';
+            position: absolute;
+            left: -15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 30px;
+        }
+
+        .ship-wheel {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin-bottom: 20px;
+        }
+
+        .wheel-outer {
+            width: 100%;
+            height: 100%;
+            border: 12px solid #8B4513;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #CD853F, #D2B48C);
+            position: relative;
+            box-shadow: 
+                0 0 30px rgba(139, 69, 19, 0.4),
+                inset 0 0 50px rgba(0, 0, 0, 0.3);
+            animation: wheelSpin 20s linear infinite;
+            background-image: 
+                radial-gradient(circle at center, transparent 60%, rgba(0,0,0,0.2) 100%),
+                repeating-radial-gradient(circle at center, #8B4513, #8B4513 2px, #A0522D 2px, #A0522D 4px);
+        }
+
+        @keyframes wheelSpin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .wheel-spoke:nth-child(1) { transform: translateX(-50%) rotate(0deg); }
+        .wheel-spoke:nth-child(2) { transform: translateX(-50%) rotate(45deg); }
+        .wheel-spoke:nth-child(3) { transform: translateX(-50%) rotate(90deg); }
+        .wheel-spoke:nth-child(4) { transform: translateX(-50%) rotate(135deg); }
+        .wheel-spoke:nth-child(5) { transform: translateX(-50%) rotate(180deg); }
+        .wheel-spoke:nth-child(6) { transform: translateX(-50%) rotate(225deg); }
+        .wheel-spoke:nth-child(7) { transform: translateX(-50%) rotate(270deg); }
+        .wheel-spoke:nth-child(8) { transform: translateX(-50%) rotate(315deg); }
+
+        /* Wheel center */
+        .wheel-center {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: #654321;
+            border: 4px solid #8B4513;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            z-index: 2;
+        }
+
+        .avatar-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #FF6B6B, #4ECDC4);
+            border: 4px solid #8B4513;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+            box-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
+            animation: avatarBounce 3s ease-in-out infinite;
+            z-index: 3;
+        }
+
+        @keyframes avatarBounce {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.1); }
+        }
+
+        /* Voice wave visualizer around wheel */
+        .voice-waves {
+            position: absolute;
+            width: 330px;
+            height: 330px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+
+        .wave-ring {
+            position: absolute;
+            border: 2px solid #FF6B6B;
+            border-radius: 50%;
+            opacity: 0;
+        }
+
+        .wave-ring.active {
+            animation: waveExpand 2s ease-out infinite;
+        }
+
+        @keyframes waveExpand {
+            0% {
+                width: 300px;
+                height: 300px;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                opacity: 1;
+            }
+            100% {
+                width: 400px;
+                height: 400px;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                opacity: 0;
+            }
+        }
+
+        /* Pirate Sandglass */
+        .sandglass-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 10;
+        }
+
+        .sandglass {
+            width: 30px;
+            height: 50px;
+            background: #D2B48C;
+            border: 3px solid #654321;
+            position: relative;
+            margin: 0 auto;
+        }
+
+        .sandglass-top, .sandglass-bottom {
+            position: absolute;
+            width: 100%;
+            height: 50%;
+            background: #F5DEB3;
+            transition: all 1s linear;
+        }
+
+        .sandglass-top {
+            top: 0;
+            border-bottom: 2px dashed #654321;
+        }
+
+        .sandglass-bottom {
+            bottom: 0;
+        }
+
+        .sandglass-stand {
+            width: 40px;
+            height: 8px;
+            background: #8B4513;
+            margin: 0 auto;
+            border-radius: 3px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        /* Right Panel - Ship's Logbook */
+        .ships-logbook {
+            grid-area: logbook;
+            background: linear-gradient(135deg, #F5DEB3, #DEB887);
+            border: 4px solid #8B4513;
+            border-radius: 20px;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: inset 0 0 20px rgba(139, 69, 19, 0.2);
+        }
+
+        .ships-logbook::before {
+            content: '🦜';
+            position: absolute;
+            top: -15px;
+            right: 20px;
+            font-size: 30px;
+            background: #8B4513;
+            color: #DEB887;
+            padding: 5px 10px;
+            border-radius: 50%;
+        }
+
+        .logbook-title {
+            font-family: 'Pirata One', cursive;
+            font-size: 24px;
+            color: #8B0000;
+            margin-bottom: 20px;
+            text-align: center;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .message-bottle {
+            flex: 1;
+            background: rgba(245, 222, 179, 0.8);
+            border: 3px solid #8B4513;
+            border-radius: 15px;
+            padding: 20px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            max-height: 350px;
+            box-shadow: inset 0 2px 8px rgba(139, 69, 19, 0.3);
+        }
+
+        .log-entry {
+            margin-bottom: 15px;
+            padding: 12px;
+            background: rgba(222, 184, 135, 0.6);
+            border: 2px solid #CD853F;
+            border-radius: 10px;
+            font-size: 14px;
+            line-height: 1.4;
+            position: relative;
+            border-left: 4px solid #8B4513;
+        }
+
+        .log-entry::before {
+            content: '📋';
+            position: absolute;
+            left: -12px;
+            top: 8px;
+            background: #DEB887;
+            border-radius: 50%;
+            padding: 2px;
+        }
+
+        .treasure-input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(245, 222, 179, 0.9);
+            border: 3px solid #8B4513;
+            border-radius: 10px;
+            color: #2F1B14;
+            font-family: 'Fredericka the Great', cursive;
+            font-size: 16px;
+            margin-bottom: 12px;
+            box-shadow: inset 0 2px 5px rgba(139, 69, 19, 0.2);
+        }
+
+        .treasure-input::placeholder {
+            color: #8B4513;
+            font-style: italic;
+        }
+
+        .send-message {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(45deg, #FF6B6B, #4ECDC4);
+            border: 3px solid #8B4513;
+            border-radius: 15px;
+            color: white;
+            font-family: 'Pirata One', cursive;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .send-message:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .parrot-icon {
+            display: inline-block;
+            animation: parrotBounce 0.8s ease infinite alternate;
+            transform-origin: bottom;
+        }
+
+        @keyframes parrotBounce {
+            0% { transform: translateY(0) rotate(-5deg); }
+            100% { transform: translateY(-5px) rotate(5deg); }
+        }
+
+        /* Bottom treasure bar */
+        .treasure-status {
+            grid-area: treasure-bar;
+            background: linear-gradient(90deg, #8B4513, #CD853F, #8B4513);
+            border: 4px solid #654321;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            padding: 0 30px;
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .status-gem {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Pirata One', cursive;
+            font-size: 16px;
+            color: #F5DEB3;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .gem-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            box-shadow: 0 0 10px currentColor;
+            animation: gemGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes gemGlow {
+            from { box-shadow: 0 0 5px currentColor; }
+            to { box-shadow: 0 0 15px currentColor; }
+        }
+
+        .connection-gem { color: #00FF00; }
+        .voice-gem { color: #FFD700; }
+        .ai-gem { color: #FF6B6B; }
+
+        /* Responsive design */
+        @media (max-width: 1200px) {
+            .pirate-deck {
+                grid-template-columns: 250px 1fr 280px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .pirate-deck {
+                grid-template-areas: 
+                    "flag"
+                    "compass"
+                    "controls"
+                    "logbook"
+                    "treasure-bar";
+                grid-template-columns: 1fr;
+                grid-template-rows: 100px 1fr 220px 250px 80px;
+            }
+            
+            .ship-wheel {
+                width: 250px;
+                height: 250px;
+            }
+            
+            .crew-name {
+                font-size: 28px;
+            }
+            
+            .sandglass-container {
+                top: 10px;
+                right: 10px;
+            }
+        }
+
+        /* Hidden class */
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="background"></div>
+    <div class="wood-texture"></div>
+    <div class="rope-border"></div>
+
+    <div class="pirate-deck">
+        <!-- Jolly Roger Header -->
+        <div class="jolly-roger">
+            <div class="skull-icon">☠️</div>
+            <div class="crew-name">SERINA PIRATES</div>
+            <button class="exit-button" onclick="goBack()">🏴‍☠️ ABANDON SHIP</button>
+        </div>
+
+        <!-- Ship Controls -->
+        <div class="ship-controls">
+            <div class="control-section">
+                <div class="section-header">Ship Commands</div>
+                <button class="pirate-btn" id="listen-btn" onclick="startListening()">
+                    🦜 Heed the Parrot's Call!
+                </button>
+                <button class="pirate-btn" id="interrupt-btn" onclick="interruptVoice()">
+                    ☠️ Silence the Scallywags!
+                </button>
+                <button class="pirate-btn sleep" id="sleep-btn" onclick="toggleSleep()">
+                    😴 Rest in Hammock
+                </button>
+            </div>
+
+            <div class="control-section">
+                <div class="section-header">🦜 Serina & Polly the Parrot</div>
+                <div style="text-align:center; font-size: 60px; margin-top: 15px;">
+                    🏴‍☠️🦜
+                </div>
+            </div>
+        </div>
+
+        <!-- Ship's Wheel & Avatar -->
+        <div class="ship-compass">
+            <div class="sandglass-container">
+                <div class="sandglass" id="voice-timer">
+                    <div class="sandglass-top"></div>
+                    <div class="sandglass-bottom"></div>
+                </div>
+                <div class="sandglass-stand"></div>
+            </div>
+            
+            <div class="status-scroll" id="status-display">Setting Sail...</div>
+            <div class="ship-wheel">
+                <div class="wheel-outer" id="ship-wheel">
+                    <div class="wheel-spoke"></div>
+                    <div class="wheel-spoke"></div>
+                    <div class="wheel-spoke"></div>
+                    <div class="wheel-spoke"></div>
+                    <div class="wheel-spoke"></div>
+                    <div class="wheel-spoke"></div>
+                    <div class="wheel-spoke"></div>
+                    <div class="wheel-spoke"></div>
+                    <div class="wheel-center"></div>
+                    <div class="avatar-center" id="avatar">🏴‍☠️</div>
+                </div>
+                <div class="voice-waves" id="voice-waves">
+                    <div class="wave-ring"></div>
+                    <div class="wave-ring"></div>
+                    <div class="wave-ring"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ship's Logbook -->
+        <div class="ships-logbook">
+            <div class="logbook-title">Captain's Log</div>
+            <div class="message-bottle" id="chat-container">
+                <div class="log-entry">
+                    <strong>System:</strong> All hands on deck! Voice navigation ready!
+                </div>
+                <div class="log-entry">
+                    <strong>Serina:</strong> Ahoy Captain! Ready to set sail on our adventure!
+                </div>
+            </div>
+            <input type="text" class="treasure-input" id="chat-input" placeholder="Send a message in a bottle...">
+            <button class="send-message" onclick="sendChatMessage()">
+                <span class="parrot-icon">🦜</span> Send with Polly the Parrot
+            </button>
+        </div>
+
+        <!-- Treasure Status Bar -->
+        <div class="treasure-status">
+            <div class="status-gem">
+                <div class="gem-icon connection-gem" id="connection-status"></div>
+                <span>Ship Connection</span>
+            </div>
+            <div class="status-gem">
+                <div class="gem-icon voice-gem" id="voice-status"></div>
+                <span>Voice Winds</span>
+            </div>
+            <div class="status-gem">
+                <div class="gem-icon ai-gem" id="ai-status"></div>
+                <span>AI Compass</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isListening = false;
+        let isSpeaking = false;
+        let isSleeping = false;
+        let waveAnimationInterval;
+        let sandTimerInterval;
+
+        // Initialize the interface
+        document.addEventListener('DOMContentLoaded', function() {
+            startSandTimer();
+            pollServer();
+            setInterval(pollServer, 1000);
+        });
+
+        // Sand timer animation
+        function startSandTimer() {
+            sandTimerInterval = setInterval(() => {
+                const topSand = document.querySelector('.sandglass-top');
+                const bottomSand = document.querySelector('.sandglass-bottom');
+                
+                if (parseInt(topSand.style.height || '50%') > 0) {
+                    topSand.style.height = (parseInt(topSand.style.height || '50') - 1) + '%';
+                    bottomSand.style.height = (parseInt(bottomSand.style.height || '50') + 1) + '%';
+                } else {
+                    topSand.style.height = '50%';
+                    bottomSand.style.height = '50%';
+                }
+            }, 100);
+        }
+
+        // Voice wave animation
+        function animateVoiceWaves() {
+            if (isListening || isSpeaking) {
+                const waves = document.querySelectorAll('.wave-ring');
+                waves.forEach((wave, index) => {
+                    setTimeout(() => {
+                        wave.classList.add('active');
+                        setTimeout(() => {
+                            wave.classList.remove('active');
+                        }, 2000);
+                    }, index * 400);
+                });
+            }
+        }
+
+        // Poll server for status updates
+        function pollServer() {
+            fetch('/serina-status')
+                .then(response => response.json())
+                .then(data => {
+                    updateStatus(data.statusText || "Sailing...");
+                    
+                    if (data.reply) {
+                        const chatContainer = document.getElementById('chat-container');
+                        const newEntry = document.createElement('div');
+                        newEntry.className = 'log-entry';
+                        newEntry.innerHTML = `<strong>Serina:</strong> ${data.reply}`;
+                        chatContainer.appendChild(newEntry);
+                        chatContainer.scrollTop = chatContainer.scrollHeight;
+                    }
+
+                    document.getElementById('connection-status').style.backgroundColor = '#00FF00';
+                    document.getElementById('voice-status').style.backgroundColor = data.listening ? '#00FF00' : '#FFD700';
+                    document.getElementById('ai-status').style.backgroundColor = data.speaking ? '#FF6B6B' : '#4ECDC4';
+
+                    isListening = data.listening;
+                    isSpeaking = data.speaking;
+                    
+                    if (isListening || isSpeaking) {
+                        animateVoiceWaves();
+                    }
+                })
+                .catch(() => {
+                    updateStatus("Setting to sail!");
+                    document.getElementById('connection-status').style.backgroundColor = '#FF0000';
+                });
+        }
+
+        // Update status display
+        function updateStatus(main) {
+            const statusDisplay = document.getElementById('status-display');
+            if (!main) main = 'Setting Sail...';
+            statusDisplay.textContent = main;
+
+            if (main.toLowerCase().includes('listening')) {
+                statusDisplay.textContent = 'Listening to the Winds...';
+            } else if (main.toLowerCase().includes('speaking')) {
+                statusDisplay.textContent = 'Voice from the Crow\'s Nest!';
+            } else if (main.toLowerCase().includes('waking')) {
+                statusDisplay.textContent = 'Raising the Anchor!';
+            } else if (main.toLowerCase().includes('sleep')) {
+                statusDisplay.textContent = 'Sailing to Dreamland...';
+            } else if (main.toLowerCase().includes('thinking')) {
+                statusDisplay.textContent = 'Consulting the Map...';
+            }
+        }
+
+        // Pirate voice control functions
+        async function startListening() {
+            try {
+                await fetch('/start-voice', { method: 'POST' });
+                updateStatus('Heeding the Parrot\'s Call!');
+                isListening = true;
+                animateVoiceWaves();
+            } catch (error) {
+                console.error('Error starting listening:', error);
+                updateStatus('Parrot be squawkin\' nonsense!');
+            }
+        }
+
+        async function interruptVoice() {
+            try {
+                await fetch('/interrupt-speech', { method: 'POST' });
+                updateStatus('Silenced the scallywags!');
+                isSpeaking = false;
+            } catch (error) {
+                console.error('Error interrupting voice:', error);
+                updateStatus('Cannon misfire!');
+            }
+        }
+
+        async function toggleSleep() {
+            try {
+                if (!isSleeping) {
+                    await fetch('/stop-voice', { method: 'POST' });
+                    updateStatus('Sailing to Dreamland...');
+                } else {
+                    await fetch('/start-voice', { method: 'POST' });
+                    updateStatus('Raising the Anchor!');
+                }
+                isSleeping = !isSleeping;
+                document.getElementById('sleep-btn').textContent = isSleeping ? '⏰ Wake from Hammock' : '😴 Rest in Hammock';
+            } catch (e) {
+                updateStatus("Anchor got stuck!");
+            }
+        }
+
+        function sendChatMessage() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            if (!message) return;
+
+            updateStatus("Consulting the Map...");
+
+            fetch('/voice-chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_input: message })
+            })
+            .then(res => res.json())
+            .then(data => {
+                const chatContainer = document.getElementById('chat-container');
+                const captainMsg = document.createElement('div');
+                captainMsg.className = 'log-entry';
+                captainMsg.innerHTML = `<strong>Captain:</strong> ${message}`;
+                chatContainer.appendChild(captainMsg);
+
+                const serinaMsg = document.createElement('div');
+                serinaMsg.className = 'log-entry';
+                serinaMsg.innerHTML = `<strong>Serina:</strong> ${data.reply}`;
+                chatContainer.appendChild(serinaMsg);
+
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+                updateStatus("Voice from the Crow's Nest!");
+            })
+            .catch(() => {
+                updateStatus("Parrot dropped the bottle!");
+            });
+
+            input.value = "";
+        }
+
+        function goBack() {
+            fetch('/stop-voice', { method: 'POST' })
+                .then(() => {
+                    updateStatus('Anchors down... Farewell, Captain! 💔');
+                    
+                    setTimeout(() => {
+                        const lastMenu = localStorage.getItem("lastMenuSkin");
+                        if (lastMenu) {
+                            window.location.href = lastMenu;
+                        } else {
+                            window.location.href = "/holo";
+                        }
+                    }, 2500);
+                })
+                .catch(() => {
+                    const lastMenu = localStorage.getItem("lastMenuSkin");
+                    if (lastMenu) {
+                        window.location.href = lastMenu;
+                    } else {
+                        window.location.href = "/holo";
+                    }
+                });
+        }
+
+        // Handle Enter key for chat input
+        document.getElementById('chat-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendChatMessage();
+            }
+        });
+    </script>
+</body>
+</html>

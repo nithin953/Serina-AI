@@ -1,0 +1,79 @@
+/* Mood-based styles */
+body.love {
+    background-color: #f8c7d1;
+    color: #e91e63;
+}
+
+body.roast {
+    background-color: #ff5722;
+    color: #fff;
+}
+
+body.angry {
+    background-color: #f44336;
+    color: #fff;
+}
+
+body.happy {
+    background-color: #ffeb3b;
+    color: #000;
+}
+
+body.sad {
+    background-color: #607d8b;
+    color: #fff;
+}
+
+/* Chat messages */
+.chatbot-response {
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    transition: all 0.3s ease;
+}
+
+.chatbot-response.love {
+    background-color: #f06292;
+    color: #fff;
+}
+
+.chatbot-response.roast {
+    background-color: #ff7043;
+    color: #fff;
+}
+
+.chatbot-response.angry {
+    background-color: #d32f2f;
+    color: #fff;
+}
+
+.chatbot-response.happy {
+    background-color: #ffeb3b;
+    color: #000;
+}
+
+.chatbot-response.sad {
+    background-color: #78909c;
+    color: #fff;
+}
+
+/* styles.css */
+body.love-theme {
+  background-color: #2e003e;
+}
+body.roast-theme {
+  background-color: #1f1f1f;
+}
+body.sad-theme {
+  background-color: #002233;
+}
+body.happy-theme {
+  background-color: #222f00;
+}
+
+.user-msg {
+  text-shadow: 0 0 8px #00f8ff;
+}
+.bot-msg {
+  text-shadow: 0 0 8px #ff8ef9;
+}

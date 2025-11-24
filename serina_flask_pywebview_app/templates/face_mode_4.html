@@ -1,0 +1,1249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Puppeteer's Stage - Serina's Theatre</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Creepster&family=Griffy:wght@400&family=UnifrakturCook:wght@700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(45deg, #2d1810, #1a0f08, #0d0603);
+            color: #f4e4c1;
+            font-family: 'Griffy', cursive;
+            min-height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Floating dust particles */
+        .dust-particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: rgba(244, 228, 193, 0.3);
+            border-radius: 50%;
+            animation: dustFloat 8s linear infinite;
+            z-index: 1;
+        }
+
+        .dust-particle:nth-child(odd) {
+            animation-duration: 12s;
+            animation-delay: 2s;
+        }
+
+        @keyframes dustFloat {
+            0% {
+                transform: translateY(100vh) translateX(0px) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.8;
+            }
+            90% {
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(-20px) translateX(100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Theatre Stage Container */
+        .theatre-stage {
+            width: 100vw;
+            height: 100vh;
+            background: 
+                radial-gradient(ellipse at center top, rgba(255, 215, 0, 0.1) 0%, transparent 50%),
+                linear-gradient(to bottom, #1a0f08 0%, #2d1810 30%, #3d2415 70%, #2d1810 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Stage Banner */
+        .stage-banner {
+            position: relative;
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #3d2415, #5d3520);
+            border: 3px solid #8b6914;
+            border-radius: 15px;
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.5),
+                inset 0 2px 10px rgba(212, 175, 140, 0.1);
+            transform: perspective(500px) rotateX(5deg);
+            z-index: 3;
+            margin-top: 20px;
+            width: 80%;
+            left: 50%;
+            transform: translateX(-50%) perspective(500px) rotateX(5deg);
+        }
+
+        .stage-banner::before {
+            content: '🎭';
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 24px;
+        }
+
+        .stage-banner::after {
+            content: '🎭';
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%) scaleX(-1);
+            font-size: 24px;
+        }
+
+        .stage-title {
+            font-family: 'Creepster', cursive;
+            font-size: 32px;
+            color: #d4af8c;
+            text-shadow: 
+                0 0 10px rgba(212, 175, 140, 0.5),
+                0 2px 4px rgba(0, 0, 0, 0.8);
+            margin-bottom: 5px;
+        }
+
+        .stage-subtitle {
+            font-size: 14px;
+            color: #a0856b;
+            font-style: italic;
+        }
+
+        /* Wooden stage floor */
+        .stage-floor {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 40%;
+            background: 
+                repeating-linear-gradient(
+                    90deg,
+                    #8B4513 0px,
+                    #8B4513 80px,
+                    #654321 80px,
+                    #654321 82px,
+                    #A0522D 82px,
+                    #A0522D 160px
+                );
+            border-top: 4px solid #654321;
+            z-index: 2;
+        }
+
+        /* Stage lighting */
+        .spotlight {
+            position: absolute;
+            top: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.3) 0%, rgba(255, 215, 0, 0.1) 40%, transparent 70%);
+            border-radius: 50%;
+            z-index: 3;
+            animation: spotlightFlicker 4s ease-in-out infinite;
+        }
+
+        @keyframes spotlightFlicker {
+            0%, 100% { opacity: 0.8; transform: translateX(-50%) scale(1); }
+            50% { opacity: 1; transform: translateX(-50%) scale(1.1); }
+        }
+
+        /* Curtain System */
+        .curtain-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .curtain {
+            position: absolute;
+            top: 0;
+            width: 52%;
+            height: 100%;
+            background: 
+                linear-gradient(
+                    90deg,
+                    #8B0000 0%,
+                    #DC143C 20%,
+                    #B22222 40%,
+                    #8B0000 60%,
+                    #DC143C 80%,
+                    #8B0000 100%
+                );
+            transition: transform 3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .curtain::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent 0px,
+                rgba(255, 255, 255, 0.1) 20px,
+                transparent 40px
+            );
+        }
+
+        .curtain-left {
+            left: 0;
+            transform: translateX(0%);
+        }
+
+        .curtain-right {
+            right: 0;
+            transform: translateX(0%);
+        }
+
+        .curtains-open .curtain-left {
+            transform: translateX(-100%);
+        }
+
+        .curtains-open .curtain-right {
+            transform: translateX(100%);
+        }
+
+        /* Curtain ropes and tassels */
+        .curtain-rope {
+            position: absolute;
+            top: 0;
+            width: 6px;
+            height: 60%;
+            background: linear-gradient(0deg, #8B4513, #CD853F);
+            border-radius: 3px;
+            z-index: 11;
+            transition: opacity 1s ease-in-out;
+        }
+
+        .hide-ropes .curtain-rope {
+            opacity: 0;
+        }
+
+        .rope-left {
+            left: 48%;
+            animation: ropeSwing 6s ease-in-out infinite;
+        }
+
+        .rope-right {
+            right: 48%;
+            animation: ropeSwing 6s ease-in-out infinite reverse;
+        }
+
+        @keyframes ropeSwing {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(2deg); }
+        }
+
+        .tassel {
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 16px;
+            height: 20px;
+            background: #FFD700;
+            border-radius: 0 0 50% 50%;
+        }
+
+        /* Puppet Strings */
+        .puppet-strings {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 4;
+        }
+
+        .puppet-string {
+            stroke: rgba(139, 69, 19, 0.7);
+            stroke-width: 2;
+            stroke-dasharray: 5, 3;
+        }
+
+        /* Puppet Serina */
+        .puppet-container {
+            position: absolute;
+            top: 35%;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 5;
+            opacity: 0;
+            transition: opacity 2s ease-in-out;
+        }
+
+        .puppet-container.show {
+            opacity: 1;
+            animation: puppetSway 4s ease-in-out infinite;
+        }
+
+        @keyframes puppetSway {
+            0%, 100% { transform: translateX(-50%) rotate(-1deg); }
+            50% { transform: translateX(-50%) rotate(1deg); }
+        }
+
+        /* Serina Puppet Body */
+        .puppet-serina {
+            width: 150px;
+            height: 200px;
+            position: relative;
+            filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.3));
+        }
+
+        /* Puppet head */
+        .puppet-head {
+            width: 80px;
+            height: 80px;
+            background: #FDBCB4;
+            border-radius: 50%;
+            position: relative;
+            margin: 0 auto 10px;
+            border: 3px solid #8B4513;
+            transition: transform 0.3s ease-out;
+        }
+
+        .puppet-eyes {
+            position: absolute;
+            top: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+        }
+
+        .puppet-eye {
+            width: 12px;
+            height: 12px;
+            background: #000;
+            border-radius: 50%;
+            animation: puppetBlink 4s ease-in-out infinite;
+        }
+
+        @keyframes puppetBlink {
+            0%, 90%, 100% { transform: scaleY(1); }
+            95% { transform: scaleY(0.1); }
+        }
+
+        .puppet-mouth {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 10px;
+            border: 2px solid #8B4513;
+            border-top: none;
+            border-radius: 0 0 20px 20px;
+            transition: all 0.3s ease;
+        }
+
+        .puppet-mouth.happy {
+            border-radius: 0 0 20px 20px;
+            transform: translateX(-50%) translateY(-2px);
+        }
+
+        .puppet-mouth.sad {
+            border-radius: 20px 20px 0 0;
+            border-top: 2px solid #8B4513;
+            border-bottom: none;
+            transform: translateX(-50%) translateY(2px);
+        }
+
+        /* Puppet hair */
+        .puppet-hair {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90px;
+            height: 40px;
+            background: #4A4A4A;
+            border-radius: 50% 50% 20% 20%;
+            z-index: -1;
+        }
+
+        .puppet-hair::before {
+            content: '';
+            position: absolute;
+            top: 5px;
+            left: -5px;
+            width: 20px;
+            height: 30px;
+            background: #4A4A4A;
+            border-radius: 50%;
+        }
+
+        .puppet-hair::after {
+            content: '';
+            position: absolute;
+            top: 5px;
+            right: -5px;
+            width: 20px;
+            height: 30px;
+            background: #4A4A4A;
+            border-radius: 50%;
+        }
+
+        /* Puppet body */
+        .puppet-body {
+            width: 60px;
+            height: 80px;
+            background: #9333EA;
+            margin: 0 auto;
+            border-radius: 30px 30px 10px 10px;
+            border: 3px solid #8B4513;
+            position: relative;
+        }
+
+        .puppet-arms {
+            position: absolute;
+            top: 20px;
+            width: 100%;
+        }
+
+        .puppet-arm {
+            width: 25px;
+            height: 50px;
+            background: #FDBCB4;
+            border: 2px solid #8B4513;
+            border-radius: 15px;
+            position: absolute;
+            transition: transform 0.5s ease;
+        }
+
+        .puppet-arm.left {
+            left: -20px;
+            transform-origin: top center;
+        }
+
+        .puppet-arm.right {
+            right: -20px;
+            transform-origin: top center;
+        }
+
+        .puppet-arm.happy.left {
+            transform: rotate(-20deg);
+        }
+
+        .puppet-arm.happy.right {
+            transform: rotate(20deg);
+        }
+
+        .puppet-arm.sad.left {
+            transform: rotate(10deg);
+        }
+
+        .puppet-arm.sad.right {
+            transform: rotate(-10deg);
+        }
+
+        /* Control Panel - Hanging Cards */
+        .control-panel {
+            position: absolute;
+            top: 20%;
+            right: 5%;
+            z-index: 6;
+            opacity: 0;
+            transition: opacity 2s ease-in-out 1s;
+        }
+
+        .control-panel.show {
+            opacity: 1;
+        }
+
+        .hanging-card {
+            background: #F4E4C1;
+            border: 3px solid #8B4513;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            position: relative;
+            transform-origin: top center;
+            animation: cardSway 5s ease-in-out infinite;
+            min-width: 200px;
+        }
+
+        .hanging-card:nth-child(2) {
+            animation-delay: 1s;
+        }
+
+        .hanging-card:nth-child(3) {
+            animation-delay: 2s;
+        }
+
+        @keyframes cardSway {
+            0%, 100% { transform: rotate(-1deg); }
+            50% { transform: rotate(1deg); }
+        }
+
+        .hanging-card::before {
+            content: '';
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 15px;
+            background: rgba(255, 255, 255, 0.6);
+        }
+
+        .card-title {
+            font-family: 'UnifrakturCook', cursive;
+            font-size: 16px;
+            color: #8B4513;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .puppet-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(45deg, #DC143C, #8B0000);
+            color: #F4E4C1;
+            border: 2px solid #8B4513;
+            border-radius: 8px;
+            font-family: 'Griffy', cursive;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .puppet-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .puppet-btn:hover::before {
+            left: 100%;
+        }
+
+        .puppet-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(220, 20, 60, 0.4);
+            background: linear-gradient(45deg, #FF1493, #DC143C);
+        }
+
+        .puppet-btn:active {
+            transform: translateY(0px);
+        }
+
+        .puppet-btn.danger {
+            background: linear-gradient(45deg, #8B0000, #4B0000);
+        }
+
+        .puppet-btn.danger:hover {
+            background: linear-gradient(45deg, #B22222, #8B0000);
+        }
+
+        /* Chat Script Scroll */
+        .script-scroll {
+            position: absolute;
+            bottom: 10%;
+            left: 5%;
+            z-index: 6;
+            opacity: 0;
+            transition: opacity 2s ease-in-out 1.5s;
+        }
+
+        .script-scroll.show {
+            opacity: 1;
+        }
+
+        .scroll-container {
+            background: #F4E4C1;
+            border: 3px solid #8B4513;
+            border-radius: 15px;
+            padding: 20px;
+            width: 300px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            position: relative;
+            transform: rotate(-2deg);
+        }
+
+        .scroll-container::before {
+            content: '📜';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            font-size: 24px;
+        }
+
+        .script-title {
+            font-family: 'UnifrakturCook', cursive;
+            font-size: 18px;
+            color: #8B4513;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .script-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #8B4513;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.8);
+            color: #2d1810;
+            font-family: 'Griffy', cursive;
+            font-size: 14px;
+            margin-bottom: 10px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .script-input:focus {
+            border-color: #DC143C;
+            box-shadow: 0 0 0 3px rgba(220, 20, 60, 0.2);
+            background: rgba(255, 255, 255, 1);
+        }
+
+        .script-input::placeholder {
+            color: #8B4513;
+            opacity: 0.7;
+        }
+
+        /* Mood Banner */
+        .mood-banner {
+            position: absolute;
+            top: 70%;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 6;
+            opacity: 0;
+            transition: opacity 2s ease-in-out 2s;
+        }
+
+        .mood-banner.show {
+            opacity: 1;
+        }
+
+        .banner-container {
+            background: #F4E4C1;
+            border: 3px solid #8B4513;
+            border-radius: 20px;
+            padding: 15px 25px;
+            position: relative;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            animation: bannerFloat 6s ease-in-out infinite;
+            min-width: 300px;
+            text-align: center;
+        }
+
+        @keyframes bannerFloat {
+            0%, 100% { transform: translateX(-50%) translateY(0px); }
+            50% { transform: translateX(-50%) translateY(-5px); }
+        }
+
+        .banner-container::before,
+        .banner-container::after {
+            content: '🎭';
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 20px;
+        }
+
+        .banner-container::before {
+            left: -15px;
+        }
+
+        .banner-container::after {
+            right: -15px;
+        }
+
+        .mood-text {
+            font-family: 'UnifrakturCook', cursive;
+            font-size: 16px;
+            color: #8B4513;
+            margin: 0;
+        }
+
+        /* Loading State */
+        .loading-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'UnifrakturCook', cursive;
+            font-size: 24px;
+            color: #F4E4C1;
+            text-align: center;
+            z-index: 12;
+            opacity: 1;
+            transition: opacity 1s ease-in-out;
+        }
+
+        .loading-text.hide {
+            opacity: 0;
+        }
+
+        .loading-dots {
+            animation: loadingDots 1.5s ease-in-out infinite;
+        }
+
+        @keyframes loadingDots {
+            0%, 20% { opacity: 0; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        /* Puppet Replies Container */
+        .puppet-replies {
+            position: absolute;
+            right: 2%;
+            bottom: 6%;
+            width: 280px;
+            z-index: 7;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            scrollbar-width: none;
+        }
+
+        .puppet-replies::-webkit-scrollbar {
+            display: none;
+        }
+
+        .puppet-reply {
+            background: #F4E4C1;
+            color: #8B4513;
+            padding: 14px;
+            border-radius: 14px;
+            border: 2px solid #8B4513;
+            font-family: 'Griffy', cursive;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 0.4s ease-out;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .control-panel {
+                right: 2%;
+                top: 15%;
+            }
+            
+            .hanging-card {
+                min-width: 150px;
+                padding: 10px;
+            }
+            
+            .script-scroll {
+                left: 2%;
+                bottom: 5%;
+            }
+            
+            .scroll-container {
+                width: 250px;
+            }
+            
+            .puppet-serina {
+                width: 120px;
+                height: 160px;
+            }
+            
+            .puppet-head {
+                width: 60px;
+                height: 60px;
+            }
+
+            .stage-banner {
+                width: 90%;
+                padding: 15px;
+            }
+
+            .stage-title {
+                font-size: 24px;
+            }
+
+            .puppet-replies {
+                width: 220px;
+                bottom: 4%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating dust particles -->
+    <div class="dust-particle" style="left: 10%; animation-delay: 0s;"></div>
+    <div class="dust-particle" style="left: 30%; animation-delay: 2s;"></div>
+    <div class="dust-particle" style="left: 50%; animation-delay: 4s;"></div>
+    <div class="dust-particle" style="left: 70%; animation-delay: 6s;"></div>
+    <div class="dust-particle" style="left: 90%; animation-delay: 8s;"></div>
+
+    <div class="theatre-stage">
+        <!-- Stage banner -->
+        <div class="stage-banner">
+            <div class="stage-title">Serina's Stage</div>
+            <div class="stage-subtitle">Where Emotions Dance on Strings</div>
+        </div>
+        
+        <!-- Stage floor -->
+        <div class="stage-floor"></div>
+        
+        <!-- Spotlight -->
+        <div class="spotlight"></div>
+        
+        <!-- Curtain system -->
+        <div class="curtain-container" id="curtainContainer">
+            <div class="curtain curtain-left"></div>
+            <div class="curtain curtain-right"></div>
+            <div class="curtain-rope rope-left">
+                <div class="tassel"></div>
+            </div>
+            <div class="curtain-rope rope-right">
+                <div class="tassel"></div>
+            </div>
+        </div>
+        
+        <!-- Puppet Strings SVG -->
+        <svg class="puppet-strings" id="puppetStrings"></svg>
+        
+        <!-- Loading text -->
+        <div class="loading-text" id="loadingText">
+            Welcome to Serina's Theatre!<span class="loading-dots">...</span>
+        </div>
+        
+        <!-- Puppet Serina -->
+        <div class="puppet-container" id="puppetContainer">
+            <div class="puppet-serina">
+                <div class="puppet-head" id="puppetHead">
+                    <div class="puppet-hair"></div>
+                    <div class="puppet-eyes">
+                        <div class="puppet-eye"></div>
+                        <div class="puppet-eye"></div>
+                    </div>
+                    <div class="puppet-mouth" id="puppetMouth"></div>
+                </div>
+                <div class="puppet-body">
+                    <div class="puppet-arms">
+                        <div class="puppet-arm left" id="leftArm"></div>
+                        <div class="puppet-arm right" id="rightArm"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Control panel -->
+        <div class="control-panel" id="controlPanel">
+            <div class="hanging-card">
+                <div class="card-title">🎬 Stage Controls</div>
+                <button class="puppet-btn" id="start-face" onclick="startFaceMode()">Cue the Puppet</button>
+                <button class="puppet-btn danger" id="go-back" onclick="goBack()">Leave Theatre 🎭</button>
+            </div>
+        </div>
+        
+        <!-- Chat script scroll -->
+        <div class="script-scroll" id="scriptScroll">
+            <div class="scroll-container">
+                <div class="script-title">💬 Script Lines</div>
+                <input type="text" class="script-input" id="face-user-input" placeholder="Whisper your line into the script...">
+                <button class="puppet-btn" id="send-face-message" onclick="sendFaceChat()">Deliver Line ✏️</button>
+            </div>
+        </div>
+        
+        <!-- Mood banner -->
+        <div class="mood-banner" id="moodBanner">
+            <div class="banner-container">
+                <p class="mood-text" id="face-status">Puppet awaits your presence...</p>
+            </div>
+        </div>
+
+        <!-- Puppet replies container -->
+        <div class="puppet-replies" id="puppetReplies"></div>
+    </div>
+
+    <script>
+        let isActive = false;
+        let calibrationTimer;
+
+        // Start calibration sequence when page loads
+        window.addEventListener('load', function() {
+            startCalibration();
+        });
+
+        function startCalibration() {
+            // After 5 seconds, open curtains and show puppet
+            calibrationTimer = setTimeout(() => {
+                document.getElementById('loadingText').classList.add('hide');
+                const curtainContainer = document.getElementById('curtainContainer');
+                curtainContainer.classList.add('curtains-open');
+
+                // AFTER 1.5 sec, hide ropes and show puppet
+                setTimeout(() => {
+                    curtainContainer.classList.add('hide-ropes');
+                    document.getElementById('puppetContainer').classList.add('show');
+                    document.getElementById('controlPanel').classList.add('show');
+                    document.getElementById('scriptScroll').classList.add('show');
+                    document.getElementById('moodBanner').classList.add('show');
+                    updatePuppetMood('The stage is set!', 'happy');
+                    
+                    // Initialize puppet strings after puppet is visible
+                    updatePuppetStrings();
+                }, 1500);
+            }, 5000);
+        }
+
+        function startFaceMode() {
+            isActive = true;
+            fetch('/start-face', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Face mode started:', data);
+                    updatePuppetMood('Scanning audience...', 'neutral');
+                })
+                .catch(error => {
+                    console.error('Error starting face mode:', error);
+                    updatePuppetMood('Stage lights dimmed - connection lost', 'sad');
+                });
+        }
+
+        function goBack() {
+            isActive = false;
+            fetch('/stop-face', { method: 'POST' })
+                .then(() => {
+                    updatePuppetMood("Disconnecting...", "Ending session...", "scanning");
+                    
+                    // Close curtains before leaving
+                    document.getElementById('curtainContainer').classList.remove('curtains-open');
+                    document.getElementById('curtainContainer').classList.remove('hide-ropes');
+                    
+                    setTimeout(() => {
+                        const lastMenu = localStorage.getItem("lastMenuSkin");
+                        if (lastMenu) {
+                            window.location.href = lastMenu;
+                        } else {
+                            window.location.href = "/holo";
+                        }
+                    }, 2000);
+                })
+                .catch(error => {
+                    console.error('Error stopping face mode:', error);
+                    const lastMenu = localStorage.getItem("lastMenuSkin");
+                    if (lastMenu) {
+                        window.location.href = lastMenu;
+                    } else {
+                        window.location.href = "/holo";
+                    }
+                });
+        }
+
+        function sendFaceChat() {
+            const input = document.getElementById('face-user-input').value.trim();
+            if (!input) return;
+
+            fetch('/face-chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ user_input: input })
+            })
+            .then(res => res.json())
+            .then(data => {
+                const reply = data.reply || 'No response received';
+                
+                // Update puppet mood with short status
+                updatePuppetMood("Speaking...", "happy");
+
+                // Show reply in chat bubble
+                const puppetReplies = document.getElementById('puppetReplies');
+                const replyBubble = document.createElement('div');
+                replyBubble.className = 'puppet-reply';
+                replyBubble.textContent = `🎭 Serina whispers: "${reply}"`;
+                puppetReplies.appendChild(replyBubble);
+                
+                // Auto-scroll to bottom
+                puppetReplies.scrollTop = puppetReplies.scrollHeight;
+            })
+            .catch(err => {
+                updatePuppetMood("The puppet's strings are tangled - connection lost 💔", 'sad');
+                console.error(err);
+            });
+
+            document.getElementById('face-user-input').value = '';
+        }
+
+        function updatePuppetMood(statusText, mood = 'neutral') {
+            const statusElement = document.getElementById('face-status');
+            const mouthElement = document.getElementById('puppetMouth');
+            const leftArm = document.getElementById('leftArm');
+            const rightArm = document.getElementById('rightArm');
+            const puppetHead = document.getElementById('puppetHead');
+
+            // Reset all classes first
+            mouthElement.className = 'puppet-mouth';
+            leftArm.className = 'puppet-arm left';
+            rightArm.className = 'puppet-arm right';
+            puppetHead.style.transform = '';
+            puppetHead.style.boxShadow = '';
+
+            // Apply mood-specific changes
+            switch(mood) {
+                case 'happy':
+                    mouthElement.classList.add('happy');
+                    leftArm.classList.add('happy');
+                    rightArm.classList.add('happy');
+                    puppetHead.style.boxShadow = '0 0 20px rgba(255, 215, 0, 0.5)';
+                    statusElement.innerHTML = `🎭 <strong>${statusText}</strong> 🎭`;
+                    break;
+                    
+                case 'sad':
+                    mouthElement.classList.add('sad');
+                    leftArm.classList.add('sad');
+                    rightArm.classList.add('sad');
+                    puppetHead.style.transform = 'rotate(5deg)';
+                    statusElement.innerHTML = `💔 <em>${statusText}</em> 💔`;
+                    break;
+                    
+                case 'angry':
+                    mouthElement.style.borderRadius = '50%';
+                    mouthElement.style.width = '15px';
+                    mouthElement.style.height = '15px';
+                    mouthElement.style.backgroundColor = '#DC143C';
+                    puppetHead.style.boxShadow = '0 0 20px rgba(220, 20, 60, 0.5)';
+                    statusElement.innerHTML = `👹 <strong>${statusText.toUpperCase()}</strong> 👹`;
+                    break;
+                    
+                default: // neutral
+                    statusElement.textContent = statusText;
+            }
+            
+            // Update strings when mood changes
+            updatePuppetStrings();
+        }
+
+        // Poll face status every 2 seconds
+        setInterval(() => {
+            if (isActive) {
+                fetch('/face-status')
+                    .then(response => response.json())
+                    .then(data => {
+                        const statusText = data.statusText || 'Watching...';
+                        const mood = data.mood ? data.mood.toLowerCase() : 'neutral';
+                        updatePuppetMood(statusText, mood);
+                    })
+                    .catch(error => {
+                        console.error('Error fetching face status:', error);
+                        updatePuppetMood('Stage connection flickering...', 'sad');
+                    });
+            }
+        }, 2000);
+
+        // Handle page unload
+        window.addEventListener('beforeunload', function() {
+            if (isActive) {
+                fetch('/stop-face', { method: 'POST' });
+            }
+        });
+
+        // Allow pressing Enter to send chat message
+        document.getElementById('face-user-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendFaceChat();
+            }
+        });
+
+        /* ======================= */
+        /* PUPPET PHYSICS & STRINGS */
+        /* ======================= */
+        const puppet = document.querySelector('.puppet-serina');
+        const puppetHead = document.getElementById('puppetHead');
+        const leftArm = document.getElementById('leftArm');
+        const rightArm = document.getElementById('rightArm');
+        
+        // Update puppet strings SVG based on current positions
+        function updatePuppetStrings() {
+            const svg = document.getElementById('puppetStrings');
+            svg.innerHTML = '';
+            
+            // Get positions of puppet parts
+            const headRect = puppetHead.getBoundingClientRect();
+            const leftArmRect = leftArm.getBoundingClientRect();
+            const rightArmRect = rightArm.getBoundingClientRect();
+            
+            // Create strings from top of stage to puppet parts
+            const headString = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            headString.setAttribute("class", "puppet-string");
+            headString.setAttribute("x1", headRect.left + headRect.width/2);
+            headString.setAttribute("y1", 0);
+            headString.setAttribute("x2", headRect.left + headRect.width/2);
+            headString.setAttribute("y2", headRect.top);
+            
+            const leftArmString = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            leftArmString.setAttribute("class", "puppet-string");
+            leftArmString.setAttribute("x1", leftArmRect.left + leftArmRect.width/2);
+            leftArmString.setAttribute("y1", 0);
+            leftArmString.setAttribute("x2", leftArmRect.left + leftArmRect.width/2);
+            leftArmString.setAttribute("y2", leftArmRect.top);
+            
+            const rightArmString = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            rightArmString.setAttribute("class", "puppet-string");
+            rightArmString.setAttribute("x1", rightArmRect.left + rightArmRect.width/2);
+            rightArmString.setAttribute("y1", 0);
+            rightArmString.setAttribute("x2", rightArmRect.left + rightArmRect.width/2);
+            rightArmString.setAttribute("y2", rightArmRect.top);
+            
+            svg.appendChild(headString);
+            svg.appendChild(leftArmString);
+            svg.appendChild(rightArmString);
+        }
+        
+        // Update puppet physics to only affect the head (keeping strings visually connected)
+        document.addEventListener('mousemove', (e) => {
+            if (!isActive) return;
+            
+            const mouseX = e.clientX;
+            const mouseY = e.clientY;
+            const puppetRect = puppet.getBoundingClientRect();
+            const puppetCenterX = puppetRect.left + puppetRect.width / 2;
+            const puppetCenterY = puppetRect.top + puppetRect.height / 2;
+            
+            // Calculate angle between mouse and puppet
+            const angleX = (mouseX - puppetCenterX) / 100;
+            const angleY = (mouseY - puppetCenterY) / 200;
+            
+            // Apply subtle rotation to puppet head only
+            puppetHead.style.transform = `rotate(${angleX}deg) translateY(${angleY}px)`;
+            
+            // Update strings after movement
+            updatePuppetStrings();
+        });
+
+        // Update strings on window resize
+        window.addEventListener('resize', updatePuppetStrings);
+        
+        // Update strings when puppet arms move (from mood changes)
+        const observer = new MutationObserver(updatePuppetStrings);
+        observer.observe(leftArm, { attributes: true });
+        observer.observe(rightArm, { attributes: true });
+
+        /* ================= */
+        /* SOUND EFFECTS */
+        /* ================= */
+        function playSoundEffect(type) {
+            if (!window.howls) window.howls = {};
+            
+            // Lazy-load Howler only when needed
+            if (!window.Howl) {
+                const script = document.createElement('script');
+                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js';
+                script.onload = () => initSounds();
+                document.head.appendChild(script);
+                return;
+            }
+            
+            if (!window.howls.init) initSounds();
+            
+            switch(type) {
+                case 'curtain':
+                    window.howls.curtain.play();
+                    break;
+                case 'creak':
+                    window.howls.creak.play();
+                    break;
+                case 'background':
+                    if (!window.howls.background.playing()) {
+                        window.howls.background.play();
+                    }
+                    break;
+            }
+        }
+        
+        function initSounds() {
+            window.howls = {
+                curtain: new Howl({
+                    src: ['https://assets.mixkit.co/sfx/preview/mixkit-theater-curtain-1467.mp3'],
+                    volume: 0.5
+                }),
+                creak: new Howl({
+                    src: ['https://assets.mixkit.co/sfx/preview/mixkit-creaky-door-2815.mp3'],
+                    volume: 0.3
+                }),
+                background: new Howl({
+                    src: ['https://assets.mixkit.co/music/preview/mixkit-creepy-horror-music-365.mp3'],
+                    volume: 0.2,
+                    loop: true
+                }),
+                init: true
+            };
+        }
+
+        // Add sound to curtain opening
+        document.getElementById('curtainContainer').addEventListener('transitionstart', function(e) {
+            if (e.target.classList.contains('curtains-open')) {
+                playSoundEffect('curtain');
+                setTimeout(playSoundEffect('background'), 2000);
+            }
+        });
+
+        // Add creak sound to button hovers
+        document.querySelectorAll('.puppet-btn').forEach(btn => {
+            btn.addEventListener('mouseenter', () => {
+                playSoundEffect('creak');
+            });
+        });
+
+        /* ================= */
+        /* FINAL POLISH */
+        /* ================= */
+        // Add occasional dramatic spotlight flicker
+        setInterval(() => {
+            if (Math.random() > 0.9) {
+                const spotlight = document.querySelector('.spotlight');
+                spotlight.style.opacity = '0.3';
+                setTimeout(() => {
+                    spotlight.style.opacity = '0.8';
+                }, 200);
+            }
+        }, 10000);
+
+        // Make puppet blink more dramatically when talking
+        document.getElementById('send-face-message').addEventListener('click', () => {
+            const eyes = document.querySelectorAll('.puppet-eye');
+            eyes.forEach(eye => {
+                eye.style.animation = 'none';
+                setTimeout(() => {
+                    eye.style.animation = 'puppetBlink 4s ease-in-out infinite';
+                }, 10);
+            });
+        });
+    </script>
+</body>
+</html>

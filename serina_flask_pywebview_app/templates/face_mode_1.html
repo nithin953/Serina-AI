@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Serina - Face Mode</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0d1117;
+            color: #f0f6fc;
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Subtle animated background */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(255, 111, 97, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 40%, rgba(120, 219, 226, 0.1) 0%, transparent 50%);
+            animation: gradientShift 10s ease-in-out infinite alternate;
+            z-index: -1;
+        }
+
+        @keyframes gradientShift {
+            0% { opacity: 0.3; }
+            100% { opacity: 0.6; }
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            padding: 20px;
+            position: relative;
+        }
+
+        .face-interface {
+            background: rgba(13, 17, 23, 0.8);
+            border: 1px solid #30363d;
+            border-radius: 20px;
+            padding: 48px;
+            text-align: center;
+            box-shadow: 
+                0 16px 70px rgba(0, 0, 0, 0.4),
+                0 0 0 1px rgba(255, 255, 255, 0.05);
+            min-width: 420px;
+            backdrop-filter: blur(40px);
+            position: relative;
+        }
+
+        .face-interface::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(120, 219, 226, 0.6), transparent);
+        }
+
+        .header-section {
+            margin-bottom: 32px;
+        }
+
+        .face-icon {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 24px;
+            border: 2px solid #7c3aed;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: #7c3aed;
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(124, 58, 237, 0.05));
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .face-icon::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border-radius: 20px;
+            background: linear-gradient(45deg, #7c3aed, #06b6d4, #7c3aed);
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .face-icon.active {
+            border-color: #10b981;
+            color: #10b981;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05));
+        }
+
+        .face-icon.active::after {
+            background: linear-gradient(45deg, #10b981, #06b6d4, #10b981);
+            opacity: 1;
+        }
+
+        .face-icon.error {
+            border-color: #ef4444;
+            color: #ef4444;
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(239, 68, 68, 0.05));
+        }
+
+        .face-icon.error::after {
+            background: linear-gradient(45deg, #ef4444, #f97316, #ef4444);
+            opacity: 1;
+        }
+
+        .title {
+            font-size: 28px;
+            margin-bottom: 8px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #f0f6fc, #c9d1d9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+        }
+
+        .version {
+            font-size: 13px;
+            color: #7d8590;
+            margin-bottom: 0;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .status-card {
+            margin: 32px 0;
+            padding: 24px;
+            background: rgba(22, 27, 34, 0.6);
+            border: 1px solid #30363d;
+            border-radius: 16px;
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .status-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(to bottom, #7c3aed, #06b6d4);
+            opacity: 0.6;
+        }
+
+        .status-card.active::before {
+            background: linear-gradient(to bottom, #10b981, #06b6d4);
+        }
+
+        .status-card.error::before {
+            background: linear-gradient(to bottom, #ef4444, #f97316);
+        }
+
+        .status-text {
+            font-size: 18px;
+            color: #f0f6fc;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .subtitle-text {
+            font-size: 14px;
+            color: #8b949e;
+            line-height: 1.5;
+            font-weight: 400;
+        }
+
+        .controls {
+            margin-top: 32px;
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            background: rgba(22, 27, 34, 0.8);
+            color: #f0f6fc;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            border-color: #58a6ff;
+            transform: translateY(-1px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-back {
+            border-color: #f85149;
+            background: rgba(248, 81, 73, 0.1);
+        }
+
+        .btn-back:hover {
+            border-color: #f85149;
+            background: rgba(248, 81, 73, 0.2);
+            box-shadow: 0 8px 25px rgba(248, 81, 73, 0.3);
+        }
+
+        .status-indicator {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #7c3aed;
+            opacity: 0.8;
+        }
+
+        .status-indicator.active {
+            background: #10b981;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .status-indicator.error {
+            background: #ef4444;
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { 
+                opacity: 0.8; 
+                box-shadow: 0 0 0 0 currentColor;
+            }
+            50% { 
+                opacity: 1; 
+                box-shadow: 0 0 0 8px transparent;
+            }
+        }
+
+        .floating-elements {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .floating-dot {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: rgba(120, 219, 226, 0.4);
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .floating-dot:nth-child(1) {
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-dot:nth-child(2) {
+            top: 60%;
+            right: 15%;
+            animation-delay: 2s;
+        }
+
+        .floating-dot:nth-child(3) {
+            bottom: 30%;
+            left: 20%;
+            animation-delay: 4s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) scale(1); opacity: 0.4; }
+            50% { transform: translateY(-20px) scale(1.2); opacity: 0.8; }
+        }
+
+        /* Chat input styling */
+        #chatInput {
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 1px solid #30363d;
+            background: rgba(22, 27, 34, 0.8);
+            color: #f0f6fc;
+            font-family: inherit;
+            font-size: 14px;
+            width: 220px;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        #chatInput:focus {
+            border-color: #58a6ff;
+            box-shadow: 0 0 0 2px rgba(88, 166, 255, 0.3);
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .face-interface {
+                min-width: 340px;
+                padding: 32px;
+            }
+            
+            .title {
+                font-size: 24px;
+            }
+            
+            .face-icon {
+                width: 80px;
+                height: 80px;
+                font-size: 32px;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            #chatInput {
+                width: 100%;
+                margin-bottom: 8px;
+            }
+        }
+
+        /* Reduced motion for accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation: none !important;
+                transition: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-elements">
+        <div class="floating-dot"></div>
+        <div class="floating-dot"></div>
+        <div class="floating-dot"></div>
+    </div>
+
+    <div class="status-indicator" id="statusIndicator"></div>
+
+    <div class="container">
+        <div class="face-interface">
+            <div class="header-section">
+                <div class="face-icon" id="faceIcon">👁️</div>
+                <h1 class="title">Face Recognition</h1>
+                <div class="version">Neural Vision System</div>
+            </div>
+            
+            <div class="status-card" id="statusCard">
+                <div class="status-text" id="statusText">Initializing...</div>
+                <div class="subtitle-text" id="subtitleText">Preparing facial recognition systems...</div>
+            </div>
+
+            <div class="controls">
+                <input id="chatInput" type="text" placeholder="Type your message...">
+                <button class="btn" onclick="sendFaceChat()">Send</button>
+                <button class="btn btn-back" onclick="goBack()">← Back to Menu</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isActive = true;
+
+        // Start face mode automatically when page loads
+        window.addEventListener('load', function() {
+            startFaceMode();
+        });
+
+        function startFaceMode() {
+            fetch('/start-face', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Face mode started:', data);
+                    updateStatus('Starting...', 'Initializing face recognition...', 'active');
+                })
+                .catch(error => {
+                    console.error('Error starting face mode:', error);
+                    updateStatus('Error', 'Failed to start face mode', 'error');
+                });
+        }
+
+        function goBack() {
+            isActive = false;
+            fetch('/stop-face', { method: 'POST' })
+                .then(() => {
+                    updateStatus('Closing...', 'Returning to main menu...', 'active');
+                    
+                    setTimeout(() => {
+                        const lastMenu = localStorage.getItem("lastMenuSkin");
+                        if (lastMenu) {
+                            window.location.href = lastMenu;
+                        } else {
+                            window.location.href = "/holo";
+                        }
+                    }, 1000);
+                })
+                .catch(error => {
+                    console.error('Error stopping face mode:', error);
+                    const lastMenu = localStorage.getItem("lastMenuSkin");
+                    if (lastMenu) {
+                        window.location.href = lastMenu;
+                    } else {
+                        window.location.href = "/holo";
+                    }
+                });
+        }
+
+        function sendFaceChat() {
+            const input = document.getElementById('chatInput').value.trim();
+            if (!input) return;
+
+            fetch('/face-chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ user_input: input })
+            })
+            .then(res => res.json())
+            .then(data => {
+                updateStatus("Serina", data.reply || "No reply", 'active');
+            })
+            .catch(err => {
+                updateStatus("Error", "Failed to chat with Serina 💔", 'error');
+                console.error(err);
+            });
+
+            document.getElementById('chatInput').value = '';
+        }
+
+        function updateStatus(status, subtitle, state) {
+            const statusElement = document.getElementById('statusText');
+            const subtitleElement = document.getElementById('subtitleText');
+            const indicator = document.querySelector('.status-indicator');
+            const faceIcon = document.getElementById('faceIcon');
+            const statusCard = document.getElementById('statusCard');
+
+            statusElement.textContent = status;
+            subtitleElement.textContent = subtitle;
+
+            // Reset classes
+            indicator.className = 'status-indicator';
+            faceIcon.className = 'face-icon';
+            statusCard.className = 'status-card';
+
+            // Update indicator and icon based on state
+            if (state === 'active') {
+                indicator.classList.add('active');
+                faceIcon.classList.add('active');
+                statusCard.classList.add('active');
+            } else if (state === 'error') {
+                indicator.classList.add('error');
+                faceIcon.classList.add('error');
+                statusCard.classList.add('error');
+            }
+        }
+
+        // Poll face status every second
+        setInterval(() => {
+            if (isActive) {
+                fetch('/face-status')
+                    .then(response => response.json())
+                    .then(data => {
+                        updateStatus(data.statusText || 'Active', data.subtitle || 'Face mode running...', 'active');
+                    })
+                    .catch(error => {
+                        console.error('Error fetching face status:', error);
+                        updateStatus('Connection Error', 'Unable to fetch status', 'error');
+                    });
+            }
+        }, 1000);
+
+        // Handle page unload
+        window.addEventListener('beforeunload', function() {
+            if (isActive) {
+                fetch('/stop-face', { method: 'POST' });
+            }
+        });
+
+        // Allow pressing Enter to send chat message
+        document.getElementById('chatInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendFaceChat();
+            }
+        });
+    </script>
+</body>
+</html>

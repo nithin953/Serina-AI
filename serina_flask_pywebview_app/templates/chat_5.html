@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Serina • Cyber Companion</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* ==== CYBERPUNK NEON FUTURE STYLE ==== */
+    :root {
+      --neon-blue: #00f3ff;
+      --neon-purple: #b400ff;
+      --neon-pink: #ff00f7;
+      --dark-bg: #0a0a15;
+      --glass-bg: rgba(10, 10, 25, 0.7);
+      --glass-border: rgba(0, 243, 255, 0.2);
+    }
+    
+    body {
+      background: 
+        radial-gradient(circle at 20% 30%, rgba(180, 0, 255, 0.1) 0%, transparent 30%),
+        radial-gradient(circle at 80% 70%, rgba(0, 243, 255, 0.1) 0%, transparent 30%),
+        var(--dark-bg);
+      color: var(--neon-blue);
+      font-family: 'Rajdhani', 'Courier New', monospace;
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* Main chat container with holographic effect */
+    .chat-container {
+      width: 90%;
+      max-width: 1000px;
+      height: 85vh;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(10px);
+      box-shadow: 
+        0 0 30px rgba(0, 243, 255, 0.2),
+        inset 0 0 20px rgba(180, 0, 255, 0.1);
+      display: grid;
+      grid-template-columns: auto 1fr;
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Avatar panel with animated AI face */
+    .avatar-panel {
+      width: 200px;
+      background: linear-gradient(135deg, rgba(0,243,255,0.05), rgba(180,0,255,0.05));
+      border-right: 1px solid var(--glass-border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .avatar-container {
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.3);
+      border: 2px solid var(--neon-purple);
+      box-shadow: 
+        0 0 20px rgba(180, 0, 255, 0.3),
+        inset 0 0 20px rgba(0, 243, 255, 0.2);
+      position: relative;
+      overflow: hidden;
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .avatar-container:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 30px rgba(180, 0, 255, 0.5);
+    }
+
+    .avatar-emoji {
+      font-size: 80px;
+      transition: all 0.3s;
+      transform-origin: center;
+    }
+
+    .avatar-name {
+      font-size: 1.5rem;
+      color: var(--neon-purple);
+      margin-top: 20px;
+      text-shadow: 0 0 10px var(--neon-purple);
+      font-weight: 600;
+    }
+
+    .avatar-status {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 0.9rem;
+      color: var(--neon-blue);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    /* Chat content area */
+    .chat-content {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      min-height: 0; /* Fixes flexbox scrolling issue */
+    }
+
+    .chat-header {
+      padding: 15px 20px;
+      background: linear-gradient(90deg, rgba(0,243,255,0.05), rgba(180,0,255,0.05));
+      border-bottom: 1px solid var(--glass-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .chat-messages {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      min-height: 0; /* Allows flex item to shrink */
+      height: 0; /* Allows proper flex sizing */
+      background: 
+        linear-gradient(rgba(0, 243, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(180, 0, 255, 0.02) 1px, transparent 1px);
+      background-size: 30px 30px;
+      position: relative;
+      scroll-padding-bottom: 20px; /* Prevent messages from being hidden under fixed elements */
+    }
+
+    /* Message bubbles with futuristic design */
+    .message {
+      margin-bottom: 20px;
+      display: flex;
+      gap: 15px;
+      align-items: flex-start;
+      position: relative;
+    }
+
+    .user-message {
+      justify-content: flex-end;
+    }
+
+    .user-message .content {
+      background: linear-gradient(135deg, rgba(0,243,255,0.15), rgba(0,243,255,0.05));
+      border: 1px solid var(--neon-blue);
+      color: var(--neon-blue);
+      text-shadow: 0 0 5px var(--neon-blue);
+      border-radius: 18px 18px 0 18px;
+      padding: 12px 18px;
+      max-width: 70%;
+      box-shadow: 0 0 15px rgba(0, 243, 255, 0.1);
+      position: relative;
+    }
+
+    .serina-message .content {
+      background: linear-gradient(135deg, rgba(180,0,255,0.15), rgba(180,0,255,0.05));
+      border: 1px solid var(--neon-purple);
+      color: var(--neon-purple);
+      text-shadow: 0 0 5px var(--neon-purple);
+      border-radius: 18px 18px 18px 0;
+      padding: 12px 18px;
+      max-width: 70%;
+      box-shadow: 0 0 15px rgba(180, 0, 255, 0.1);
+      position: relative;
+    }
+
+    .timestamp {
+      font-size: 0.7rem;
+      opacity: 0.6;
+      margin-top: 5px;
+      text-align: right;
+    }
+
+    /* Input area with futuristic controls */
+    .chat-input-container {
+      padding: 15px;
+      background: rgba(0, 0, 0, 0.2);
+      border-top: 1px solid var(--glass-border);
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      position: sticky;
+      bottom: 0;
+    }
+
+    #chat-input {
+      flex: 1;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--neon-blue);
+      color: var(--neon-blue);
+      padding: 12px 18px;
+      font-family: 'Rajdhani', 'Courier New', monospace;
+      outline: none;
+      border-radius: 25px;
+      transition: all 0.3s;
+    }
+
+    #chat-input:focus {
+      box-shadow: 0 0 15px rgba(0, 243, 255, 0.3);
+      border-color: var(--neon-pink);
+    }
+
+    #send-btn {
+      background: transparent;
+      border: 1px solid var(--neon-purple);
+      color: var(--neon-purple);
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.2rem;
+    }
+
+    #send-btn:hover {
+      background: rgba(180, 0, 255, 0.2);
+      box-shadow: 0 0 20px rgba(180, 0, 255, 0.3);
+      transform: scale(1.1);
+    }
+
+    /* Mood selector (hidden since we're using the avatar now) */
+    .mood-selector {
+      display: none;
+    }
+
+    /* Brain selector as futuristic switch */
+    .brain-switcher {
+      position: relative;
+    }
+    
+    #brain-select {
+      background: rgba(0, 0, 0, 0.3);
+      color: var(--neon-blue);
+      border: 1px solid var(--neon-blue);
+      font-family: 'Rajdhani', 'Courier New', monospace;
+      padding: 8px 15px;
+      border-radius: 25px;
+      appearance: none;
+      cursor: pointer;
+      text-transform: uppercase;
+      font-size: 0.8rem;
+      letter-spacing: 1px;
+      transition: all 0.3s;
+    }
+    
+    #brain-select:hover {
+      box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+    }
+    
+    #brain-select option {
+      background: var(--dark-bg);
+      color: var(--neon-blue);
+    }
+    
+    /* Back to menu button */
+    .back-to-menu {
+      background: transparent;
+      border: 1px solid var(--neon-purple);
+      color: var(--neon-purple);
+      padding: 8px 15px;
+      font-family: 'Rajdhani', 'Courier New', monospace;
+      cursor: pointer;
+      border-radius: 25px;
+      transition: all 0.3s;
+      text-transform: uppercase;
+      font-size: 0.8rem;
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .back-to-menu:hover {
+      background: rgba(180, 0, 255, 0.2);
+      box-shadow: 0 0 15px rgba(180, 0, 255, 0.2);
+    }
+
+    /* Typing indicator with animation */
+    .typing-indicator {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      color: var(--neon-purple);
+      opacity: 0.8;
+      margin: 15px 0;
+    }
+
+    .typing-dots {
+      display: flex;
+      gap: 5px;
+    }
+
+    .typing-dots span {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      background: var(--neon-purple);
+      border-radius: 50%;
+      animation: typing 1.4s infinite ease-in-out;
+      box-shadow: 0 0 5px var(--neon-purple);
+    }
+
+    .typing-dots span:nth-child(1) { animation-delay: 0s; }
+    .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes typing {
+      0%, 60%, 100% { transform: translateY(0); opacity: 0.6; }
+      30% { transform: translateY(-5px); opacity: 1; }
+    }
+
+    /* Custom scrollbar */
+    .chat-messages::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .chat-messages::-webkit-scrollbar-thumb {
+      background: linear-gradient(var(--neon-blue), var(--neon-purple));
+      border-radius: 3px;
+    }
+
+    /* Holographic effects */
+    .holographic-line {
+      position: absolute;
+      height: 1px;
+      width: 100%;
+      background: linear-gradient(90deg, transparent, var(--neon-blue), transparent);
+      opacity: 0.1;
+    }
+
+    /* Animation for emoji face */
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(5deg); }
+      75% { transform: rotate(-5deg); }
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="chat-container">
+    <!-- Animated Avatar Panel -->
+    <div class="avatar-panel">
+      <div class="holographic-line" style="top: 10%;"></div>
+      <div class="holographic-line" style="top: 30%;"></div>
+      <div class="holographic-line" style="top: 70%;"></div>
+      
+      <div class="avatar-container" id="avatar-container">
+        <div class="avatar-emoji" id="avatar-emoji">😊</div>
+      </div>
+      
+      <div class="avatar-name">SERINA</div>
+      <div class="avatar-status" id="avatar-status">STANDARD MODE</div>
+      
+      <!-- Hidden mood selector (we'll use the avatar click instead) -->
+      <div class="mood-selector">
+        <select id="mood-select">
+          <option value="normal">😊 NORMAL</option>
+          <option value="love">💖 LOVE</option>
+          <option value="roast">🔥 ROAST</option>
+          <option value="angry">😡 ANGRY</option>
+          <option value="nuclear">💣 NUCLEAR</option>
+          <option value="jealous">😤 JEALOUS</option>
+          <option value="sad">😢 SAD</option>
+          <option value="baddie">😏 BADDIE</option>
+        </select>
+      </div>
+    </div>
+    
+    <!-- Chat Content Area -->
+    <div class="chat-content">
+      <div class="chat-header">
+        <div class="header-controls">
+          <button class="back-to-menu" onclick="backToMenu()">
+            <i class="fas fa-arrow-left"></i> MENU
+          </button>
+          
+          <div class="brain-switcher">
+            <select id="brain-select">
+              <option value="together">💾 CORE AI</option>
+              <option value="deepinfra">🛰️ STARLINK PROTOCOL</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="connection-status">
+          <i class="fas fa-circle" style="color: #00ff00; font-size: 0.7rem;"></i>
+          <span style="margin-left: 5px; font-size: 0.8rem;">CONNECTED</span>
+        </div>
+      </div>
+      
+      <div class="chat-messages" id="chat-messages">
+        <div class="message serina-message">
+          <div>
+            <div class="content">SYSTEM INITIALIZED. READY FOR USER INPUT.</div>
+            <div class="timestamp">SYSTEM STARTUP</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="chat-input-container">
+        <input type="text" id="chat-input" placeholder="ENTER MESSAGE..." autocomplete="off">
+        <button id="send-btn"><i class="fas fa-paper-plane"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const chatInput = document.getElementById('chat-input');
+    const chatMessages = document.getElementById('chat-messages');
+    const sendBtn = document.getElementById('send-btn');
+    const brainSelect = document.getElementById('brain-select');
+    const moodSelect = document.getElementById('mood-select');
+    const avatarContainer = document.getElementById('avatar-container');
+    const avatarEmoji = document.getElementById('avatar-emoji');
+    const avatarStatus = document.getElementById('avatar-status');
+    
+    // Mood to emoji mapping
+    const moodEmojis = {
+      normal: '😊',
+      love: '💖',
+      roast: '🔥',
+      angry: '😡',
+      nuclear: '💣',
+      jealous: '😏',
+      sad: '😕',
+      baddie: '💅'
+    };
+    
+    // Mood to color mapping
+    const moodColors = {
+      normal: '#00f3ff',
+      love: '#ff00f7',
+      roast: '#ff5500',
+      angry: '#ff0000',
+      nuclear: '#ff00aa',
+      jealous: '#ffff00',
+      sad: '#00aaff',
+      baddie: '#aa00ff'
+    };
+    
+    // Mood to status text mapping
+    const moodStatus = {
+      normal: 'STANDARD MODE',
+      love: 'AFFECTION MODE',
+      roast: 'ROAST MODE',
+      angry: 'AGGRESSION MODE',
+      nuclear: 'EXTREME MODE',
+      jealous: 'JEALOUSY MODE',
+      sad: 'MELANCHOLY MODE',
+      baddie: 'BAD GIRL MODE'
+    };
+
+    // Mood to animation mapping
+    const moodAnimations = {
+      normal: 'pulse 2s infinite',
+      love: 'bounce 1s infinite',
+      roast: 'shake 0.5s infinite',
+      angry: 'shake 0.3s infinite',
+      nuclear: 'pulse 0.2s infinite',
+      jealous: 'shake 0.8s infinite',
+      sad: 'pulse 3s infinite',
+      baddie: 'pulse 1.5s infinite'
+    };
+
+    let currentMoodIndex = 0;
+    const moodKeys = Object.keys(moodEmojis);
+
+    function addMessage(text, isUser = false) {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${isUser ? 'user-message' : 'serina-message'}`;
+
+      const now = new Date();
+      const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      messageDiv.innerHTML = `
+        <div>
+          <div class="content">${text}</div>
+          <div class="timestamp">${timeString}</div>
+        </div>
+      `;
+
+      chatMessages.appendChild(messageDiv);
+      // Add small delay to ensure proper scrolling
+      setTimeout(() => {
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }, 50);
+      
+      // Trigger avatar animation for Serina messages
+      if (!isUser) {
+        animateAvatarTalk();
+      }
+    }
+
+    function showTyping() {
+      const typingDiv = document.createElement('div');
+      typingDiv.className = 'typing-indicator';
+      typingDiv.id = 'typing-indicator';
+      typingDiv.innerHTML = `
+        <div class="typing-dots">
+          <span></span><span></span><span></span>
+        </div>
+        <div>PROCESSING...</div>
+      `;
+      chatMessages.appendChild(typingDiv);
+      // Add small delay to ensure proper scrolling
+      setTimeout(() => {
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }, 50);
+      
+      // Change avatar status to "THINKING"
+      avatarStatus.textContent = "PROCESSING...";
+      avatarStatus.style.color = moodColors[moodKeys[currentMoodIndex]];
+    }
+
+    function hideTyping() {
+      const typingIndicator = document.getElementById('typing-indicator');
+      if (typingIndicator) typingIndicator.remove();
+      
+      // Restore avatar status
+      updateAvatarStatus();
+    }
+
+    // Animate avatar talking
+    function animateAvatarTalk() {
+      avatarEmoji.style.transform = 'scale(1.2)';
+      setTimeout(() => {
+        avatarEmoji.style.transform = 'scale(1)';
+      }, 300);
+      
+      // Change status briefly to "SPEAKING"
+      avatarStatus.textContent = "SPEAKING";
+      setTimeout(updateAvatarStatus, 1500);
+    }
+    
+    // Update avatar status based on mood
+    function updateAvatarStatus() {
+      const mood = moodKeys[currentMoodIndex];
+      avatarStatus.textContent = moodStatus[mood];
+      avatarStatus.style.color = moodColors[mood];
+    }
+
+    // Change mood when avatar is clicked
+    function changeMood() {
+      currentMoodIndex = (currentMoodIndex + 1) % moodKeys.length;
+      const mood = moodKeys[currentMoodIndex];
+      
+      // Update emoji
+      avatarEmoji.textContent = moodEmojis[mood];
+      
+      // Update animation
+      avatarEmoji.style.animation = moodAnimations[mood];
+      
+      // Update container border color
+      avatarContainer.style.borderColor = moodColors[mood];
+      
+      // Update status
+      updateAvatarStatus();
+      
+      // Removed the message about mood change from appearing in chat
+    }
+
+    async function handleSend() {
+      const message = chatInput.value.trim();
+      
+      if (message === '') return;
+
+      addMessage(message, true);
+      chatInput.value = '';
+      showTyping();
+
+      try {
+        const response = await fetch('/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            message, 
+            mood: moodKeys[currentMoodIndex]
+          })
+        });
+
+        if (!response.ok) throw new Error('Network response was not ok');
+
+        const data = await response.json();
+        hideTyping();
+        addMessage(data.reply, false);
+      } catch (error) {
+        hideTyping();
+        addMessage(`SYSTEM ERROR: ${error.message}`, false);
+        avatarStatus.textContent = "ERROR";
+        avatarStatus.style.color = "#ff0000";
+      }
+    }
+
+    function backToMenu() {
+      const lastMenu = localStorage.getItem("lastMenuSkin");
+      if (lastMenu) {
+        window.location.href = lastMenu;
+      } else {
+        window.location.href = "holo";
+      }
+    }
+
+    // Event listeners
+    sendBtn.addEventListener('click', handleSend);
+    chatInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') handleSend();
+    });
+
+    brainSelect.addEventListener('change', (e) => {
+      const brainName = e.target.options[e.target.selectedIndex].text;
+      addMessage(`⚡ SWITCHING TO ${brainName} PROTOCOL...`, false);
+
+      const brain = e.target.value;
+      fetch('/set-brain', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ api: brain })
+      });
+    });
+    
+    // Click on avatar to change mood
+    avatarContainer.addEventListener('click', changeMood);
+
+    // Initialize
+    chatInput.focus();
+    updateAvatarStatus();
+    avatarEmoji.style.animation = moodAnimations[moodKeys[currentMoodIndex]];
+  </script>
+</body>
+</html>

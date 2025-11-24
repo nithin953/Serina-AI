@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SERINA NEXUS • Advanced Communication Interface</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Rajdhani:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* ==== QUANTUM NEXUS STYLE ==== */
+    :root {
+      --primary-blue: #00f0ff;
+      --secondary-blue: #0077ff;
+      --quantum-purple: #aa00ff;
+      --quantum-pink: #ff00aa;
+      --quantum-green: #00ff8f;
+      --dark-matter: #050510;
+      --dark-energy: #0a0a20;
+      --interface-bg: #080818;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      background: var(--dark-matter);
+      color: var(--primary-blue);
+      font-family: 'Rajdhani', sans-serif;
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      background-image: 
+        radial-gradient(circle at 50% 50%, rgba(0, 240, 255, 0.03) 0%, transparent 70%),
+        radial-gradient(circle at 20% 30%, rgba(170, 0, 255, 0.03) 0%, transparent 70%),
+        radial-gradient(circle at 80% 20%, rgba(255, 0, 170, 0.03) 0%, transparent 70%);
+    }
+
+    /* Holographic grid effect */
+    body::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: 
+        linear-gradient(to right, rgba(0, 240, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(0, 240, 255, 0.05) 1px, transparent 1px);
+      background-size: 50px 50px;
+      z-index: -1;
+      transform: perspective(1000px) rotateX(60deg) scale(2.5);
+      transform-origin: center bottom;
+      opacity: 0.2;
+      animation: gridFloat 20s linear infinite;
+    }
+
+    @keyframes gridFloat {
+      0% { background-position: 0 0; }
+      100% { background-position: 50px 50px; }
+    }
+
+    /* Ambient particles */
+    .particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .particle {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: var(--primary-blue);
+      border-radius: 50%;
+      opacity: 0;
+      animation: particleFloat 10s infinite linear;
+    }
+
+    @keyframes particleFloat {
+      0% { transform: translateY(100vh); opacity: 0; }
+      10% { opacity: 0.7; }
+      90% { opacity: 0.7; }
+      100% { transform: translateY(-100px); opacity: 0; }
+    }
+
+    .interface-container {
+      width: 90%;
+      max-width: 1200px;
+      height: 85vh;
+      background: var(--interface-bg);
+      border-radius: 8px;
+      overflow: hidden;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      position: relative;
+      box-shadow: 
+        0 0 40px rgba(0, 240, 255, 0.1),
+        0 0 80px rgba(170, 0, 255, 0.1);
+    }
+
+    /* Hexagonal border effect */
+    .interface-container::before {
+      content: "";
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: 
+        conic-gradient(
+          from 0deg, 
+          var(--primary-blue), 
+          var(--quantum-purple), 
+          var(--quantum-pink), 
+          var(--quantum-green), 
+          var(--secondary-blue),
+          var(--primary-blue)
+        );
+      z-index: -1;
+      border-radius: 10px;
+      clip-path: polygon(
+        0% 5%, 2% 0%, 98% 0%, 100% 5%,
+        100% 95%, 98% 100%, 2% 100%, 0% 95%
+      );
+      animation: borderPulse 8s linear infinite;
+      opacity: 0.8;
+    }
+
+    @keyframes borderPulse {
+      0%, 100% { filter: hue-rotate(0deg) brightness(1); }
+      50% { filter: hue-rotate(30deg) brightness(1.2); }
+    }
+
+    .interface-header {
+      padding: 20px 30px;
+      background: linear-gradient(90deg, 
+        rgba(0, 119, 255, 0.2) 0%, 
+        rgba(170, 0, 255, 0.2) 100%);
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      position: relative;
+      border-bottom: 1px solid rgba(0, 240, 255, 0.1);
+    }
+
+    .quantum-logo {
+      width: 40px;
+      height: 40px;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .quantum-logo::before {
+      content: "";
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 2px solid var(--quantum-green);
+      animation: rotateCW 4s linear infinite;
+      box-sizing: border-box;
+    }
+
+    .quantum-logo::after {
+      content: "";
+      position: absolute;
+      width: 80%;
+      height: 80%;
+      border-radius: 50%;
+      border: 2px solid var(--quantum-pink);
+      animation: rotateCCW 3s linear infinite;
+      box-sizing: border-box;
+    }
+
+    .quantum-core {
+      width: 50%;
+      height: 50%;
+      background: radial-gradient(circle, var(--primary-blue) 0%, transparent 70%);
+      border-radius: 50%;
+      box-shadow: 0 0 15px var(--primary-blue);
+      animation: pulsate 2s ease infinite;
+    }
+
+    @keyframes rotateCW {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes rotateCCW {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(-360deg); }
+    }
+
+    @keyframes pulsate {
+      0%, 100% { transform: scale(1); opacity: 0.8; }
+      50% { transform: scale(1.2); opacity: 1; }
+    }
+
+    .interface-header h2 {
+      margin: 0;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 700;
+      letter-spacing: 3px;
+      font-size: 1.5rem;
+      background: linear-gradient(to right, 
+        var(--primary-blue), 
+        var(--quantum-purple));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-transform: uppercase;
+    }
+
+    .brain-switcher {
+      margin-left: auto;
+      position: relative;
+      z-index: 10;
+    }
+    
+    #brain-select {
+      background: rgba(0, 119, 255, 0.2);
+      color: var(--primary-blue);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      font-family: 'Orbitron', sans-serif;
+      padding: 10px 15px;
+      border-radius: 0;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      cursor: pointer;
+      transition: all 0.3s;
+      appearance: none;
+      -webkit-appearance: none;
+      clip-path: polygon(
+        0% 20%, 10% 0%, 90% 0%, 100% 20%,
+        100% 80%, 90% 100%, 10% 100%, 0% 80%
+      );
+      padding-right: 40px;
+      min-width: 200px;
+    }
+    
+    #brain-select:hover {
+      background: rgba(0, 119, 255, 0.4);
+      border-color: var(--primary-blue);
+    }
+    
+    #brain-select option {
+      background: var(--dark-energy);
+      color: var(--primary-blue);
+    }
+
+    .select-arrow {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+      color: var(--primary-blue);
+    }
+
+    /* Menu button */
+    .menu-button {
+      background: transparent;
+      border: 1px solid var(--quantum-green);
+      color: var(--quantum-green);
+      padding: 10px 15px;
+      font-family: 'Orbitron', sans-serif;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-transform: uppercase;
+      font-size: 0.7rem;
+      letter-spacing: 2px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      position: relative;
+      overflow: hidden;
+      clip-path: polygon(
+        0% 20%, 10% 0%, 90% 0%, 100% 20%,
+        100% 80%, 90% 100%, 10% 100%, 0% 80%
+      );
+    }
+
+    .menu-button::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 255, 143, 0.2);
+      transition: all 0.3s;
+    }
+
+    .menu-button:hover::before {
+      left: 0;
+    }
+
+    .menu-button:hover {
+      box-shadow: 0 0 15px rgba(0, 255, 143, 0.5);
+    }
+
+    .menu-button span {
+      position: relative;
+      z-index: 1;
+    }
+
+    .menu-button i {
+      position: relative;
+      z-index: 1;
+    }
+
+    .chat-display {
+      padding: 30px;
+      overflow-y: auto;
+      position: relative;
+      background: 
+        radial-gradient(circle at center top, 
+          rgba(0, 119, 255, 0.05) 0%, 
+          transparent 60%);
+    }
+
+    /* Custom scrollbar */
+    .chat-display::-webkit-scrollbar {
+      width: 6px;
+      background: transparent;
+    }
+
+    .chat-display::-webkit-scrollbar-thumb {
+      background: linear-gradient(to bottom, var(--primary-blue), var(--quantum-purple));
+      border-radius: 3px;
+    }
+
+    .message {
+      margin-bottom: 25px;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 15px;
+      opacity: 0;
+      animation: messageAppear 0.5s forwards;
+      position: relative;
+    }
+
+    @keyframes messageAppear {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .user-message {
+      grid-template-columns: 1fr auto;
+    }
+
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    .user-avatar {
+      background: linear-gradient(135deg, 
+        rgba(0, 119, 255, 0.3), 
+        rgba(0, 240, 255, 0.3));
+      color: var(--primary-blue);
+      font-size: 1.2rem;
+    }
+
+    .system-avatar {
+      background: linear-gradient(135deg, 
+        rgba(170, 0, 255, 0.3), 
+        rgba(255, 0, 170, 0.3));
+      color: var(--quantum-pink);
+      font-size: 1.2rem;
+    }
+
+    .avatar::before {
+      content: "";
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: 
+        conic-gradient(
+          from 45deg, 
+          var(--primary-blue), 
+          var(--quantum-purple), 
+          var(--quantum-pink), 
+          var(--primary-blue)
+        );
+      z-index: -1;
+      border-radius: 12px;
+      opacity: 0.6;
+      animation: rotateSlow 4s linear infinite;
+    }
+
+    @keyframes rotateSlow {
+      100% { transform: rotate(360deg); }
+    }
+
+    .content-container {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      max-width: 80%;
+    }
+
+    .user-message .content-container {
+      align-items: flex-end;
+      margin-left: auto;
+    }
+
+    .message-content {
+      padding: 15px 20px;
+      border-radius: 8px;
+      position: relative;
+      font-weight: 500;
+      line-height: 1.5;
+      letter-spacing: 0.5px;
+      font-size: 1rem;
+    }
+
+    .user-message .message-content {
+      background: linear-gradient(135deg, 
+        rgba(0, 119, 255, 0.15), 
+        rgba(0, 240, 255, 0.15));
+      color: #ffffff;
+      border-top-right-radius: 0;
+      clip-path: polygon(
+        0% 0%, 100% 0%, 100% 80%, 
+        80% 100%, 0% 100%
+      );
+    }
+
+    .system-message .message-content {
+      background: linear-gradient(135deg, 
+        rgba(170, 0, 255, 0.15), 
+        rgba(255, 0, 170, 0.15));
+      color: #ffffff;
+      border-top-left-radius: 0;
+      clip-path: polygon(
+        0% 0%, 100% 0%, 100% 100%,
+        0% 100%, 0% 20%
+      );
+    }
+
+    .message-content::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: 
+        linear-gradient(45deg, 
+          transparent 60%, 
+          rgba(255, 255, 255, 0.1) 100%);
+      z-index: -1;
+      border-radius: inherit;
+    }
+
+    .message-timestamp {
+      font-size: 0.7rem;
+      opacity: 0.6;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .user-message .message-timestamp {
+      text-align: right;
+    }
+
+    /* Data lines effect */
+    .data-line {
+      position: absolute;
+      height: 1px;
+      background: linear-gradient(90deg, 
+        transparent, 
+        var(--primary-blue),
+        transparent);
+      width: 100%;
+      opacity: 0.3;
+    }
+
+    .input-zone {
+      padding: 20px 30px;
+      background: rgba(10, 10, 32, 0.8);
+      border-top: 1px solid rgba(0, 240, 255, 0.1);
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 15px;
+      align-items: center;
+      position: relative;
+    }
+
+    #mood-select-container {
+      position: relative;
+      width: 180px;
+    }
+
+    #mood-select {
+      width: 100%;
+      background: rgba(0, 119, 255, 0.1);
+      color: var(--primary-blue);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      font-family: 'Rajdhani', sans-serif;
+      padding: 12px 15px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      transition: all 0.3s;
+      border-radius: 0;
+      clip-path: polygon(
+        0% 0%, 95% 0%, 100% 50%, 
+        95% 100%, 0% 100%, 5% 50%
+      );
+      padding-right: 40px;
+    }
+
+    #mood-select:hover {
+      background: rgba(0, 119, 255, 0.2);
+      border-color: var(--primary-blue);
+    }
+
+    #mood-select option {
+      background: var(--dark-energy);
+      color: var(--primary-blue);
+    }
+
+    .mood-icon {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+      color: var(--primary-blue);
+    }
+
+    .input-wrapper {
+      position: relative;
+      width: 100%;
+    }
+
+    #chat-input {
+      width: 100%;
+      background: rgba(0, 240, 255, 0.05);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      color: #ffffff;
+      padding: 15px 20px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1rem;
+      font-weight: 500;
+      outline: none;
+      transition: all 0.3s;
+      clip-path: polygon(
+        10px 0%, calc(100% - 10px) 0%, 100% 50%, 
+        calc(100% - 10px) 100%, 10px 100%, 0% 50%
+      );
+    }
+
+    #chat-input::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+      letter-spacing: 1px;
+    }
+
+    #chat-input:focus {
+      background: rgba(0, 240, 255, 0.1);
+      border-color: var(--primary-blue);
+      box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+    }
+
+    /* Input visualizer effect */
+    .input-visualizer {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 2px;
+      width: 0%;
+      background: linear-gradient(90deg, 
+        var(--primary-blue), 
+        var(--quantum-purple));
+      transition: width 0.3s;
+      z-index: 5;
+    }
+
+    #chat-input:focus + .input-visualizer {
+      width: 100%;
+    }
+
+    #send-btn {
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(135deg, 
+        var(--quantum-purple), 
+        var(--quantum-pink));
+      border: none;
+      color: #ffffff;
+      cursor: pointer;
+      transition: all 0.3s;
+      position: relative;
+      clip-path: polygon(
+        50% 0%, 100% 50%, 50% 100%, 0% 50%
+      );
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #send-btn::before {
+      content: "";
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      right: 2px;
+      bottom: 2px;
+      background: linear-gradient(135deg, 
+        rgba(170, 0, 255, 0.5), 
+        rgba(255, 0, 170, 0.5));
+      clip-path: polygon(
+        50% 0%, 100% 50%, 50% 100%, 0% 50%
+      );
+      z-index: -1;
+      opacity: 0;
+      transition: all 0.3s;
+    }
+
+    #send-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 20px rgba(255, 0, 170, 0.5);
+    }
+
+    #send-btn:hover::before {
+      opacity: 1;
+    }
+
+    #send-btn i {
+      font-size: 1.2rem;
+      margin-left: 3px;
+    }
+
+    .typing-indicator {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 15px 0;
+      opacity: 0;
+      animation: fadeIn 0.3s forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .typing-pulse {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .typing-pulse span {
+      width: 8px;
+      height: 8px;
+      background: var(--quantum-purple);
+      border-radius: 50%;
+      animation: pulse 1.5s infinite ease-in-out;
+      box-shadow: 0 0 5px var(--quantum-purple);
+    }
+
+    .typing-pulse span:nth-child(1) { animation-delay: 0s; }
+    .typing-pulse span:nth-child(2) { animation-delay: 0.3s; }
+    .typing-pulse span:nth-child(3) { animation-delay: 0.6s; }
+
+    .typing-text {
+      font-size: 0.8rem;
+      color: var(--quantum-purple);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      animation: blink 1.5s infinite;
+      font-family: 'Orbitron', sans-serif;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(0.8); opacity: 0.6; }
+      50% { transform: scale(1.2); opacity: 1; }
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
+
+    /* Futuristic details */
+    .detail-corner {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--primary-blue);
+      opacity: 0.5;
+    }
+
+    .corner-tl {
+      top: 10px;
+      left: 10px;
+      border-right: none;
+      border-bottom: none;
+    }
+
+    .corner-tr {
+      top: 10px;
+      right: 10px;
+      border-left: none;
+      border-bottom: none;
+    }
+
+    .corner-bl {
+      bottom: 10px;
+      left: 10px;
+      border-right: none;
+      border-top: none;
+    }
+
+    .corner-br {
+      bottom: 10px;
+      right: 10px;
+      border-left: none;
+      border-top: none;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .interface-container {
+        width: 95%;
+        height: 90vh;
+      }
+
+      .interface-header {
+        padding: 15px;
+        gap: 10px;
+      }
+
+      .interface-header h2 {
+        font-size: 1.2rem;
+      }
+
+      #brain-select, .menu-button {
+        font-size: 0.6rem;
+        padding: 8px 12px;
+        min-width: 150px;
+      }
+
+      .chat-display {
+        padding: 15px;
+      }
+
+      .message {
+        gap: 10px;
+      }
+
+      .avatar {
+        width: 35px;
+        height: 35px;
+      }
+
+      .content-container {
+        max-width: 90%;
+      }
+
+      .input-zone {
+        padding: 15px;
+        grid-template-columns: 1fr auto;
+      }
+
+      #mood-select-container {
+        grid-column: 1 / span 2;
+        margin-bottom: 10px;
+      }
+
+      #send-btn {
+        width: 45px;
+        height: 45px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="particles" id="particles"></div>
+  
+  <div class="interface-container">
+    <!-- Interface corners -->
+    <div class="detail-corner corner-tl"></div>
+    <div class="detail-corner corner-tr"></div>
+    <div class="detail-corner corner-bl"></div>
+    <div class="detail-corner corner-br"></div>
+    
+    <div class="interface-header">
+      <div class="quantum-logo">
+        <div class="quantum-core"></div>
+      </div>
+      <h2>Serina Quantum Nexus</h2>
+      
+      <div class="brain-switcher">
+        <select id="brain-select">
+          <option value="together">⚛️ QUANTUM CORE</option>
+          <option value="deepinfra">⚡ NEURAL MATRIX</option>
+        </select>
+        <div class="select-arrow">
+          <i class="fas fa-chevron-down"></i>
+        </div>
+      </div>
+      
+      <button class="menu-button" onclick="backToMenu()">
+        <i class="fas fa-network-wired"></i>
+        <span>Nexus Hub</span>
+      </button>
+    </div>
+    
+    <div class="chat-display" id="chat-display">
+      <!-- Data lines background effect -->
+      <div class="data-line" style="top: 20%; animation: slideRight 15s linear infinite;"></div>
+      <div class="data-line" style="top: 40%; animation: slideLeft 12s linear infinite;"></div>
+      <div class="data-line" style="top: 60%; animation: slideRight 18s linear infinite;"></div>
+      <div class="data-line" style="top: 80%; animation: slideLeft 10s linear infinite;"></div>
+      
+      <div class="message system-message">
+        <div class="avatar system-avatar">
+          <i class="fas fa-cube"></i>
+        </div>
+        <div class="content-container">
+          <div class="message-content">Quantum link established. Neural interface ready for communication...</div>
+          <div class="message-timestamp">SYSTEM CALIBRATED</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="input-zone">
+      <div id="mood-select-container">
+        <select id="mood-select">
+          <option value="normal">◉ STANDARD</option>
+          <option value="love">✧ HARMONIC</option>
+          <option value="roast">⚠ CRITICAL</option>
+          <option value="angry">⚡ ENERGIZED</option>
+          <option value="nuclear">☢ OVERCLOCKED</option>
+          <option value="jealous">⌀ DEFENSIVE</option>
+          <option value="sad">⁂ SUBDUED</option>
+          <option value="baddie">⍟ ROGUE</option>
+        </select>
+        <div class="mood-icon">
+          <i class="fas fa-signal"></i>
+        </div>
+      </div>
+      
+      <div class="input-wrapper">
+        <input type="text" id="chat-input" placeholder="Enter neural transmission..." autocomplete="off">
+        <div class="input-visualizer"></div>
+      </div>
+      
+      <button id="send-btn">
+        <i class="fas fa-paper-plane"></i>
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // Create animated background particles
+    const particlesContainer = document.getElementById('particles');
+    const particleCount = 50;
+    
+    for (let i = 0; i < particleCount; i++) {
+      createParticle();
+    }
+    
+    function createParticle() {
+      const particle = document.createElement('div');
+      particle.className = 'particle';
+      
+      // Random position
+      const x = Math.random() * 100;
+      particle.style.left = `${x}%`;
+      particle.style.bottom = '-10px';
+      
+      // Random size
+      const size = Math.random() * 3 + 1;
+      particle.style.width = `${size}px`;
+      particle.style.height = `${size}px`;
+      
+      // Random color
+      const colors = [
+        'var(--primary-blue)', 
+        'var(--quantum-purple)', 
+        'var(--quantum-pink)',
+        'var(--quantum-green)'
+      ];
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      particle.style.background = color;
+      particle.style.boxShadow = `0 0 ${size * 2}px ${color}`;
+      
+      // Random animation duration
+      const duration = Math.random() * 15 + 10;
+      particle.style.animationDuration = `${duration}s`;
+      
+      // Random delay
+      particle.style.animationDelay = `${Math.random() * 5}s`;
+      
+      particlesContainer.appendChild(particle);
+      
+      // Remove after animation completes
+      setTimeout(() => {
+        particle.remove();
+        createParticle();
+      }, duration * 1000);
+    }
+    
+    // Add sliding animation for data lines
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes slideRight {
+        from { transform: translateX(-100%); }
+        to { transform: translateX(100%); }
+      }
+      @keyframes slideLeft {
+        from { transform: translateX(100%); }
+        to { transform: translateX(-100%); }
+      }
+    `;
+    document.head.appendChild(style);
+
+    const chatInput = document.getElementById('chat-input');
+    const chatDisplay = document.getElementById('chat-display');
+    const sendBtn = document.getElementById('send-btn');
+    const brainSelect = document.getElementById('brain-select');
+    
+    // Add message to chat
+    function addMessage(text, isUser = false) {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${isUser ? 'user-message' : 'system-message'}`;
+      
+      const now = new Date();
+      const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      
+      const avatarIcon = isUser 
+        ? '<i class="fas fa-user"></i>' 
+        : '<i class="fas fa-cube"></i>';
+      
+      messageDiv.innerHTML = `
+        ${isUser ? '' : `<div class="avatar system-avatar">${avatarIcon}</div>`}
+        <div class="content-container">
+          <div class="message-content">${text}</div>
+          <div class="message-timestamp">${timeString}</div>
+        </div>
+        ${isUser ? `<div class="avatar user-avatar">${avatarIcon}</div>` : ''}
+      `;
+      
+      chatDisplay.appendChild(messageDiv);
+      chatDisplay.scrollTop = chatDisplay.scrollHeight;
+      
+      // Add data transfer effect
+      setTimeout(() => {
+        addDataTransferEffect(messageDiv, isUser);
+      }, 100);
+    }
+    
+    // Create data transfer effect
+    function addDataTransferEffect(element, isUser) {
+      const count = Math.floor(Math.random() * 3) + 2;
+      const direction = isUser ? 'left' : 'right';
+      
+      for (let i = 0; i < count; i++) {
+        const line = document.createElement('div');
+        line.style.position = 'absolute';
+        line.style.height = '1px';
+        line.style.width = '30px';
+        line.style.background = isUser ? 'var(--primary-blue)' : 'var(--quantum-purple)';
+        line.style.opacity = '0';
+        
+        // Position relative to message
+        const rect = element.getBoundingClientRect();
+        const displayRect = chatDisplay.getBoundingClientRect();
+        
+        line.style.top = `${rect.top + Math.random() * rect.height - displayRect.top}px`;
+        
+        if (direction === 'right') {
+          line.style.left = `${rect.left - displayRect.left}px`;
+          line.style.animation = 'dataTransferRight 1s forwards';
+        } else {
+          line.style.right = `${displayRect.right - rect.right}px`;
+          line.style.animation = 'dataTransferLeft 1s forwards';
+        }
+        
+        // Add animation
+        const dataTransferStyle = document.createElement('style');
+        dataTransferStyle.textContent = `
+          @keyframes dataTransferRight {
+            0% { width: 0; opacity: 0; }
+            50% { opacity: 0.8; }
+            100% { width: 100px; opacity: 0; }
+          }
+          @keyframes dataTransferLeft {
+            0% { width: 0; opacity: 0; }
+            50% { opacity: 0.8; }
+            100% { width: 100px; opacity: 0; }
+          }
+        `;
+        document.head.appendChild(dataTransferStyle);
+        
+        chatDisplay.appendChild(line);
+        
+        // Remove after animation
+        setTimeout(() => line.remove(), 1000);
+      }
+    }
+    
+    // Show typing indicator
+    function showTypingIndicator() {
+      const typingDiv = document.createElement('div');
+      typingDiv.className = 'typing-indicator';
+      typingDiv.id = 'typing-indicator';
+      
+      typingDiv.innerHTML = `
+        <div class="avatar system-avatar">
+          <i class="fas fa-cube"></i>
+        </div>
+        <div class="content-container">
+          <div class="typing-pulse">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <div class="typing-text">Processing neural response</div>
+        </div>
+      `;
+      
+      chatDisplay.appendChild(typingDiv);
+      chatDisplay.scrollTop = chatDisplay.scrollHeight;
+    }
+    
+    // Hide typing indicator
+    function hideTypingIndicator() {
+      const typingIndicator = document.getElementById('typing-indicator');
+      if (typingIndicator) typingIndicator.remove();
+    }
+    
+    // Handle sending a message
+    async function handleSend() {
+      const message = chatInput.value.trim();
+      const mood = document.getElementById('mood-select').value;
+      
+      if (message === '') return;
+      
+      addMessage(message, true);
+      chatInput.value = '';
+      showTypingIndicator();
+      
+      try {
+        const response = await fetch('/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            message, 
+            mood
+          })
+        });
+        
+        if (!response.ok) throw new Error('Network response was not ok');
+        
+        const data = await response.json();
+        hideTypingIndicator();
+        
+        // Add a slight delay for better UX
+        setTimeout(() => {
+          addMessage(data.reply, false);
+        }, 500);
+        
+      } catch (error) {
+        hideTypingIndicator();
+        addMessage(`SYSTEM ERROR: ${error.message}. Quantum stabilization required.`, false);
+      }
+    }
+    
+    // Navigate back to menu
+    function backToMenu() {
+      const lastMenu = localStorage.getItem("lastMenuSkin");
+      if (lastMenu) {
+        window.location.href = lastMenu;
+      } else {
+        window.location.href = "holo";
+      }
+    }
+    
+    // Event listeners
+    sendBtn.addEventListener('click', handleSend);
+    
+    chatInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') handleSend();
+    });
+    
+    brainSelect.addEventListener('change', (e) => {
+      const brainName = e.target.options[e.target.selectedIndex].text;
+      addMessage(`SYSTEM UPDATE: Switching to ${brainName} processing matrix...`, false);
+      
+      const brain = e.target.value;
+      fetch('/set-brain', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ api: brain })
+      });
+    });
+    
+    // Focus on input when page loads
+    chatInput.focus();
+    
+    // Add some ambient animation to the interface
+    function createAmbientEffects() {
+      // Simulate random system messages at intervals
+      setInterval(() => {
+        // Small chance to show system status updates
+        if (Math.random() > 0.97) {
+          const statusMessages = [
+            "Quantum fluctuations stabilized",
+            "Neural pathways optimized",
+            "Dimension protocols synchronized",
+            "Memory banks defragmented"
+          ];
+          
+          const statusDiv = document.createElement('div');
+          statusDiv.className = 'system-status';
+          statusDiv.textContent = statusMessages[Math.floor(Math.random() * statusMessages.length)];
+          statusDiv.style.position = 'absolute';
+          statusDiv.style.left = '50%';
+          statusDiv.style.transform = 'translateX(-50%)';
+          statusDiv.style.bottom = '10px';
+          statusDiv.style.fontSize = '0.7rem';
+          statusDiv.style.color = 'var(--quantum-green)';
+          statusDiv.style.opacity = '0';
+          statusDiv.style.textTransform = 'uppercase';
+          statusDiv.style.letterSpacing = '1px';
+          statusDiv.style.fontFamily = "'Orbitron', sans-serif";
+          statusDiv.style.animation = 'statusFade 3s forwards';
+          
+          const statusStyle = document.createElement('style');
+          statusStyle.textContent = `
+            @keyframes statusFade {
+              0% { opacity: 0; }
+              20% { opacity: 0.8; }
+              80% { opacity: 0.8; }
+              100% { opacity: 0; }
+            }
+          `;
+          document.head.appendChild(statusStyle);
+          
+          document.querySelector('.interface-header').appendChild(statusDiv);
+          
+          // Remove after animation
+          setTimeout(() => statusDiv.remove(), 3000);
+        }
+      }, 5000);
+    }
+    
+    createAmbientEffects();
+  </script>
+</body>
+</html>

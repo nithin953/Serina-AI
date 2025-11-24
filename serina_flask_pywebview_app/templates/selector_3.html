@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Serina Interface Selector</title>
+    <style>
+        :root {
+            --primary: #6a11cb;
+            --secondary: #2575fc;
+            --accent: #ff7e5f;
+            --text: #f8f9fa;
+            --dark: #121212;
+        }
+        
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background: var(--dark);
+            color: var(--text);
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, rgba(106, 17, 203, 0.8), rgba(37, 117, 252, 0.8));
+        }
+        
+        .serina-title {
+            position: absolute;
+            top: 20px;
+            font-size: 3rem;
+            letter-spacing: 8px;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            animation: pulse 2s infinite alternate;
+        }
+        
+        .selector-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            perspective: 800px;
+            margin-bottom: 100px;
+        }
+        
+        .cube {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transform: translateZ(-150px);
+            transition: transform 1s;
+            animation: rotate 20s infinite linear;
+        }
+        
+        .cube-face {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid var(--accent);
+            box-shadow: 0 0 15px rgba(255, 126, 95, 0.7);
+            cursor: pointer;
+            transition: all 0.3s;
+            overflow: hidden;
+        }
+        
+        .cube-face:hover {
+            background: rgba(255, 126, 95, 0.3);
+            box-shadow: 0 0 25px rgba(255, 126, 95, 1);
+        }
+        
+        .front { transform: rotateY(0deg) translateZ(150px); }
+        .back { transform: rotateY(180deg) translateZ(150px); }
+        .right { transform: rotateY(90deg) translateZ(150px); }
+        .left { transform: rotateY(-90deg) translateZ(150px); }
+        .top { transform: rotateX(90deg) translateZ(150px); }
+        .bottom { transform: rotateX(-90deg) translateZ(150px); }
+        
+        .mode-selector {
+            position: absolute;
+            bottom: 50px;
+            display: flex;
+            gap: 20px;
+        }
+        
+        .mode-btn {
+            padding: 10px 20px;
+            border: none;
+            background: rgba(0, 0, 0, 0.5);
+            color: var(--text);
+            border: 1px solid var(--accent);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1.2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .mode-btn:hover {
+            background: var(--accent);
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(255, 126, 95, 0.5);
+        }
+        
+        .mode-btn.active {
+            background: var(--accent);
+            box-shadow: 0 0 15px rgba(255, 126, 95, 0.8);
+        }
+        
+        .mode-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+        
+        .mode-btn:hover::before {
+            left: 100%;
+        }
+        
+        .orb {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--accent), transparent);
+            opacity: 0.5;
+            filter: blur(8px);
+            animation: float 8s infinite ease-in-out;
+        }
+        
+        .orb:nth-child(1) {
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+        
+        .orb:nth-child(2) {
+            top: 20%;
+            right: 15%;
+            animation-delay: 2s;
+        }
+        
+        .orb:nth-child(3) {
+            bottom: 15%;
+            left: 20%;
+            animation-delay: 4s;
+        }
+        
+        .orb:nth-child(4) {
+            bottom: 25%;
+            right: 10%;
+            animation-delay: 6s;
+        }
+        
+        .info-panel {
+            position: absolute;
+            bottom: 120px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid var(--accent);
+            text-align: center;
+            transform: translateY(20px);
+            opacity: 0;
+            transition: all 0.3s;
+        }
+        
+        .info-panel.active {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        /* DNA helix for loading animation */
+        .dna-container {
+            position: absolute;
+            width: 100px;
+            height: 200px;
+            perspective: 800px;
+            display: none;
+        }
+        
+        .dna-strand {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            animation: rotateDNA 4s linear infinite;
+        }
+        
+        .dna-step {
+            position: absolute;
+            width: 100%;
+            height: 10px;
+        }
+        
+        .dna-left, .dna-right {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background: var(--accent);
+            border-radius: 50%;
+        }
+        
+        .dna-left {
+            left: 20px;
+        }
+        
+        .dna-right {
+            right: 20px;
+        }
+        
+        .dna-connection {
+            position: absolute;
+            left: 35px;
+            right: 35px;
+            height: 3px;
+            background: var(--text);
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.8; transform: scale(1); }
+            100% { opacity: 1; transform: scale(1.05); }
+        }
+        
+        @keyframes rotate {
+            0% { transform: translateZ(-150px) rotateX(0) rotateY(0); }
+            100% { transform: translateZ(-150px) rotateX(360deg) rotateY(360deg); }
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-20px) scale(1.1); }
+        }
+        
+        @keyframes rotateDNA {
+            0% { transform: rotateY(0); }
+            100% { transform: rotateY(360deg); }
+        }
+        
+        .interface-preview {
+            width: 280px;
+            height: 280px;
+            background-size: cover;
+            background-position: center;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        
+        .interface-name {
+            position: absolute;
+            bottom: 10px;
+            font-size: 1.2rem;
+            background: rgba(0,0,0,0.7);
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="orb"></div>
+        <div class="orb"></div>
+        <div class="orb"></div>
+        <div class="orb"></div>
+        
+        <h1 class="serina-title">SERINA</h1>
+        
+        <div class="selector-container">
+            <div class="cube" id="interfaceCube">
+                <div class="cube-face front" data-interface="1">
+                    <div class="interface-preview" style="background-image: url('/api/placeholder/280/280');"></div>
+                    <div class="interface-name">Interface 1</div>
+                </div>
+                <div class="cube-face back" data-interface="2">
+                    <div class="interface-preview" style="background-image: url('/api/placeholder/280/280');"></div>
+                    <div class="interface-name">Interface 2</div>
+                </div>
+                <div class="cube-face right" data-interface="3">
+                    <div class="interface-preview" style="background-image: url('/api/placeholder/280/280');"></div>
+                    <div class="interface-name">Interface 3</div>
+                </div>
+                <div class="cube-face left" data-interface="4">
+                    <div class="interface-preview" style="background-image: url('/api/placeholder/280/280');"></div>
+                    <div class="interface-name">Interface 4</div>
+                </div>
+                <div class="cube-face top" data-interface="5">
+                    <div class="interface-preview" style="background-image: url('/api/placeholder/280/280');"></div>
+                    <div class="interface-name">Interface 5</div>
+                </div>
+                <div class="cube-face bottom" data-interface="6">
+                    <div class="interface-preview" style="background-image: url('/api/placeholder/280/280');"></div>
+                    <div class="interface-name">Interface 6</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="info-panel" id="infoPanel">
+            Click a face to select the interface
+        </div>
+        
+        <div class="mode-selector">
+            <button class="mode-btn active" id="menuBtn">MENU SKINS</button>
+            <button class="mode-btn" id="chatBtn">CHAT SKINS</button>
+        </div>
+        
+        <div class="dna-container" id="loadingAnimation">
+            <div class="dna-strand" id="dnaStrand">
+                <!-- DNA steps will be generated by JS -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM elements
+        const cube = document.getElementById('interfaceCube');
+        const menuBtn = document.getElementById('menuBtn');
+        const chatBtn = document.getElementById('chatBtn');
+        const infoPanel = document.getElementById('infoPanel');
+        const loadingAnimation = document.getElementById('loadingAnimation');
+        const dnaStrand = document.getElementById('dnaStrand');
+        const cubeFaces = document.querySelectorAll('.cube-face');
+        
+        // Current mode (menu or chat)
+        let currentMode = 'menu';
+        
+        // Interface data (placeholder - would be replaced with actual data)
+        const interfaces = {
+            menu: [
+                { name: "Cosmic", preview: "/api/placeholder/280/280" },
+                { name: "Neon", preview: "/api/placeholder/280/280" },
+                { name: "Minimalist", preview: "/api/placeholder/280/280" },
+                { name: "Retro", preview: "/api/placeholder/280/280" },
+                { name: "Futuristic", preview: "/api/placeholder/280/280" },
+                { name: "Elegant", preview: "/api/placeholder/280/280" }
+            ],
+            chat: [
+                { name: "Bubbles", preview: "/api/placeholder/280/280" },
+                { name: "Terminal", preview: "/api/placeholder/280/280" },
+                { name: "Material", preview: "/api/placeholder/280/280" },
+                { name: "Glass", preview: "/api/placeholder/280/280" },
+                { name: "Flat", preview: "/api/placeholder/280/280" },
+                { name: "Holographic", preview: "/api/placeholder/280/280" }
+            ]
+        };
+        
+        // Initialize the cube faces with interface data
+        function updateCubeWithInterfaces(mode) {
+            cubeFaces.forEach((face, index) => {
+                if (index < interfaces[mode].length) {
+                    const interfaceData = interfaces[mode][index];
+                    face.querySelector('.interface-name').textContent = interfaceData.name;
+                    face.querySelector('.interface-preview').style.backgroundImage = `url('${interfaceData.preview}')`;
+                }
+            });
+        }
+        
+        // Create DNA animation
+        function createDNA() {
+            dnaStrand.innerHTML = '';
+            for (let i = 0; i < 20; i++) {
+                const step = document.createElement('div');
+                step.className = 'dna-step';
+                step.style.top = `${i * 10}px`;
+                step.style.transform = `rotateY(${i * 18}deg)`;
+                
+                const left = document.createElement('div');
+                left.className = 'dna-left';
+                
+                const right = document.createElement('div');
+                right.className = 'dna-right';
+                
+                const connection = document.createElement('div');
+                connection.className = 'dna-connection';
+                
+                step.appendChild(left);
+                step.appendChild(right);
+                step.appendChild(connection);
+                dnaStrand.appendChild(step);
+            }
+        }
+        
+        // Show loading animation
+        function showLoading() {
+            cube.style.animation = 'none';
+            cube.style.display = 'none';
+            loadingAnimation.style.display = 'block';
+        }
+        
+        // Hide loading animation
+        function hideLoading() {
+            loadingAnimation.style.display = 'none';
+            cube.style.display = 'block';
+            cube.style.animation = 'rotate 20s infinite linear';
+        }
+        
+        // Switch between menu and chat modes
+        function switchMode(mode) {
+            currentMode = mode;
+            
+            if (mode === 'menu') {
+                menuBtn.classList.add('active');
+                chatBtn.classList.remove('active');
+            } else {
+                chatBtn.classList.add('active');
+                menuBtn.classList.remove('active');
+            }
+            
+            // Show loading animation
+            showLoading();
+            
+            // Simulate loading time
+            setTimeout(() => {
+                updateCubeWithInterfaces(mode);
+                hideLoading();
+            }, 1000);
+        }
+        
+        // Initialize the page
+        function init() {
+            // Create DNA animation
+            createDNA();
+            
+            // Set initial interfaces
+            updateCubeWithInterfaces('menu');
+            
+            // Show info panel
+            infoPanel.classList.add('active');
+            
+            // Add event listeners to mode buttons
+            menuBtn.addEventListener('click', () => switchMode('menu'));
+            chatBtn.addEventListener('click', () => switchMode('chat'));
+            
+            // Add event listeners to cube faces
+            cubeFaces.forEach(face => {
+                face.addEventListener('click', () => {
+                    const interfaceIndex = face.getAttribute('data-interface');
+                    const interfaceName = interfaces[currentMode][interfaceIndex - 1].name;
+                    
+                    // Show loading animation
+                    showLoading();
+                    
+                    // Simulate loading time for interface selection
+                    setTimeout(() => {
+                        alert(`Selected ${currentMode} interface: ${interfaceName}`);
+                        hideLoading();
+                    }, 800);
+                });
+                
+                // Pause cube rotation on hover
+                face.addEventListener('mouseenter', () => {
+                    cube.style.animation = 'none';
+                });
+                
+                // Resume cube rotation on mouse leave
+                face.addEventListener('mouseleave', () => {
+                    cube.style.animation = 'rotate 20s infinite linear';
+                });
+            });
+        }
+        
+        // Initialize on page load
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>

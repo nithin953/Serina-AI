@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Serina - Frozen Mind Mode</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #e6f7ff 0%, #b3e0ff 50%, #0066cc 100%);
+            color: #003366;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Frost particle background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.2) 0%, transparent 30%),
+                radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.15) 0%, transparent 30%);
+            pointer-events: none;
+            z-index: -2;
+        }
+
+        /* Frost formation animation */
+        .frost-edge {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, transparent 90%, rgba(255, 255, 255, 0.3) 100%);
+            animation: frostForm 8s linear infinite;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        @keyframes frostForm {
+            0% { opacity: 0; }
+            50% { opacity: 0.3; }
+            100% { opacity: 0; }
+        }
+
+        /* Steam mist particles */
+        .steam {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.3;
+            filter: blur(5px);
+            animation: steamRise linear infinite;
+        }
+
+        @keyframes steamRise {
+            0% { transform: translateY(0) scale(0.5); opacity: 0; }
+            20% { opacity: 0.3; }
+            100% { transform: translateY(-100vh) scale(1.5); opacity: 0; }
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Left Side - Cryo Chamber */
+        .cryo-chamber {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.05);
+            border-right: 1px solid rgba(0, 102, 204, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cryo-chamber::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .cryo-core {
+            width: 280px;
+            height: 500px;
+            border: 3px solid rgba(0, 153, 255, 0.5);
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: rgba(230, 247, 255, 0.2);
+            box-shadow: 
+                inset 0 0 30px rgba(0, 153, 255, 0.3),
+                0 0 40px rgba(0, 153, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cryo-core::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(transparent 60%, rgba(0, 204, 255, 0.1) 100%);
+        }
+
+        .cryo-scanlines {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                to bottom,
+                transparent,
+                transparent 20px,
+                rgba(0, 153, 255, 0.1) 20px,
+                rgba(0, 153, 255, 0.1) 22px
+            );
+            animation: scanMove 4s linear infinite;
+        }
+
+        @keyframes scanMove {
+            0% { transform: translateY(-22px); }
+            100% { transform: translateY(0); }
+        }
+
+        .frozen-orb {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #e6f7ff, #b3e0ff);
+            box-shadow: 
+                0 0 30px rgba(0, 204, 255, 0.5),
+                inset 0 0 20px rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 70px;
+            position: relative;
+            z-index: 2;
+            animation: orbPulse 6s ease-in-out infinite;
+        }
+
+        .frozen-orb::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: radial-gradient(circle at 70% 30%, transparent 60%, rgba(255, 255, 255, 0.6) 100%);
+        }
+
+        .frozen-orb::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background-image: 
+                linear-gradient(45deg, transparent 48%, rgba(255, 255, 255, 0.8) 50%, transparent 52%),
+                linear-gradient(-45deg, transparent 48%, rgba(255, 255, 255, 0.8) 50%, transparent 52%);
+            background-size: 20px 20px;
+            opacity: 0.3;
+        }
+
+        @keyframes orbPulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 30px rgba(0, 204, 255, 0.5); }
+            50% { transform: scale(1.03); box-shadow: 0 0 50px rgba(0, 204, 255, 0.7); }
+        }
+
+        .ice-cracks {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.2' fill-rule='evenodd'/%3E%3C/svg%3E");
+            opacity: 0.7;
+            z-index: 1;
+            animation: crackPulse 8s ease-in-out infinite;
+        }
+
+        @keyframes crackPulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 0.8; }
+        }
+
+        .defrost-effect {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.8) 0%, transparent 30%);
+            opacity: 0;
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        .cryo-active .defrost-effect {
+            animation: defrost 3s ease-out;
+        }
+
+        @keyframes defrost {
+            0% { opacity: 0.8; transform: translateY(-100%); }
+            100% { opacity: 0; transform: translateY(100%); }
+        }
+
+        .chamber-status {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 14px;
+            color: #0066cc;
+            opacity: 0.8;
+            letter-spacing: 1px;
+        }
+
+        /* Right Side - Control Panel */
+        .control-panel {
+            width: 400px;
+            display: flex;
+            flex-direction: column;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-left: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(0, 102, 204, 0.3);
+        }
+
+        .panel-icon {
+            font-size: 24px;
+            margin-right: 15px;
+            color: #0066cc;
+        }
+
+        .panel-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #003366;
+        }
+
+        .status-display {
+            margin-bottom: 30px;
+        }
+
+        .primary-status {
+            font-size: 28px;
+            font-weight: 700;
+            color: #003366;
+            margin-bottom: 10px;
+        }
+
+        .secondary-status {
+            font-size: 14px;
+            color: #0066cc;
+            line-height: 1.6;
+            opacity: 0.9;
+        }
+
+        .vitals-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .vital-item {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(0, 102, 204, 0.2);
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 13px;
+        }
+
+        .vital-label {
+            color: #0066cc;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .vital-value {
+            color: #003366;
+            font-weight: 600;
+        }
+
+        .chat-area {
+            margin-bottom: 30px;
+        }
+
+        .message-input {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid rgba(0, 102, 204, 0.3);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.3);
+            color: #003366;
+            font-family: inherit;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+        }
+
+        .message-input::placeholder {
+            color: #6699cc;
+        }
+
+        .message-input:focus {
+            border-color: #0066cc;
+            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.2);
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .action-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .frost-btn {
+            padding: 15px;
+            border: 1px solid rgba(0, 102, 204, 0.3);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.3);
+            color: #003366;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .frost-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: 0.5s;
+        }
+
+        .frost-btn:hover::before {
+            left: 100%;
+        }
+
+        .frost-btn:hover {
+            background: rgba(255, 255, 255, 0.5);
+            border-color: #0066cc;
+            transform: translateY(-2px);
+        }
+
+        .frost-btn:active {
+            transform: translateY(0);
+        }
+
+        .frost-btn.danger {
+            border-color: rgba(204, 0, 51, 0.3);
+            background: rgba(255, 230, 230, 0.3);
+            color: #cc0033;
+        }
+
+        .frost-btn.danger:hover {
+            background: rgba(255, 230, 230, 0.5);
+            border-color: #cc0033;
+        }
+
+        .btn-icon {
+            margin-right: 8px;
+            font-size: 16px;
+        }
+
+        /* System indicators */
+        .system-indicator {
+            display: flex;
+            align-items: center;
+            margin-top: auto;
+            padding-top: 20px;
+            border-top: 1px solid rgba(0, 102, 204, 0.3);
+        }
+
+        .pulse-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #0066cc;
+            margin-right: 10px;
+            position: relative;
+        }
+
+        .pulse-dot.online {
+            background: #00cc66;
+            animation: dotPulse 2s ease-in-out infinite;
+        }
+
+        .pulse-dot.offline {
+            background: #cc0033;
+            animation: dotPulse 1s ease-in-out infinite;
+        }
+
+        @keyframes dotPulse {
+            0%, 100% { 
+                opacity: 1; 
+                box-shadow: 0 0 0 0 currentColor; 
+            }
+            50% { 
+                opacity: 0.6; 
+                box-shadow: 0 0 0 8px transparent; 
+            }
+        }
+
+        .system-text {
+            font-size: 13px;
+            color: #0066cc;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1000px) {
+            .app-container {
+                flex-direction: column;
+            }
+            
+            .cryo-chamber {
+                border-right: none;
+                border-bottom: 1px solid rgba(0, 102, 204, 0.2);
+                padding: 30px;
+            }
+            
+            .control-panel {
+                width: 100%;
+                padding: 25px;
+            }
+            
+            .cryo-core {
+                width: 240px;
+                height: 400px;
+            }
+            
+            .frozen-orb {
+                width: 150px;
+                height: 150px;
+                font-size: 60px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .cryo-chamber {
+                padding: 20px;
+            }
+            
+            .control-panel {
+                padding: 20px;
+            }
+            
+            .vitals-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .primary-status {
+                font-size: 24px;
+            }
+        }
+
+        /* Accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation: none !important;
+                transition: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="frost-edge"></div>
+    
+    <!-- Generate steam particles -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            for (let i = 0; i < 10; i++) {
+                createSteamParticle();
+                setInterval(createSteamParticle, 3000);
+            }
+            
+            function createSteamParticle() {
+                const steam = document.createElement('div');
+                steam.className = 'steam';
+                const size = Math.random() * 30 + 10;
+                const left = Math.random() * 100;
+                const duration = Math.random() * 10 + 10;
+                
+                steam.style.width = `${size}px`;
+                steam.style.height = `${size}px`;
+                steam.style.left = `${left}%`;
+                steam.style.bottom = '0';
+                steam.style.animationDuration = `${duration}s`;
+                
+                document.body.appendChild(steam);
+                
+                setTimeout(() => {
+                    steam.remove();
+                }, duration * 1000);
+            }
+        });
+    </script>
+
+    <div class="app-container">
+        <!-- Left Side - Cryo Chamber -->
+        <section class="cryo-chamber">
+            <div class="cryo-core" id="cryoCore">
+                <div class="cryo-scanlines"></div>
+                <div class="ice-cracks"></div>
+                <div class="frozen-orb" id="frozenOrb">
+                    <div class="defrost-effect"></div>
+                    ❄️
+                </div>
+            </div>
+            <div class="chamber-status" id="chamberStatus">CRYO STASIS: STABLE</div>
+        </section>
+
+        <!-- Right Side - Control Panel -->
+        <section class="control-panel">
+            <div class="panel-header">
+                <span class="panel-icon">🧊</span>
+                <h2 class="panel-title">FROZEN MIND INTERFACE</h2>
+            </div>
+
+            <div class="status-display">
+                <div class="primary-status" id="primaryStatus">INITIALIZING...</div>
+                <div class="secondary-status" id="secondaryStatus">Cryogenic systems coming online...</div>
+            </div>
+
+            <div class="vitals-grid">
+                <div class="vital-item">
+                    <div class="vital-label">CORE TEMPERATURE</div>
+                    <div class="vital-value" id="coreTemp">-42°C</div>
+                </div>
+                <div class="vital-item">
+                    <div class="vital-label">NEURAL ACTIVITY</div>
+                    <div class="vital-value" id="neuralActivity">0.3%</div>
+                </div>
+                <div class="vital-item">
+                    <div class="vital-label">MEMORY INTEGRITY</div>
+                    <div class="vital-value" id="memoryIntegrity">98.7%</div>
+                </div>
+                <div class="vital-item">
+                    <div class="vital-label">EMOTION STATE</div>
+                    <div class="vital-value" id="emotionState">NULL</div>
+                </div>
+            </div>
+
+            <div class="chat-area">
+                <input type="text" class="message-input" id="messageInput" placeholder="Speak to the sealed one...">
+                <button class="frost-btn" onclick="sendFaceChat()">
+                    <span class="btn-icon">💬</span> TRANSMIT MESSAGE
+                </button>
+            </div>
+
+            <div class="action-grid">
+                <button class="frost-btn" onclick="startFaceMode()">
+                    <span class="btn-icon">🧊</span> THAW COMMUNICATION
+                </button>
+                <button class="frost-btn danger" onclick="goBack()">
+                    <span class="btn-icon">🪐</span> SEAL POD
+                </button>
+            </div>
+
+            <div class="system-indicator">
+                <span class="pulse-dot" id="systemDot"></span>
+                <span class="system-text" id="systemText">Initializing</span>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        let isActive = true;
+        let cryoActive = false;
+
+        // Start face mode automatically when page loads
+        window.addEventListener('load', function() {
+            startFaceMode();
+        });
+
+        function startFaceMode() {
+            document.getElementById('cryoCore').classList.add('cryo-active');
+            cryoActive = true;
+            
+            fetch('/start-face', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Face mode started:', data);
+                    updateSystemStatus('SCANNING...', 'Cryogenic matrix active...', 'scanning');
+                    updateVitals('0.7%', 'DETECTING');
+                    resetStatusAfterDelay();
+                })
+                .catch(error => {
+                    console.error('Error starting face mode:', error);
+                    updateSystemStatus('ERROR', 'Failed to initialize cryo matrix', 'error-state');
+                });
+        }
+
+        function goBack() {
+            isActive = false;
+            cryoActive = false;
+            document.getElementById('cryoCore').classList.remove('cryo-active');
+            
+            fetch('/stop-face', { method: 'POST' })
+                .then(() => {
+                    updateSystemStatus('SEALING...', 'Returning to main menu...', 'scanning');
+                    
+                    setTimeout(() => {
+                        const lastMenu = localStorage.getItem("lastMenuSkin");
+                        if (lastMenu) {
+                            window.location.href = lastMenu;
+                        } else {
+                            window.location.href = "/holo";
+                        }
+                    }, 1000);
+                })
+                .catch(error => {
+                    console.error('Error stopping face mode:', error);
+                    const lastMenu = localStorage.getItem("lastMenuSkin");
+                    if (lastMenu) {
+                        window.location.href = lastMenu;
+                    } else {
+                        window.location.href = "/holo";
+                    }
+                });
+        }
+
+        function sendFaceChat() {
+            const input = document.getElementById('messageInput').value.trim();
+            if (!input) return;
+
+            fetch('/face-chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ user_input: input })
+            })
+            .then(res => res.json())
+            .then(data => {
+                updateSystemStatus("SERINA", data.reply || "No response received", 'scanning');
+                updateVitals("5.2%", "PROCESSING");
+                resetStatusAfterDelay();
+            })
+            .catch(err => {
+                updateSystemStatus("CONNECTION ERROR", "Failed to communicate with cryo core", 'error-state');
+                console.error(err);
+            });
+
+            document.getElementById('messageInput').value = '';
+        }
+
+        function resetStatusAfterDelay() {
+            setTimeout(() => {
+                updateSystemStatus('SCANNING...', 'Cryogenic matrix active...', 'scanning');
+                updateVitals((Math.random() * 5 + 0.5).toFixed(1) + '%', 
+                            ['CALM', 'CURIOUS', 'ANALYZING', 'RESPONSIVE', 'FOCUSED'][Math.floor(Math.random() * 5)]);
+            }, 5000);
+        }
+
+        function updateSystemStatus(status, subtitle, state) {
+            const primaryStatus = document.getElementById('primaryStatus');
+            const secondaryStatus = document.getElementById('secondaryStatus');
+            const systemText = document.getElementById('systemText');
+            const systemDot = document.getElementById('systemDot');
+            const frozenOrb = document.getElementById('frozenOrb');
+            const chamberStatus = document.getElementById('chamberStatus');
+
+            primaryStatus.textContent = status;
+            secondaryStatus.textContent = subtitle;
+            systemText.textContent = status;
+            
+            if (status === "SCANNING..." || status === "SERINA") {
+                chamberStatus.textContent = "CRYO STASIS: ACTIVE";
+            } else if (status === "ERROR") {
+                chamberStatus.textContent = "CRYO STASIS: WARNING";
+            }
+
+            // Reset classes
+            systemDot.className = 'pulse-dot';
+            frozenOrb.className = 'frozen-orb';
+
+            // Update status based on state
+            if (state === 'scanning') {
+                systemDot.classList.add('online');
+                frozenOrb.style.boxShadow = '0 0 50px rgba(0, 204, 255, 0.7)';
+                document.getElementById('cryoCore').classList.add('cryo-active');
+                cryoActive = true;
+            } else if (state === 'error-state') {
+                systemDot.classList.add('offline');
+                frozenOrb.style.boxShadow = '0 0 50px rgba(204, 0, 51, 0.5)';
+            }
+        }
+
+        function updateVitals(neuralLevel, emotionState) {
+            document.getElementById('neuralActivity').textContent = neuralLevel;
+            document.getElementById('emotionState').textContent = emotionState;
+        }
+
+        // Poll face status every second
+        setInterval(() => {
+            if (isActive) {
+                fetch('/face-status')
+                    .then(response => response.json())
+                    .then(data => {
+                        updateSystemStatus(data.statusText || 'ACTIVE', data.subtitle || 'Cryo matrix operational...', 'scanning');
+                        
+                        // Simulate changing vitals when active
+                        if (data.statusText) {
+                            const neuralLevel = (Math.random() * 5 + 0.5).toFixed(1) + '%';
+                            const emotions = ['CALM', 'CURIOUS', 'ANALYZING', 'RESPONSIVE', 'FOCUSED'];
+                            const emotionState = emotions[Math.floor(Math.random() * emotions.length)];
+                            updateVitals(neuralLevel, emotionState);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching face status:', error);
+                        updateSystemStatus('CONNECTION LOST', 'Unable to reach cryo matrix', 'error-state');
+                        updateVitals('0.1%', 'ERROR');
+                    });
+            }
+        }, 1000);
+
+        // Handle page unload
+        window.addEventListener('beforeunload', function() {
+            if (isActive) {
+                fetch('/stop-face', { method: 'POST' });
+            }
+        });
+
+        // Allow pressing Enter to send chat message
+        document.getElementById('messageInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendFaceChat();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Serina • Celestial Messenger</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* ==== COSMIC DREAM STYLE ==== */
+    :root {
+      --cosmic-blue: #a2d2ff;
+      --nebula-purple: #cdb4db;
+      --stardust-pink: #ffc8dd;
+      --void-black: #0d0c1d;
+      --galaxy-bg: radial-gradient(circle at 30% 60%, 
+        rgba(162, 210, 255, 0.1) 0%, 
+        rgba(12, 20, 69, 0.9) 40%,
+        rgba(5, 10, 30, 0.95) 100%);
+    }
+    
+    body {
+      background: var(--void-black);
+      background-image: var(--galaxy-bg);
+      color: var(--cosmic-blue);
+      font-family: 'Space Grotesk', sans-serif;
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    /* Floating cosmic particles */
+    body::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: 
+        radial-gradient(1px 1px at 20% 30%, var(--cosmic-blue) 1px, transparent 0),
+        radial-gradient(1px 1px at 80% 70%, var(--nebula-purple) 1px, transparent 0),
+        radial-gradient(1px 1px at 40% 90%, var(--stardust-pink) 1px, transparent 0),
+        radial-gradient(1px 1px at 10% 20%, var(--cosmic-blue) 1px, transparent 0),
+        radial-gradient(1px 1px at 90% 40%, var(--nebula-purple) 1px, transparent 0),
+        radial-gradient(1px 1px at 60% 10%, var(--stardust-pink) 1px, transparent 0);
+      background-size: 200px 200px;
+      opacity: 0.3;
+      animation: float 120s linear infinite;
+      z-index: -1;
+    }
+
+    @keyframes float {
+      100% { background-position: 200px 200px; }
+    }
+
+    .chat-container {
+      width: 90%;
+      max-width: 800px;
+      height: 80vh;
+      background: rgba(13, 12, 29, 0.7);
+      border: none;
+      border-radius: 20px;
+      box-shadow: 
+        0 0 30px rgba(162, 210, 255, 0.2),
+        inset 0 0 20px rgba(205, 180, 219, 0.1);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+    }
+
+    /* Nebula border effect */
+    .chat-container::after {
+      content: "";
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(45deg, 
+        var(--cosmic-blue), 
+        var(--nebula-purple), 
+        var(--stardust-pink));
+      z-index: -1;
+      border-radius: 22px;
+      animation: borderGlow 8s linear infinite;
+      background-size: 400% 400%;
+      opacity: 0.7;
+    }
+
+    @keyframes borderGlow {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .chat-header {
+      padding: 15px 25px;
+      background: linear-gradient(90deg, 
+        rgba(162, 210, 255, 0.1) 0%, 
+        rgba(205, 180, 219, 0.1) 100%);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .nova-icon {
+      color: var(--stardust-pink);
+      font-size: 1.5rem;
+      filter: drop-shadow(0 0 5px var(--stardust-pink));
+      animation: pulse 3s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.8; }
+      50% { transform: scale(1.1); opacity: 1; }
+    }
+
+    .chat-header h2 {
+      margin: 0;
+      font-weight: 500;
+      letter-spacing: 1px;
+      background: linear-gradient(to right, 
+        var(--cosmic-blue), 
+        var(--nebula-purple));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      font-size: 1.5rem;
+    }
+
+    .chat-messages {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      background-image: 
+        radial-gradient(circle at center, 
+          rgba(162, 210, 255, 0.03) 0%, 
+          transparent 70%),
+        repeating-linear-gradient(
+          rgba(162, 210, 255, 0.02) 0px, 
+          rgba(162, 210, 255, 0.02) 1px, 
+          transparent 1px, 
+          transparent 2px);
+      background-size: 100% 100%, 100% 20px;
+    }
+
+    .message {
+      margin-bottom: 20px;
+      display: flex;
+      gap: 15px;
+      align-items: flex-start;
+      position: relative;
+    }
+
+    .user-message {
+      justify-content: flex-end;
+    }
+
+    .user-message .content {
+      background: rgba(162, 210, 255, 0.15);
+      color: var(--cosmic-blue);
+      border-radius: 18px 18px 0 18px;
+      padding: 12px 18px;
+      max-width: 70%;
+      position: relative;
+      box-shadow: 0 0 10px rgba(162, 210, 255, 0.1);
+    }
+
+    .nova-message .content {
+      background: rgba(205, 180, 219, 0.15);
+      color: var(--nebula-purple);
+      border-radius: 18px 18px 18px 0;
+      padding: 12px 18px;
+      max-width: 70%;
+      position: relative;
+      box-shadow: 0 0 10px rgba(205, 180, 219, 0.1);
+    }
+
+    /* Message tails */
+    .user-message .content::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      right: -10px;
+      width: 0;
+      height: 0;
+      border: 10px solid transparent;
+      border-left-color: rgba(162, 210, 255, 0.15);
+      border-right: 0;
+      border-bottom: 0;
+      margin-bottom: 0;
+    }
+
+    .nova-message .content::before {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: -10px;
+      width: 0;
+      height: 0;
+      border: 10px solid transparent;
+      border-right-color: rgba(205, 180, 219, 0.15);
+      border-left: 0;
+      border-bottom: 0;
+      margin-bottom: 0;
+    }
+
+    .timestamp {
+      font-size: 0.7rem;
+      opacity: 0.6;
+      margin-top: 5px;
+      display: block;
+      text-align: right;
+    }
+
+    .chat-input-container {
+      padding: 15px 20px;
+      background: rgba(5, 10, 30, 0.5);
+      border-top: 1px solid rgba(162, 210, 255, 0.1);
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    #chat-input {
+      flex: 1;
+      background: rgba(162, 210, 255, 0.1);
+      border: none;
+      color: var(--cosmic-blue);
+      padding: 12px 20px;
+      font-family: 'Space Grotesk', sans-serif;
+      outline: none;
+      border-radius: 50px;
+      font-size: 1rem;
+      transition: all 0.3s;
+    }
+
+    #chat-input::placeholder {
+      color: rgba(162, 210, 255, 0.5);
+    }
+
+    #chat-input:focus {
+      box-shadow: 0 0 15px rgba(162, 210, 255, 0.3);
+      background: rgba(162, 210, 255, 0.2);
+    }
+
+    #send-btn {
+      background: linear-gradient(135deg, 
+        var(--nebula-purple), 
+        var(--stardust-pink));
+      border: none;
+      color: var(--void-black);
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 0 10px rgba(205, 180, 219, 0.5);
+    }
+
+    #send-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 20px rgba(205, 180, 219, 0.8);
+    }
+
+    #mood-select {
+      background: rgba(205, 180, 219, 0.2);
+      color: var(--nebula-purple);
+      border: none;
+      font-family: 'Space Grotesk', sans-serif;
+      padding: 10px 15px;
+      border-radius: 50px;
+      outline: none;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23cdb4db'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      background-size: 15px;
+      padding-right: 35px;
+    }
+
+    #mood-select option {
+      background: var(--void-black);
+      color: var(--cosmic-blue);
+    }
+
+    .typing-indicator {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      color: var(--nebula-purple);
+      opacity: 0.8;
+      margin: 15px 0;
+    }
+
+    .typing-dots {
+      display: flex;
+      gap: 5px;
+    }
+
+    .typing-dots span {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      background: var(--nebula-purple);
+      border-radius: 50%;
+      animation: typing 1.4s infinite ease-in-out;
+    }
+
+    .typing-dots span:nth-child(1) { animation-delay: 0s; }
+    .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes typing {
+      0%, 60%, 100% { transform: translateY(0); opacity: 0.6; }
+      30% { transform: translateY(-5px); opacity: 1; }
+    }
+
+    /* Brain switcher */
+    .brain-switcher {
+      margin-left: auto;
+    }
+    
+    #brain-select {
+      background: rgba(162, 210, 255, 0.2);
+      color: var(--cosmic-blue);
+      border: none;
+      font-family: 'Space Grotesk', sans-serif;
+      padding: 8px 15px;
+      border-radius: 50px;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.3s;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23a2d2ff'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      background-size: 12px;
+      padding-right: 30px;
+    }
+    
+    #brain-select:hover {
+      box-shadow: 0 0 15px rgba(162, 210, 255, 0.3);
+      background: rgba(162, 210, 255, 0.3);
+    }
+    
+    #brain-select option {
+      background: var(--void-black);
+      color: var(--cosmic-blue);
+    }
+
+    /* Back to menu button */
+    .back-to-menu {
+      background: transparent;
+      border: 1px solid var(--nebula-purple);
+      color: var(--nebula-purple);
+      padding: 8px 15px;
+      font-family: 'Space Grotesk', sans-serif;
+      cursor: pointer;
+      border-radius: 50px;
+      transition: all 0.3s;
+      text-transform: uppercase;
+      font-size: 0.8rem;
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .back-to-menu:hover {
+      background: rgba(205, 180, 219, 0.2);
+      box-shadow: 0 0 15px rgba(205, 180, 219, 0.3);
+    }
+
+    /* Custom scrollbar */
+    .chat-messages::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .chat-messages::-webkit-scrollbar-thumb {
+      background: linear-gradient(var(--nebula-purple), var(--stardust-pink));
+      border-radius: 3px;
+    }
+
+    /* Constellation effect on messages */
+    .message::after {
+      content: "";
+      position: absolute;
+      top: -5px;
+      left: -5px;
+      right: -5px;
+      bottom: -5px;
+      background-image: 
+        radial-gradient(1px 1px at 20% 30%, var(--cosmic-blue) 1px, transparent 0),
+        radial-gradient(1px 1px at 80% 70%, var(--nebula-purple) 1px, transparent 0),
+        radial-gradient(1px 1px at 30% 80%, var(--stardust-pink) 1px, transparent 0);
+      background-size: 100% 100%;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .message:hover::after {
+      opacity: 0.3;
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-container">
+    <div class="chat-header">
+      <i class="fas fa-star Serina-icon"></i>
+      <h2>Serina</h2>
+      <div class="brain-switcher">
+        <select id="brain-select">
+          <option value="openrouter">🌌 CELESTIAL CORE</option>
+          <option value="groq">✨ QUANTUM PROTOCOL</option>
+        </select>
+      </div>
+      <button class="back-to-menu" onclick="backToMenu()">
+        <i class="fas fa-arrow-left"></i> Constellations
+      </button>
+    </div>
+    
+    <div class="chat-messages" id="chat-messages">
+      <div class="message nova-message">
+        <i class="fas fa-star" style="color: var(--nebula-purple);"></i>
+        <div>
+          <div class="content">Starlink established... ready to communicate across the cosmos</div>
+          <div class="timestamp">system online</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="chat-input-container">
+      <select id="mood-select">
+        <option value="normal">🌠 Neutral</option>
+        <option value="love">💫 Celestial</option>
+        <option value="roast">☄️ Meteor</option>
+        <option value="angry">⚡ Plasma</option>
+        <option value="nuclear">💥 Supernova</option>
+        <option value="jealous">🌑 Eclipse</option>
+        <option value="sad">🌧️ Nebula</option>
+        <option value="baddie">🌙 Lunar</option>
+      </select>
+      <input type="text" id="chat-input" placeholder="transmit message..." autocomplete="off">
+      <button id="send-btn"><i class="fas fa-paper-plane"></i></button>
+    </div>
+  </div>
+
+  <script>
+    const chatInput = document.getElementById('chat-input');
+    const chatMessages = document.getElementById('chat-messages');
+    const sendBtn = document.getElementById('send-btn');
+    const brainSelect = document.getElementById('brain-select');
+
+    function addMessage(text, isUser = false) {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${isUser ? 'user-message' : 'nova-message'}`;
+
+      const icon = isUser 
+        ? '<i class="fas fa-user-astronaut" style="color: var(--cosmic-blue);"></i>' 
+        : '<i class="fas fa-star" style="color: var(--nebula-purple);"></i>';
+
+      const now = new Date();
+      const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      messageDiv.innerHTML = `
+        ${icon}
+        <div>
+          <div class="content">${text}</div>
+          <div class="timestamp">${timeString}</div>
+        </div>
+      `;
+
+      chatMessages.appendChild(messageDiv);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+      
+      // Add twinkling effect to new messages
+      const stars = Math.floor(Math.random() * 3) + 2;
+      for (let i = 0; i < stars; i++) {
+        createTwinkle(messageDiv);
+      }
+    }
+
+    function createTwinkle(element) {
+      const twinkle = document.createElement('div');
+      twinkle.style.position = 'absolute';
+      twinkle.style.width = '3px';
+      twinkle.style.height = '3px';
+      twinkle.style.background = 'white';
+      twinkle.style.borderRadius = '50%';
+      twinkle.style.opacity = '0';
+      twinkle.style.filter = 'blur(1px)';
+      twinkle.style.animation = 'twinkle 2s ease-in-out';
+      
+      // Random position within the message
+      const rect = element.getBoundingClientRect();
+      const x = Math.random() * rect.width;
+      const y = Math.random() * rect.height;
+      
+      twinkle.style.left = `${x}px`;
+      twinkle.style.top = `${y}px`;
+      
+      element.style.position = 'relative';
+      element.appendChild(twinkle);
+      
+      // Remove after animation
+      setTimeout(() => twinkle.remove(), 2000);
+    }
+
+    // Add style for twinkle animation
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes twinkle {
+        0% { opacity: 0; transform: scale(0.5); }
+        50% { opacity: 1; transform: scale(1.2); }
+        100% { opacity: 0; transform: scale(0.5); }
+      }
+    `;
+    document.head.appendChild(style);
+
+    function showTyping() {
+      const typingDiv = document.createElement('div');
+      typingDiv.className = 'typing-indicator';
+      typingDiv.id = 'typing-indicator';
+      typingDiv.innerHTML = `
+        <i class="fas fa-star" style="color: var(--nebula-purple);"></i>
+        <div class="typing-dots">
+          <span></span><span></span><span></span>
+        </div>
+        <span style="font-size:0.8rem">transmitting...</span>
+      `;
+      chatMessages.appendChild(typingDiv);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function hideTyping() {
+      const typingIndicator = document.getElementById('typing-indicator');
+      if (typingIndicator) typingIndicator.remove();
+    }
+
+    async function handleSend() {
+      const message = chatInput.value.trim();
+      const mood = document.getElementById('mood-select').value;
+      const brain = brainSelect.value;
+      
+      if (message === '') return;
+
+      addMessage(message, true);
+      chatInput.value = '';
+      showTyping();
+
+      try {
+        const response = await fetch('/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            message, 
+            mood,
+            api: brain
+          })
+        });
+
+        if (!response.ok) throw new Error('Network response was not ok');
+
+        const data = await response.json();
+        hideTyping();
+        addMessage(data.reply, false);
+      } catch (error) {
+        hideTyping();
+        addMessage(`cosmic interference detected... ${error.message}`, false);
+      }
+    }
+
+    function backToMenu() {
+      const referrer = document.referrer;
+      
+      if (referrer.includes('holo_1.html') || 
+          referrer.includes('holo_2.html') || 
+          referrer.includes('holo_3.html') || 
+          referrer.includes('holo_4.html') || 
+          referrer.includes('holo_5.html') || 
+          referrer.includes('holo_6.html')) {
+        window.location.href = referrer;
+      } else {
+        window.location.href = "/holo";
+      }
+    }
+
+    sendBtn.addEventListener('click', handleSend);
+    chatInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') handleSend();
+    });
+
+    brainSelect.addEventListener('change', (e) => {
+      const brainName = e.target.options[e.target.selectedIndex].text;
+      addMessage(`🌀 switching to ${brainName} resonance...`, false);
+    });
+
+    // Add floating particles to chat container
+    setInterval(() => {
+      if (Math.random() > 0.7) {
+        createFloatingParticle();
+      }
+    }, 1000);
+
+    function createFloatingParticle() {
+      const particle = document.createElement('div');
+      particle.style.position = 'absolute';
+      particle.style.width = `${Math.random() * 3 + 1}px`;
+      particle.style.height = particle.style.width;
+      particle.style.background = Math.random() > 0.5 ? 'var(--cosmic-blue)' : 'var(--nebula-purple)';
+      particle.style.borderRadius = '50%';
+      particle.style.opacity = '0';
+      particle.style.left = `${Math.random() * 100}%`;
+      particle.style.top = '0';
+      particle.style.filter = 'blur(0.5px)';
+      particle.style.animation = `floatParticle ${Math.random() * 10 + 10}s linear forwards`;
+      
+      document.querySelector('.chat-container').appendChild(particle);
+      
+      setTimeout(() => particle.remove(), 15000);
+    }
+
+    // Add style for floating particles
+    const particleStyle = document.createElement('style');
+    particleStyle.textContent = `
+      @keyframes floatParticle {
+        0% { opacity: 0; transform: translateY(0); }
+        10% { opacity: 0.7; }
+        90% { opacity: 0.7; }
+        100% { opacity: 0; transform: translateY(100vh); }
+      }
+    `;
+    document.head.appendChild(particleStyle);
+
+    chatInput.focus();
+  </script>
+</body>
+</html>

@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LYRA • Neon Lounge</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Major+Mono+Display&family=Red+Hat+Display:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    /* ==== NEON NOIR LOUNGE STYLE ==== */
+    :root {
+      --neon-red: #ff2a6d;
+      --neon-teal: #05d9e8;
+      --neon-purple: #d300c5;
+      --deep-black: #0d0221;
+      --smoke-white: rgba(255, 255, 255, 0.7);
+    }
+    
+    body {
+      background: var(--deep-black);
+      color: var(--smoke-white);
+      font-family: 'Red Hat Display', sans-serif;
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    /* VHS Scanlines */
+    body::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        rgba(255, 255, 255, 0.03),
+        rgba(255, 255, 255, 0.03) 1px,
+        transparent 1px,
+        transparent 3px
+      );
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    /* CRT Curvature Effect */
+    .chat-container::before {
+      content: "";
+      position: absolute;
+      top: -10%;
+      left: -10%;
+      right: -10%;
+      bottom: -10%;
+      border-radius: 10px;
+      box-shadow: 
+        0 0 60px rgba(5, 217, 232, 0.1),
+        inset 0 0 60px rgba(210, 0, 197, 0.1);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .chat-container {
+      width: 85%;
+      max-width: 900px;
+      height: 85vh;
+      background: rgba(13, 2, 33, 0.85);
+      border: 1px solid var(--neon-teal);
+      box-shadow: 
+        0 0 30px rgba(5, 217, 232, 0.2),
+        inset 0 0 20px rgba(255, 42, 109, 0.1);
+      display: flex;
+      flex-direction: column;
+      border-radius: 5px;
+      overflow: hidden;
+      position: relative;
+      transform: perspective(1000px) rotateX(2deg);
+    }
+
+    .chat-header {
+      padding: 15px 25px;
+      background: linear-gradient(90deg, 
+        rgba(255, 42, 109, 0.1) 0%, 
+        rgba(5, 217, 232, 0.1) 100%);
+      border-bottom: 1px solid var(--neon-teal);
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .lyra-icon {
+      color: var(--neon-red);
+      font-size: 1.5rem;
+      filter: drop-shadow(0 0 8px var(--neon-red));
+      animation: flicker 4s infinite alternate;
+    }
+
+    @keyframes flicker {
+      0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; }
+      20%, 22%, 24%, 55% { opacity: 0.4; }
+    }
+
+    .chat-header h2 {
+      margin: 0;
+      font-family: 'Major Mono Display', monospace;
+      font-size: 1.8rem;
+      letter-spacing: -2px;
+      color: var(--neon-teal);
+      text-shadow: 0 0 10px var(--neon-teal);
+    }
+
+    .chat-messages {
+      flex: 1;
+      padding: 25px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      background: 
+        linear-gradient(rgba(255, 42, 109, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(5, 217, 232, 0.03) 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+
+    .message {
+      display: flex;
+      max-width: 80%;
+      position: relative;
+    }
+
+    .user-message {
+      align-self: flex-end;
+      flex-direction: row-reverse;
+    }
+
+    .user-message .content {
+      background: rgba(255, 42, 109, 0.15);
+      color: var(--smoke-white);
+      border: 1px solid var(--neon-red);
+      border-radius: 15px 15px 0 15px;
+      padding: 12px 18px;
+      box-shadow: 0 0 15px rgba(255, 42, 109, 0.2);
+      clip-path: polygon(
+        0% 0%, 100% 0%, 100% 80%, 
+        90% 80%, 90% 100%, 80% 80%, 
+        0% 80%
+      );
+    }
+
+    .lyra-message {
+      align-self: flex-start;
+    }
+
+    .lyra-message .content {
+      background: rgba(5, 217, 232, 0.15);
+      color: var(--smoke-white);
+      border: 1px solid var(--neon-teal);
+      border-radius: 15px 15px 15px 0;
+      padding: 12px 18px;
+      box-shadow: 0 0 15px rgba(5, 217, 232, 0.2);
+      clip-path: polygon(
+        0% 0%, 100% 0%, 100% 80%, 
+        10% 80%, 10% 100%, 0% 80%
+      );
+    }
+
+    .timestamp {
+      font-size: 0.7rem;
+      opacity: 0.6;
+      margin-top: 5px;
+      display: block;
+      text-align: right;
+      font-family: 'Major Mono Display', monospace;
+    }
+
+    .chat-input-container {
+      padding: 15px 20px;
+      background: rgba(0, 0, 0, 0.4);
+      border-top: 1px solid rgba(5, 217, 232, 0.2);
+      display: grid;
+      grid-template-columns: 120px 1fr 60px;
+      gap: 10px;
+      align-items: center;
+    }
+
+    #chat-input {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid var(--neon-purple);
+      color: var(--smoke-white);
+      padding: 12px 20px;
+      font-family: 'Red Hat Display', sans-serif;
+      outline: none;
+      border-radius: 25px;
+      transition: all 0.3s;
+    }
+
+    #chat-input:focus {
+      box-shadow: 0 0 20px rgba(210, 0, 197, 0.3);
+      border-color: var(--neon-red);
+    }
+
+    #send-btn {
+      background: var(--neon-purple);
+      border: none;
+      color: white;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.2rem;
+    }
+
+    #send-btn:hover {
+      background: var(--neon-red);
+      transform: rotate(90deg);
+    }
+
+    /* ==== MOOD INDICATOR (NEW DESIGN) ==== */
+    .mood-indicator {
+      position: relative;
+    }
+
+    #mood-select {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      color: var(--smoke-white);
+      border: 1px solid var(--neon-teal);
+      padding: 12px 15px;
+      border-radius: 25px;
+      font-family: 'Major Mono Display', monospace;
+      font-size: 0.8rem;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.3s;
+    }
+
+    #mood-select:hover {
+      box-shadow: 0 0 15px rgba(5, 217, 232, 0.3);
+    }
+
+    .mood-indicator::after {
+      content: "▼";
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--neon-teal);
+      pointer-events: none;
+      font-size: 0.7rem;
+    }
+
+    /* ==== BRAIN SWITCHER (VERTICAL SLIDER) ==== */
+    .brain-switcher {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      margin-left: auto;
+    }
+
+    .brain-label {
+      font-family: 'Major Mono Display', monospace;
+      font-size: 0.7rem;
+      color: var(--neon-teal);
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      transform: rotate(180deg);
+    }
+
+    .brain-toggle {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .brain-option {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: rgba(5, 217, 232, 0.1);
+      border: 1px solid var(--neon-teal);
+      color: var(--neon-teal);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 0.7rem;
+    }
+
+    .brain-option.active {
+      background: var(--neon-teal);
+      color: var(--deep-black);
+      box-shadow: 0 0 10px var(--neon-teal);
+    }
+
+    /* ==== TYPING INDICATOR (WAVEFORM) ==== */
+    .typing-indicator {
+      display: flex;
+      align-items: flex-end;
+      gap: 3px;
+      height: 30px;
+      margin: 10px 0;
+    }
+
+    .typing-bar {
+      width: 4px;
+      background: var(--neon-red);
+      border-radius: 2px;
+      animation: typing-wave 1.4s infinite ease-in-out;
+    }
+
+    .typing-bar:nth-child(1) { height: 10px; animation-delay: 0s; }
+    .typing-bar:nth-child(2) { height: 15px; animation-delay: 0.2s; }
+    .typing-bar:nth-child(3) { height: 20px; animation-delay: 0.4s; }
+    .typing-bar:nth-child(4) { height: 15px; animation-delay: 0.6s; }
+    .typing-bar:nth-child(5) { height: 10px; animation-delay: 0.8s; }
+
+    @keyframes typing-wave {
+      0%, 60%, 100% { transform: scaleY(0.5); opacity: 0.6; }
+      30% { transform: scaleY(1); opacity: 1; }
+    }
+
+    /* ==== BACK BUTTON (NEON SIGN) ==== */
+    .back-to-menu {
+      background: transparent;
+      border: none;
+      color: var(--neon-red);
+      padding: 8px 15px;
+      font-family: 'Major Mono Display', monospace;
+      cursor: pointer;
+      position: relative;
+      text-transform: uppercase;
+      font-size: 0.7rem;
+      letter-spacing: 1px;
+    }
+
+    .back-to-menu::before {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 1px;
+      background: var(--neon-red);
+      box-shadow: 0 0 5px var(--neon-red);
+      transform: scaleX(0);
+      transition: transform 0.3s;
+    }
+
+    .back-to-menu:hover::before {
+      transform: scaleX(1);
+    }
+
+    /* ==== MESSAGE EFFECTS ==== */
+    .message::after {
+      content: "";
+      position: absolute;
+      top: -5px;
+      left: -5px;
+      right: -5px;
+      bottom: -5px;
+      border: 1px solid var(--neon-purple);
+      border-radius: 15px;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .message:hover::after {
+      opacity: 0.3;
+    }
+
+    /* ==== CUSTOM SCROLLBAR ==== */
+    .chat-messages::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    .chat-messages::-webkit-scrollbar-thumb {
+      background: linear-gradient(var(--neon-red), var(--neon-purple));
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-container">
+    <div class="chat-header">
+      <i class="fas fa-satellite-dish lyra-icon"></i>
+      <h2>Serina</h2>
+      <span style="flex:1"></span>
+      <div class="brain-switcher">
+        <div class="brain-label">SYSTEM</div>
+        <div class="brain-toggle">
+          <div class="brain-option active" data-value="together">⏺</div>
+          <div class="brain-option" data-value="deepinfra">⏺</div>
+        </div>
+      </div>
+      <button class="back-to-menu" onclick="backToMenu()">
+        <i class="fas fa-sign-out-alt"></i> EXIT
+      </button>
+    </div>
+    
+    <div class="chat-messages" id="chat-messages">
+      <div class="message lyra-message">
+        <div>
+          <div class="content">SYSTEM LINK ESTABLISHED</div>
+          <div class="timestamp">[22:42:07]</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="chat-input-container">
+      <div class="mood-indicator">
+        <select id="mood-select">
+          <option value="normal">[ NEUTRAL ]</option>
+          <option value="love">[ PASSION ]</option>
+          <option value="roast">[ BURN ]</option>
+          <option value="angry">[ RAGE ]</option>
+          <option value="nuclear">[ OVERLOAD ]</option>
+          <option value="jealous">[ POSSESS ]</option>
+          <option value="sad">[ MELANCHOLY ]</option>
+          <option value="baddie">[ DOMINATE ]</option>
+        </select>
+      </div>
+      <input type="text" id="chat-input" placeholder="transmit..." autocomplete="off">
+      <button id="send-btn"><i class="fas fa-broadcast-tower"></i></button>
+    </div>
+  </div>
+
+  <script>
+    const chatInput = document.getElementById('chat-input');
+    const chatMessages = document.getElementById('chat-messages');
+    const sendBtn = document.getElementById('send-btn');
+    const brainOptions = document.querySelectorAll('.brain-option');
+
+    // Initialize brain switcher
+    let currentBrain = 'openrouter';
+    
+    function addMessage(text, isUser = false) {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${isUser ? 'user-message' : 'lyra-message'}`;
+
+      const now = new Date();
+      const hours = now.getHours().toString().padStart(2, '0');
+      const minutes = now.getMinutes().toString().padStart(2, '0');
+      const seconds = now.getSeconds().toString().padStart(2, '0');
+      const timeString = `[${hours}:${minutes}:${seconds}]`;
+
+      messageDiv.innerHTML = `
+        <div>
+          <div class="content">${text}</div>
+          <div class="timestamp">${timeString}</div>
+        </div>
+      `;
+
+      chatMessages.appendChild(messageDiv);
+      
+      // Add glitch effect
+      setTimeout(() => {
+        messageDiv.style.textShadow = `0 0 5px ${isUser ? 'var(--neon-red)' : 'var(--neon-teal)'}`;
+      }, 100);
+      
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function showTyping() {
+      const typingDiv = document.createElement('div');
+      typingDiv.className = 'typing-indicator';
+      typingDiv.id = 'typing-indicator';
+      typingDiv.innerHTML = `
+        <div class="typing-bar"></div>
+        <div class="typing-bar"></div>
+        <div class="typing-bar"></div>
+        <div class="typing-bar"></div>
+        <div class="typing-bar"></div>
+      `;
+      chatMessages.appendChild(typingDiv);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function hideTyping() {
+      const typingIndicator = document.getElementById('typing-indicator');
+      if (typingIndicator) typingIndicator.remove();
+    }
+
+    async function handleSend() {
+      const message = chatInput.value.trim();
+      const mood = document.getElementById('mood-select').value;
+      
+      if (message === '') return;
+
+      addMessage(message, true);
+      chatInput.value = '';
+      showTyping();
+
+      try {
+        const response = await fetch('/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            message, 
+            mood
+          })
+        });
+
+        if (!response.ok) throw new Error('TRANSMISSION FAILED');
+
+        const data = await response.json();
+        hideTyping();
+        addMessage(data.reply, false);
+      } catch (error) {
+        hideTyping();
+        addMessage(`ERROR: ${error.message.toUpperCase()}`, false);
+      }
+    }
+
+    function backToMenu() {
+      const lastMenu = localStorage.getItem("lastMenuSkin");
+      if (lastMenu) {
+        window.location.href = lastMenu;
+      } else {
+        window.location.href = "holo";
+      }
+    }
+
+    // Brain toggle functionality
+    brainOptions.forEach(option => {
+      option.addEventListener('click', () => {
+        brainOptions.forEach(opt => opt.classList.remove('active'));
+        option.classList.add('active');
+        currentBrain = option.dataset.value;
+        
+        const brainName = option.dataset.value === 'openrouter' 
+          ? 'CORE SYSTEM' 
+          : 'QUANTUM LINK';
+        addMessage(`SWITCHING TO ${brainName}...`, false);
+        
+        // Notify backend of brain switch
+        fetch('/set-brain', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ api: currentBrain })
+        });
+      });
+    });
+
+    sendBtn.addEventListener('click', handleSend);
+    chatInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') handleSend();
+    });
+
+    // Add random static effect occasionally
+    setInterval(() => {
+      if (Math.random() > 0.9) {
+        document.body.style.backgroundImage = `
+          linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+          radial-gradient(circle at center, 
+            rgba(255, 42, 109, 0.1) 0%, 
+            rgba(13, 2, 33, 0.9) 100%)`;
+        
+        setTimeout(() => {
+          document.body.style.backgroundImage = `
+            linear-gradient(rgba(255, 42, 109, 0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(5, 217, 232, 0.03) 1px, transparent 1px),
+            radial-gradient(circle at center, 
+              rgba(13, 2, 33, 0.9) 0%, 
+              rgba(13, 2, 33, 0.95) 100%)`;
+        }, 100);
+      }
+    }, 5000);
+
+    chatInput.focus();
+  </script>
+</body>
+</html>

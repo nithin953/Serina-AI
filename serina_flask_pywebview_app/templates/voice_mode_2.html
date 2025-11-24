@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Serina - Anime Control Deck</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Bungee&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Orbitron', monospace;
+            background: #0a0a0a;
+            color: #00ffff;
+            overflow: hidden;
+            height: 100vh;
+            position: relative;
+        }
+
+        /* Animated background with scanlines and glitch effects */
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #0a0a0a 0%, #1a0a1a 50%, #0a1a0a 100%);
+            z-index: -2;
+        }
+
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0, 255, 255, 0.03) 2px,
+                rgba(0, 255, 255, 0.03) 4px
+            );
+            pointer-events: none;
+            z-index: -1;
+            animation: scanlineMove 2s linear infinite;
+        }
+
+        @keyframes scanlineMove {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(4px); }
+        }
+
+        /* Grid overlay */
+        .grid-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 255, 255, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 255, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Main container with diagonal split */
+        .control-deck {
+            display: grid;
+            grid-template-areas: 
+                "header header header"
+                "left-panel center-panel right-panel"
+                "status-bar status-bar status-bar";
+            grid-template-columns: 250px 1fr 300px;
+            grid-template-rows: 80px 1fr 60px;
+            height: 100vh;
+            gap: 2px;
+            padding: 10px;
+        }
+
+        /* Header */
+        .header {
+            grid-area: header;
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.1) 0%, rgba(255, 0, 255, 0.1) 100%);
+            border: 2px solid #00ffff;
+            border-radius: 0 0 20px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.3), transparent);
+            animation: headerSweep 3s infinite;
+        }
+
+        @keyframes headerSweep {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .logo {
+            font-family: 'Bungee', cursive;
+            font-size: 24px;
+            color: #00ffff;
+            text-shadow: 0 0 10px #00ffff;
+            animation: logoGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes logoGlow {
+            from { text-shadow: 0 0 10px #00ffff; }
+            to { text-shadow: 0 0 20px #00ffff, 0 0 30px #00ffff; }
+        }
+
+        .back-btn {
+            background: linear-gradient(45deg, #ff006e, #8338ec);
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(255, 0, 110, 0.5);
+        }
+
+        .back-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 25px rgba(255, 0, 110, 0.8);
+        }
+
+        /* Left Panel - Controls */
+        .left-panel {
+            grid-area: left-panel;
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.05) 0%, rgba(0, 255, 255, 0.02) 100%);
+            border: 2px solid #00ffff;
+            border-radius: 20px 0 0 20px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .left-panel::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, transparent, rgba(0, 255, 255, 0.1), transparent);
+            animation: rotate 10s linear infinite;
+            z-index: -1;
+        }
+
+        .control-section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 14px;
+            color: #ff006e;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-bottom: 1px solid #ff006e;
+            padding-bottom: 5px;
+        }
+
+        .control-btn {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, rgba(0, 255, 255, 0.1), rgba(0, 255, 255, 0.05));
+            border: 1px solid #00ffff;
+            color: #00ffff;
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 100%, 10px 100%);
+        }
+
+        .control-btn:hover {
+            background: linear-gradient(45deg, rgba(0, 255, 255, 0.3), rgba(0, 255, 255, 0.1));
+            transform: translateX(5px);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+        }
+
+        .control-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .control-btn:hover::before {
+            left: 100%;
+        }
+
+        /* Mood Wheel */
+        .mood-wheel {
+            position: relative;
+            width: 180px;
+            height: 180px;
+            margin: 20px auto;
+            border: 2px solid #00ffff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: wheelRotate 20s linear infinite;
+        }
+
+        @keyframes wheelRotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .mood-segment {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid #00ffff;
+            color: #00ffff;
+            position: absolute;
+            transform-origin: 50% 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 20px;
+        }
+
+        .mood-segment:hover {
+            transform: scale(1.1) !important;
+            box-shadow: 0 0 15px #00ffff;
+        }
+
+        .mood-segment.active {
+            background: #ff006e;
+            color: #fff;
+            box-shadow: 0 0 20px #ff006e;
+            transform: scale(1.1) !important;
+            z-index: 10;
+            animation: moodPulse 2s infinite;
+        }
+
+        @keyframes moodPulse {
+            0%, 100% { transform: scale(1.1); box-shadow: 0 0 20px #ff006e; }
+            50% { transform: scale(1.15); box-shadow: 0 0 30px #ff006e; }
+        }
+
+        .mood-wheel::before {
+            content: 'MOOD';
+            position: absolute;
+            font-size: 12px;
+            color: #00ffff;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* Center Panel - Avatar and Visualizer */
+        .center-panel {
+            grid-area: center-panel;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: radial-gradient(circle at center, rgba(0, 255, 255, 0.05) 0%, transparent 70%);
+        }
+
+        .avatar-container {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin-bottom: 30px;
+        }
+
+        .avatar {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #00ffff, #ff006e);
+            border-radius: 50%;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 50px rgba(0, 255, 255, 0.5);
+            animation: avatarPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes avatarPulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 50px rgba(0, 255, 255, 0.5); }
+            50% { transform: scale(1.05); box-shadow: 0 0 80px rgba(0, 255, 255, 0.8); }
+        }
+
+        .avatar-silhouette {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 80px;
+            color: rgba(0, 0, 0, 0.7);
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+        }
+
+        /* Circular voice visualizer */
+        .voice-visualizer {
+            position: absolute;
+            width: 250px;
+            height: 250px;
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .voice-visualizer::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border: 2px solid transparent;
+            border-top-color: #00ffff;
+            border-radius: 50%;
+            animation: rotate 2s linear infinite;
+        }
+
+        .voice-bars {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+        }
+
+        .voice-bar {
+            position: absolute;
+            width: 4px;
+            background: linear-gradient(to top, #00ffff, #ff006e);
+            border-radius: 2px;
+            transform-origin: bottom center;
+            opacity: 0.7;
+        }
+
+        /* Status display */
+        .status-display {
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid #00ffff;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+        }
+
+        /* Subtitle display */
+        .subtitle-display {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #00ffff;
+            text-align: center;
+            opacity: 0.8;
+            min-height: 20px;
+            transition: opacity 0.5s ease;
+        }
+
+        /* Right Panel - Chat */
+        .right-panel {
+            grid-area: right-panel;
+            background: linear-gradient(135deg, rgba(255, 0, 110, 0.05) 0%, rgba(255, 0, 110, 0.02) 100%);
+            border: 2px solid #ff006e;
+            border-radius: 0 20px 20px 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .chat-title {
+            font-size: 16px;
+            color: #ff006e;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-align: center;
+        }
+
+        .chat-container {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #ff006e;
+            border-radius: 10px;
+            padding: 15px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            max-height: 400px;
+        }
+
+        .chat-message {
+            margin-bottom: 10px;
+            padding: 8px;
+            border-radius: 5px;
+            font-size: 12px;
+            border-left: 3px solid #ff006e;
+            background: rgba(255, 0, 110, 0.1);
+        }
+
+        .chat-input {
+            width: 100%;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid #ff006e;
+            border-radius: 5px;
+            color: #ff006e;
+            font-family: 'Orbitron', monospace;
+            margin-bottom: 10px;
+        }
+
+        .chat-send {
+            width: 100%;
+            padding: 10px;
+            background: linear-gradient(45deg, #ff006e, #8338ec);
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .chat-send:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 0, 110, 0.5);
+        }
+
+        /* Status bar */
+        .status-bar {
+            grid-area: status-bar;
+            background: linear-gradient(90deg, rgba(0, 255, 255, 0.1), rgba(255, 0, 110, 0.1));
+            border: 2px solid #00ffff;
+            border-radius: 20px 20px 0 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #00ffff;
+            box-shadow: 0 0 10px #00ffff;
+            animation: statusBlink 2s infinite;
+        }
+
+        @keyframes statusBlink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 1200px) {
+            .control-deck {
+                grid-template-columns: 200px 1fr 250px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .control-deck {
+                grid-template-areas: 
+                    "header"
+                    "center-panel"
+                    "left-panel"
+                    "right-panel"
+                    "status-bar";
+                grid-template-columns: 1fr;
+                grid-template-rows: 80px 1fr 200px 200px 60px;
+            }
+            
+            .header {
+                border-radius: 0;
+            }
+            
+            .left-panel, .right-panel {
+                border-radius: 0;
+            }
+            
+            .avatar-container {
+                width: 150px;
+                height: 150px;
+            }
+            
+            .voice-visualizer {
+                width: 200px;
+                height: 200px;
+            }
+
+            .mood-wheel {
+                width: 140px;
+                height: 140px;
+            }
+
+            .mood-segment {
+                width: 50px;
+                height: 50px;
+                font-size: 16px;
+            }
+        }
+
+        /* Listening state */
+        .listening {
+            animation: listening-pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes listening-pulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 0 50px rgba(0, 255, 255, 0.5);
+            }
+            50% {
+                transform: scale(1.1);
+                box-shadow: 0 0 100px rgba(0, 255, 255, 1);
+            }
+        }
+
+        /* Hidden class */
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="background"></div>
+    <div class="scanlines"></div>
+    <div class="grid-overlay"></div>
+
+    <div class="control-deck">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">SERINA</div>
+            <button class="back-btn" onclick="goBack()">◀ EXIT</button>
+        </div>
+
+        <!-- Left Panel - Controls -->
+        <div class="left-panel">
+            <div class="control-section">
+                <div class="section-title">VOICE CONTROL</div>
+                <button class="control-btn" onclick="startVoice()">
+                    🔊 START MODE
+                </button>
+                <button class="control-btn" id="interrupt-btn" onclick="interruptVoice()">
+                    ⚡ INTERRUPT
+                </button>
+                <button class="control-btn" id="sleep-btn" onclick="toggleSleep()">
+                    💤 SLEEP MODE
+                </button>
+            </div>
+
+            <div class="control-section">
+                <div class="section-title">MOOD MATRIX</div>
+                <div class="mood-wheel">
+                    <div class="mood-segment" data-mood="love">❤️</div>
+                    <div class="mood-segment" data-mood="calm">🌀</div>
+                    <div class="mood-segment" data-mood="sad">😢</div>
+                    <div class="mood-segment" data-mood="angry">😠</div>
+                    <div class="mood-segment" data-mood="flirty">😘</div>
+                    <div class="mood-segment" data-mood="playful">😜</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Center Panel - Avatar and Visualizer -->
+        <div class="center-panel">
+            <div class="status-display" id="mainStatus">INITIALIZING...</div>
+            
+            <div class="avatar-container">
+                <div class="avatar" id="avatar">
+                    <div class="avatar-silhouette">🤖</div>
+                </div>
+                <div class="voice-visualizer" id="voice-visualizer">
+                    <div class="voice-bars" id="voice-bars"></div>
+                </div>
+            </div>
+            
+            <div class="subtitle-display" id="subStatus">Click "Start Mode" to activate</div>
+        </div>
+
+        <!-- Right Panel - Chat -->
+        <div class="right-panel">
+            <div class="chat-title">NEURAL LINK</div>
+            <div class="chat-container" id="chat-container">
+                <div class="chat-message">System: Neural link established</div>
+                <div class="chat-message">Serina: Hello! I'm ready to assist you.</div>
+            </div>
+            <input type="text" class="chat-input" id="chat-input" placeholder="Enter command...">
+            <button class="chat-send" onclick="sendChatMessage()">TRANSMIT</button>
+        </div>
+
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <div class="status-indicator">
+                <div class="status-dot" id="connection-status"></div>
+                <span>CONNECTION</span>
+            </div>
+            <div class="status-indicator">
+                <div class="status-dot" id="voice-status"></div>
+                <span>VOICE LINK</span>
+            </div>
+            <div class="status-indicator">
+                <div class="status-dot" id="ai-status"></div>
+                <span>AI CORE</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isListening = false;
+        let isSpeaking = false;
+        let currentMood = 'calm';
+        let isSleeping = false;
+        let voiceBars = [];
+
+        // Initialize voice visualizer bars
+        function initializeVoiceVisualizer() {
+            const voiceBarsContainer = document.getElementById('voice-bars');
+            const numberOfBars = 24;
+            
+            for (let i = 0; i < numberOfBars; i++) {
+                const bar = document.createElement('div');
+                bar.className = 'voice-bar';
+                const angle = (i * 360) / numberOfBars;
+                bar.style.left = '50%';
+                bar.style.bottom = '0';
+                bar.style.height = '20px';
+                bar.style.transformOrigin = '2px 125px';
+                bar.style.transform = `translateX(-50%) rotate(${angle}deg)`;
+                voiceBarsContainer.appendChild(bar);
+                voiceBars.push(bar);
+            }
+        }
+
+        // Position mood wheel segments
+        function positionMoodSegments() {
+            const segments = document.querySelectorAll('.mood-segment');
+            const step = 360 / segments.length;
+            segments.forEach((seg, index) => {
+                seg.style.transform = `rotate(${step * index}deg) translate(70px) rotate(-${step * index}deg)`;
+                seg.addEventListener('click', () => {
+                    setMood(seg.getAttribute('data-mood'));
+                });
+            });
+        }
+
+        // Animate voice visualizer
+        function animateVoiceVisualizer() {
+            if (isListening || isSpeaking) {
+                voiceBars.forEach((bar, index) => {
+                    const height = Math.random() * 50 + 10;
+                    bar.style.height = `${height}px`;
+                    bar.style.opacity = Math.random() * 0.5 + 0.5;
+                });
+            } else {
+                voiceBars.forEach(bar => {
+                    bar.style.height = '20px';
+                    bar.style.opacity = '0.3';
+                });
+            }
+        }
+
+        // Update status display
+        function updateStatus(main, sub, type = null) {
+            document.getElementById('mainStatus').textContent = main;
+            document.getElementById('subStatus').textContent = sub;
+            document.getElementById('subStatus').style.opacity = 1;
+            
+            const statusDot = document.getElementById('ai-status');
+            const voiceStatusDot = document.getElementById('voice-status');
+            
+            if (!type) {
+                if (main.toLowerCase().includes("speaking") || main.toLowerCase().includes("waking") || main.toLowerCase().includes("thinking")) {
+                    type = "active";
+                } else if (main.toLowerCase().includes("listening") || main.toLowerCase().includes("ready") || main.toLowerCase().includes("waiting")) {
+                    type = "standby";
+                } else {
+                    type = "error";
+                }
+            }
+            
+            switch(type) {
+                case 'active':
+                    statusDot.style.background = '#00ff00';
+                    voiceStatusDot.style.background = '#00ff00';
+                    document.getElementById('avatar').classList.add('listening');
+                    break;
+                case 'standby':
+                    statusDot.style.background = '#ffaa00';
+                    voiceStatusDot.style.background = '#ffaa00';
+                    document.getElementById('avatar').classList.remove('listening');
+                    break;
+                case 'error':
+                default:
+                    statusDot.style.background = '#ff0000';
+                    voiceStatusDot.style.background = '#ff0000';
+                    document.getElementById('avatar').classList.remove('listening');
+                    break;
+            }
+            
+            if (sub) {
+                setTimeout(() => {
+                    document.getElementById('subStatus').style.opacity = 0.5;
+                }, 5000);
+            }
+        }
+
+        // Poll server for status updates
+        function pollServer() {
+            fetch('/serina-status')
+                .then(response => response.json())
+                .then(data => {
+                    updateStatus(data.statusText, data.subtitle, data.statusType || null);
+                    if (data.mood) {
+                        setMood(data.mood);
+                    }
+                    
+                    // Update status indicators
+                    document.getElementById('connection-status').style.background = '#00ff00';
+                    document.getElementById('voice-status').style.background = data.listening ? '#00ff00' : '#ffff00';
+                    document.getElementById('ai-status').style.background = data.speaking ? '#ff006e' : '#00ffff';
+                    
+                    isListening = data.listening;
+                    isSpeaking = data.speaking;
+                })
+                .catch(() => {
+                    updateStatus("Connection Error", "Failed to fetch updates", "error");
+                    document.getElementById('connection-status').style.background = '#ff0000';
+                });
+        }
+
+        // Voice control functions
+        function startVoice() {
+            updateStatus('Waking Up...', 'Just a moment, my love 💖', 'active');
+            fetch('/start-voice', { method: 'POST' });
+        }
+
+        function interruptVoice() {
+            fetch('/interrupt-speech', { method: 'POST' })
+              .then(() => updateStatus('Listening...', 'Speech interrupted. Talk now 💬', 'standby'));
+        }
+
+        function toggleSleep() {
+            try {
+                const endpoint = isSleeping ? '/start-voice' : '/stop-voice';
+                fetch(endpoint, { method: 'POST' });
+                isSleeping = !isSleeping;
+                
+                const sleepBtn = document.getElementById('sleep-btn');
+                sleepBtn.textContent = isSleeping ? '🌙 WAKE UP' : '💤 SLEEP MODE';
+                
+                updateStatus(isSleeping ? 'SLEEP MODE' : 'AWAKE');
+                
+                // Update avatar appearance
+                const avatar = document.getElementById('avatar');
+                if (isSleeping) {
+                    avatar.style.opacity = '0.3';
+                    avatar.style.filter = 'grayscale(1)';
+                } else {
+                    avatar.style.opacity = '1';
+                    avatar.style.filter = 'none';
+                }
+            } catch (error) {
+                console.error('Error toggling sleep:', error);
+            }
+        }
+
+        // Mood control
+        function setMood(mood) {
+            try {
+                fetch('/set-mood', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ mood: mood })
+                });
+                currentMood = mood;
+                document.body.className = `mood-${mood}`;
+                
+                // Update active mood segment
+                document.querySelectorAll('.mood-segment').forEach(seg => {
+                    seg.classList.remove('active');
+                });
+                document.querySelector(`.mood-segment[data-mood="${mood}"]`).classList.add('active');
+            } catch (error) {
+                console.error('Error setting mood:', error);
+            }
+        }
+
+        // Chat functions
+        function sendChatMessage() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            
+            if (message) {
+                addChatMessage('User', message);
+                input.value = '';
+                
+                updateStatus("Thinking...", "Generating reply...", "active");
+
+                fetch('/voice-chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_input: message })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    addChatMessage('Serina', data.reply);
+                    updateStatus("Speaking...", "Serina: " + data.reply, "active");
+                })
+                .catch(() => {
+                    updateStatus("Error", "Couldn't reach Serina...", "error");
+                });
+            }
+        }
+
+        function addChatMessage(sender, message) {
+            const chatContainer = document.getElementById('chat-container');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'chat-message';
+            messageDiv.innerHTML = `<strong>${sender}:</strong> ${message}`;
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        // Navigation
+        function goBack() {
+            fetch('/stop-voice', { method: 'POST' })
+               .then(() => {
+                   updateStatus('Leaving...', 'Farewell, my love 💔', 'standby');
+                   
+                   setTimeout(() => {
+                       const lastMenu = localStorage.getItem("lastMenuSkin");
+                       if (lastMenu) {
+                           window.location.href = lastMenu;
+                       } else {
+                           window.location.href = "/holo";
+                       }
+                   }, 1000);
+                })
+                .catch(() => {
+                    const lastMenu = localStorage.getItem("lastMenuSkin");
+                    if (lastMenu) {
+                        window.location.href = lastMenu;
+                    } else {
+                        window.location.href = "/holo";
+                    }
+                });
+        }
+
+        // Event listeners
+        document.getElementById('chat-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendChatMessage();
+            }
+        });
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                goBack();
+            }
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeVoiceVisualizer();
+            positionMoodSegments();
+            pollServer();
+            
+            // Set up periodic status updates
+            setInterval(pollServer, 1000);
+            setInterval(animateVoiceVisualizer, 100);
+            
+            // Initialize mood
+            setMood('calm');
+        });
+    </script>
+</body>
+</html>

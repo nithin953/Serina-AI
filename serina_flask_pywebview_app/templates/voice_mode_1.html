@@ -1,0 +1,1670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Serina Voice Interface</title>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&display=swap');
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+    
+    body {
+      min-height: 100vh;
+      background: linear-gradient(to bottom right, #111827, #000000, #1f2937);
+      color: white;
+      position: relative;
+      overflow-x: hidden;
+    }
+    
+    .absolute {
+      position: absolute;
+    }
+    
+    .inset-0 {
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+    }
+    
+    .relative {
+      position: relative;
+    }
+    
+    .z-10 {
+      z-index: 10;
+    }
+    
+    .z-20 {
+      z-index: 20;
+    }
+    
+    .z-100 {
+      z-index: 100;
+    }
+    
+    .flex {
+      display: flex;
+    }
+    
+    .items-center {
+      align-items: center;
+    }
+    
+    .justify-center {
+      justify-content: center;
+    }
+    
+    .justify-between {
+      justify-content: space-between;
+    }
+    
+    .flex-col {
+      flex-direction: column;
+    }
+    
+    .flex-1 {
+      flex: 1;
+    }
+    
+    .min-h-screen {
+      min-height: 100vh;
+    }
+    
+    .w-full {
+      width: 100%;
+    }
+    
+    .h-full {
+      height: 100%;
+    }
+    
+    .w-16 {
+      width: 4rem;
+    }
+    
+    .h-16 {
+      height: 4rem;
+    }
+    
+    .w-12 {
+      width: 3rem;
+    }
+    
+    .h-12 {
+      height: 3rem;
+    }
+    
+    .w-6 {
+      width: 1.5rem;
+    }
+    
+    .h-6 {
+      height: 1.5rem;
+    }
+    
+    .w-5 {
+      width: 1.25rem;
+    }
+    
+    .h-5 {
+      height: 1.25rem;
+    }
+    
+    .w-4 {
+      width: 1rem;
+    }
+    
+    .h-4 {
+      height: 1rem;
+    }
+    
+    .w-32 {
+      width: 8rem;
+    }
+    
+    .h-32 {
+      height: 8rem;
+    }
+    
+    .w-48 {
+      width: 12rem;
+    }
+    
+    .h-48 {
+      height: 12rem;
+    }
+    
+    .w-40 {
+      width: 10rem;
+    }
+    
+    .h-40 {
+      height: 10rem;
+    }
+    
+    .w-80 {
+      width: 20rem;
+    }
+    
+    .rounded-full {
+      border-radius: 9999px;
+    }
+    
+    .rounded-lg {
+      border-radius: 0.5rem;
+    }
+    
+    .bg-white {
+      background-color: white;
+    }
+    
+    .bg-gray-800 {
+      background-color: rgba(31, 41, 55, 0.8);
+    }
+    
+    .bg-gray-900 {
+      background-color: rgba(17, 24, 39, 0.8);
+    }
+    
+    .bg-red-500 {
+      background-color: #ef4444;
+    }
+    
+    .bg-gradient-to-r {
+      background-image: linear-gradient(to right, var(--tw-gradient-stops));
+    }
+    
+    .from-pink-500 {
+      --tw-gradient-from: #ec4899;
+      --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(236, 72, 153, 0));
+    }
+    
+    .to-purple-500 {
+      --tw-gradient-to: #a855f7;
+    }
+    
+    .from-purple-500 {
+      --tw-gradient-from: #a855f7;
+      --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(168, 85, 247, 0));
+    }
+    
+    .text-white {
+      color: white;
+    }
+    
+    .text-gray-400 {
+      color: rgba(156, 163, 175);
+    }
+    
+    .text-gray-500 {
+      color: rgba(107, 114, 128);
+    }
+    
+    .text-sm {
+      font-size: 0.875rem;
+    }
+    
+    .text-lg {
+      font-size: 1.125rem;
+    }
+    
+    .text-xl {
+      font-size: 1.25rem;
+    }
+    
+    .text-2xl {
+      font-size: 1.5rem;
+    }
+    
+    .text-4xl {
+      font-size: 2.25rem;
+    }
+    
+    .font-bold {
+      font-weight: 700;
+    }
+    
+    .font-semibold {
+      font-weight: 600;
+    }
+    
+    .font-medium {
+      font-weight: 500;
+    }
+    
+    .mb-1 {
+      margin-bottom: 0.25rem;
+    }
+    
+    .mb-2 {
+      margin-bottom: 0.5rem;
+    }
+    
+    .mb-4 {
+      margin-bottom: 1rem;
+    }
+    
+    .mb-6 {
+      margin-bottom: 1.5rem;
+    }
+    
+    .mb-8 {
+      margin-bottom: 2rem;
+    }
+    
+    .mt-1 {
+      margin-top: 0.25rem;
+    }
+    
+    .mt-2 {
+      margin-top: 0.5rem;
+    }
+    
+    .mt-4 {
+      margin-top: 1rem;
+    }
+    
+    .mt-6 {
+      margin-top: 1.5rem;
+    }
+    
+    .mr-2 {
+      margin-right: 0.5rem;
+    }
+    
+    .mx-auto {
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    .p-3 {
+      padding: 0.75rem;
+    }
+    
+    .p-4 {
+      padding: 1rem;
+    }
+    
+    .p-6 {
+      padding: 1.5rem;
+    }
+    
+    .p-8 {
+      padding: 2rem;
+    }
+    
+    .px-4 {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+    
+    .px-8 {
+      padding-left: 2rem;
+      padding-right: 2rem;
+    }
+    
+    .py-2 {
+      padding-top: 0.5rem;
+      padding-bottom: 0.5rem;
+    }
+    
+    .py-4 {
+      padding-top: 1rem;
+      padding-bottom: 1rem;
+    }
+    
+    .space-x-1 > * + * {
+      margin-left: 0.25rem;
+    }
+    
+    .space-x-2 > * + * {
+      margin-left: 0.5rem;
+    }
+    
+    .space-x-4 > * + * {
+      margin-left: 1rem;
+    }
+    
+    .space-x-6 > * + * {
+      margin-left: 1.5rem;
+    }
+    
+    .space-x-8 > * + * {
+      margin-left: 2rem;
+    }
+    
+    .space-y-2 > * + * {
+      margin-top: 0.5rem;
+    }
+    
+    .space-y-4 > * + * {
+      margin-top: 1rem;
+    }
+    
+    .grid {
+      display: grid;
+    }
+    
+    .grid-cols-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    
+    .gap-2 {
+      gap: 0.5rem;
+    }
+    
+    .text-center {
+      text-align: center;
+    }
+    
+    .shadow-lg {
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+    
+    .backdrop-blur-sm {
+      backdrop-filter: blur(4px);
+    }
+    
+    .border {
+      border-width: 1px;
+    }
+    
+    .border-gray-700 {
+      border-color: rgba(55, 65, 81);
+    }
+    
+    .border-gray-800 {
+      border-color: rgba(31, 41, 55);
+    }
+    
+    .border-t {
+      border-top-width: 1px;
+    }
+    
+    .border-l {
+      border-left-width: 1px;
+    }
+    
+    .ring-2 {
+      box-shadow: 0 0 0 2px var(--tw-ring-color);
+    }
+    
+    .ring-white {
+      --tw-ring-color: rgba(255, 255, 255);
+    }
+    
+    .transition-all {
+      transition-property: all;
+    }
+    
+    .duration-300 {
+      transition-duration: 300ms;
+    }
+    
+    .hover\:bg-gray-700:hover {
+      background-color: rgba(55, 65, 81);
+    }
+    
+    .hover\:from-pink-600:hover {
+      --tw-gradient-from: #db2777;
+      --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(219, 39, 119, 0));
+    }
+    
+    .hover\:to-purple-600:hover {
+      --tw-gradient-to: #9333ea;
+    }
+    
+    .hover\:scale-105:hover {
+      transform: scale(1.05);
+    }
+    
+    .hover\:scale-110:hover {
+      transform: scale(1.1);
+    }
+    
+    .animate-ping {
+      animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+    }
+    
+    .animate-pulse {
+      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    
+    .opacity-20 {
+      opacity: 0.2;
+    }
+    
+    .opacity-30 {
+      opacity: 0.3;
+    }
+    
+    .opacity-60 {
+      opacity: 0.6;
+    }
+    
+    .max-w-2xl {
+      max-width: 42rem;
+    }
+    
+    .h-\[calc\(100vh-100px\)\] {
+      height: calc(100vh - 100px);
+    }
+    
+    @keyframes ping {
+      75%, 100% {
+        transform: scale(2);
+        opacity: 0;
+      }
+    }
+    
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.5;
+      }
+    }
+
+    /* New animations */
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-10px);
+      }
+    }
+
+    @keyframes neonPulse {
+      0%, 100% {
+        opacity: 0.8;
+        text-shadow: 0 0 5px currentColor, 0 0 10px currentColor;
+      }
+      50% {
+        opacity: 1;
+        text-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
+      }
+    }
+
+    @keyframes scanline {
+      0% {
+        background-position: 0 -100vh;
+      }
+      100% {
+        background-position: 0 100vh;
+      }
+    }
+
+    @keyframes glitch {
+      0% {
+        transform: translate(0);
+      }
+      20% {
+        transform: translate(-2px, 2px);
+      }
+      40% {
+        transform: translate(-2px, -2px);
+      }
+      60% {
+        transform: translate(2px, 2px);
+      }
+      80% {
+        transform: translate(2px, -2px);
+      }
+      100% {
+        transform: translate(0);
+      }
+    }
+
+    @keyframes particleMove {
+      0% {
+        transform: translateY(0) translateX(0);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-100vh) translateX(var(--tx, 0));
+        opacity: 0;
+      }
+    }
+
+    /* Custom styles */
+    .conversation-bubble {
+      background: rgba(31, 41, 55, 0.5);
+      backdrop-filter: blur(4px);
+      border-radius: 0.5rem;
+      padding: 1rem;
+      border: 1px solid rgba(55, 65, 81);
+    }
+
+    .mood-button {
+      padding: 0.75rem;
+      border-radius: 0.5rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 300ms;
+      color: white;
+    }
+
+    .mood-button.active {
+      box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5);
+    }
+
+    .audio-bar {
+      width: 0.125rem;
+      border-radius: 9999px;
+      transition: all 100ms;
+    }
+
+    .main-control-button {
+      width: 4rem;
+      height: 4rem;
+      border-radius: 9999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 300ms;
+      transform-origin: center;
+      border: none;
+      cursor: pointer;
+    }
+
+    .mode-button {
+      padding: 0.5rem 1rem;
+      border-radius: 9999px;
+      font-size: 0.875rem;
+      transition: all 300ms;
+    }
+
+    .mode-button.active {
+      background: linear-gradient(to right, #ec4899, #a855f7);
+      color: white;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    .mode-button.inactive {
+      background: rgba(31, 41, 55);
+      color: rgba(156, 163, 175);
+    }
+
+    .mode-button.inactive:hover {
+      background: rgba(55, 65, 81);
+    }
+
+    .wake-button {
+      padding: 1rem 2rem;
+      background: linear-gradient(to right, #ec4899, #a855f7);
+      color: white;
+      border-radius: 9999px;
+      font-size: 1.125rem;
+      font-weight: 600;
+      transition: all 300ms;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      border: none;
+      cursor: pointer;
+    }
+
+    .wake-button:hover {
+      background: linear-gradient(to right, #db2777, #9333ea);
+      transform: scale(1.05);
+    }
+
+    .status-item {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.875rem;
+    }
+
+    .shortcut-item {
+      font-size: 0.875rem;
+      color: rgba(156, 163, 175);
+    }
+
+    /* Enhanced chat box styles */
+    .chat-box {
+      position: fixed;
+      bottom: 120px;
+      right: 30px;
+      background: rgba(10, 10, 20, 0.9);
+      border: 2px solid;
+      border-radius: 15px;
+      padding: 15px;
+      display: none;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+      width: 300px;
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+      border-image: linear-gradient(45deg, #00ffff, #ff00ff) 1;
+      animation: neonPulse 3s infinite alternate;
+    }
+
+    .chat-box::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border-radius: inherit;
+      padding: 2px;
+      background: linear-gradient(45deg, #00ffff, #ff00ff);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+    }
+
+    .chat-box input {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      outline: none;
+      font-family: 'Inter', sans-serif;
+      background: rgba(0, 0, 0, 0.7);
+      color: #00ffff;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      border: 1px solid rgba(0, 255, 255, 0.3);
+    }
+
+    .chat-box button {
+      width: 100%;
+      padding: 10px;
+      background: linear-gradient(45deg, #00ffff, #ff00ff);
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .chat-box button:hover {
+      background: linear-gradient(45deg, #00bfff, #ff2da4);
+      box-shadow: 0 0 15px rgba(0, 191, 255, 0.5);
+    }
+
+    /* Enhanced conversation display */
+    .conversation-display {
+      position: fixed;
+      top: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80%;
+      max-width: 600px;
+      max-height: 300px;
+      overflow-y: auto;
+      padding: 20px;
+      background: rgba(10, 10, 20, 0.8);
+      border-radius: 15px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      z-index: 90;
+      display: none;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .conversation-display::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.5), transparent);
+      animation: scanline 3s linear infinite;
+    }
+
+    .message {
+      margin-bottom: 15px;
+      padding: 12px 15px;
+      border-radius: 10px;
+      position: relative;
+      max-width: 80%;
+      word-wrap: break-word;
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .user-message {
+      background: rgba(0, 150, 255, 0.2);
+      border-left: 3px solid #00ffff;
+      margin-left: auto;
+      border-top-right-radius: 0;
+    }
+
+    .ai-message {
+      background: rgba(255, 45, 164, 0.2);
+      border-left: 3px solid #ff2da4;
+      margin-right: auto;
+      border-top-left-radius: 0;
+    }
+
+    .message-time {
+      font-size: 0.7rem;
+      color: rgba(255, 255, 255, 0.5);
+      margin-top: 5px;
+      text-align: right;
+    }
+
+    /* Control buttons container */
+    .control-buttons {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 20px;
+      z-index: 100;
+    }
+
+    /* Enhanced neon control buttons */
+    .control-btn {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(8px);
+      border: 2px solid;
+      box-shadow: 0 0 15px currentColor;
+      position: relative;
+      overflow: hidden;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    .control-btn::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(
+        to bottom right,
+        transparent,
+        transparent,
+        transparent,
+        currentColor,
+        transparent,
+        transparent,
+        transparent
+      );
+      transform: rotate(30deg);
+      opacity: 0.3;
+    }
+
+    .control-btn:hover {
+      transform: scale(1.1) translateY(-5px);
+      box-shadow: 0 0 25px currentColor;
+      animation: none;
+    }
+
+    .control-btn:hover::before {
+      animation: shine 1.5s;
+    }
+
+    @keyframes shine {
+      0% {
+        transform: rotate(30deg) translate(-30%, -30%);
+      }
+      100% {
+        transform: rotate(30deg) translate(30%, 30%);
+      }
+    }
+
+    .interrupt-btn {
+      color: #00ffff;
+      background: rgba(0, 255, 255, 0.1);
+      border-color: #00ffff;
+      animation-delay: 0.1s;
+    }
+
+    .stop-btn {
+      color: #ff3860;
+      background: rgba(255, 56, 96, 0.1);
+      border-color: #ff3860;
+      animation-delay: 0.2s;
+    }
+
+    .chat-btn {
+      color: #ff2da4;
+      background: rgba(255, 45, 164, 0.1);
+      border-color: #ff2da4;
+      animation-delay: 0.3s;
+    }
+
+    .back-btn {
+      color: #ff00ff;
+      background: rgba(255, 0, 255, 0.1);
+      border-color: #ff00ff;
+      animation-delay: 0.4s;
+    }
+
+    /* Sleep screen back button */
+    .sleep-back-btn {
+      position: absolute;
+      top: 30px;
+      left: 30px;
+      padding: 12px 24px;
+      background: rgba(255, 0, 100, 0.3);
+      border: 2px solid #ff0064;
+      border-radius: 25px;
+      color: #ff0064;
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+      z-index: 20;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 600;
+    }
+    
+    .sleep-back-btn:hover {
+      background: rgba(255, 0, 100, 0.5);
+      box-shadow: 0 0 20px rgba(255, 0, 100, 0.6);
+      transform: translateY(-2px);
+    }
+
+    /* Top left name and mood */
+    .name-mood-container {
+      position: absolute;
+      top: 30px;
+      left: 30px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      z-index: 20;
+    }
+
+    .name-mood {
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Futuristic HUD elements */
+    .hud-element {
+      position: absolute;
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      border-radius: 5px;
+      padding: 5px 10px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.8rem;
+      color: #00ffff;
+      text-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
+      background: rgba(0, 0, 0, 0.3);
+    }
+
+    .hud-corner {
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      border: 2px solid;
+      border-image: linear-gradient(45deg, #00ffff, #ff00ff) 1;
+    }
+
+    .hud-corner-tl {
+      top: 20px;
+      left: 20px;
+      border-right: none;
+      border-bottom: none;
+    }
+
+    .hud-corner-tr {
+      top: 20px;
+      right: 20px;
+      border-left: none;
+      border-bottom: none;
+    }
+
+    .hud-corner-bl {
+      bottom: 20px;
+      left: 20px;
+      border-right: none;
+      border-top: none;
+    }
+
+    .hud-corner-br {
+      bottom: 20px;
+      right: 20px;
+      border-left: none;
+      border-top: none;
+    }
+
+    /* Particle background */
+    .particles {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: 0;
+    }
+
+    .particle {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: white;
+      border-radius: 50%;
+      opacity: 0.5;
+    }
+
+    /* Voice response visualization */
+    .voice-visualizer {
+      position: absolute;
+      bottom: 200px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80%;
+      max-width: 500px;
+      height: 100px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 2px;
+      z-index: 10;
+    }
+
+    .visualizer-bar {
+      width: 6px;
+      background: linear-gradient(to top, #00ffff, #ff00ff);
+      border-radius: 3px;
+      transition: height 0.1s ease-out;
+    }
+
+    /* Mood indicator pulse */
+    .mood-pulse {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .pulse-active {
+      animation: pulseExpand 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+
+    @keyframes pulseExpand {
+      0% {
+        transform: scale(0.8);
+        opacity: 0.7;
+      }
+      100% {
+        transform: scale(1.5);
+        opacity: 0;
+      }
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .w-48 {
+        width: 10rem;
+      }
+      
+      .h-48 {
+        height: 10rem;
+      }
+      
+      .w-40 {
+        width: 8rem;
+      }
+      
+      .h-40 {
+        height: 8rem;
+      }
+      
+      .text-4xl {
+        font-size: 2rem;
+      }
+      
+      .chat-box {
+        width: 90%;
+        right: 5%;
+      }
+      
+      .conversation-display {
+        width: 90%;
+        top: 80px;
+        max-height: 200px;
+      }
+
+      .control-buttons {
+        gap: 10px;
+      }
+
+      .control-btn {
+        width: 60px;
+        height: 60px;
+        font-size: 24px;
+      }
+
+      .name-mood-container {
+        top: 20px;
+        left: 20px;
+      }
+
+      .voice-visualizer {
+        bottom: 180px;
+        height: 80px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .control-btn {
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+      }
+
+      .conversation-display {
+        max-height: 150px;
+        padding: 10px;
+      }
+
+      .message {
+        padding: 8px 10px;
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <!-- Content will be rendered here by JavaScript -->
+  </div>
+
+  <!-- Conversation display -->
+  <div class="conversation-display" id="conversationDisplay"></div>
+
+  <!-- Chat box -->
+  <div class="chat-box" id="chatBox">
+    <input type="text" id="chatInput" placeholder="Type your message..." />
+    <button onclick="sendChat()">Send Message</button>
+  </div>
+
+  <!-- Control buttons (will be shown only in main interface) -->
+  <div class="control-buttons" id="controlButtons" style="display: none;">
+    <button class="control-btn interrupt-btn" onclick="handleInterrupt()" title="Interrupt Voice">
+      <i data-lucide="zap"></i>
+    </button>
+    <button class="control-btn stop-btn" onclick="handleSleep()" title="Stop Voice">
+      <i data-lucide="mic-off"></i>
+    </button>
+    <button class="control-btn chat-btn" onclick="toggleChat()" title="Open Chat">
+      <i data-lucide="message-circle"></i>
+    </button>
+    <button class="control-btn back-btn" onclick="goBack()" title="Back to Menu">
+      <i data-lucide="arrow-left"></i>
+    </button>
+  </div>
+
+  <script>
+    // Mood configurations
+    const moodConfig = {
+      love: { 
+        primary: '#FF2DA4', 
+        secondary: '#FF6B9D', 
+        accent: '#FFB3D1',
+        glow: 'rgba(255, 45, 164, 0.3)',
+        name: 'Love Mode',
+        particleColor: 'rgba(255, 45, 164, 0.8)'
+      },
+      roast: { 
+        primary: '#FF4500', 
+        secondary: '#FF6347', 
+        accent: '#FFA07A',
+        glow: 'rgba(255, 69, 0, 0.3)',
+        name: 'Roast Mode',
+        particleColor: 'rgba(255, 69, 0, 0.8)'
+      },
+      tease: { 
+        primary: '#9A00FF', 
+        secondary: '#B347FF', 
+        accent: '#D19AFF',
+        glow: 'rgba(154, 0, 255, 0.3)',
+        name: 'Tease Mode',
+        particleColor: 'rgba(154, 0, 255, 0.8)'
+      },
+      care: { 
+        primary: '#00FFF0', 
+        secondary: '#47FFE6', 
+        accent: '#9AFFF7',
+        glow: 'rgba(0, 255, 240, 0.3)',
+        name: 'Care Mode',
+        particleColor: 'rgba(0, 255, 240, 0.8)'
+      },
+      scold: { 
+        primary: '#FF1744', 
+        secondary: '#FF5983', 
+        accent: '#FFB3C6',
+        glow: 'rgba(255, 23, 68, 0.3)',
+        name: 'Scold Mode',
+        particleColor: 'rgba(255, 23, 68, 0.8)'
+      }
+    };
+
+    // App state
+    const state = {
+      isListening: false,
+      currentMood: 'love',
+      isAwake: false,
+      currentLanguage: 'english',
+      transcript: '',
+      response: '',
+      audioLevels: Array(50).fill(0),
+      isSpeaking: false,
+      currentMode: 'voice',
+      animationRef: null,
+      statusText: 'Voice Mode Ready',
+      subtitle: 'Click "Say Serina" to activate',
+      statusType: 'standby',
+      chatBoxVisible: false,
+      conversation: [],
+      visualizerBars: Array(30).fill(0),
+      particles: []
+    };
+
+    // Initialize Lucide icons
+    lucide.createIcons();
+
+    // DOM elements
+    const app = document.getElementById('app');
+    const controlButtons = document.getElementById('controlButtons');
+    const chatBox = document.getElementById('chatBox');
+    const conversationDisplay = document.getElementById('conversationDisplay');
+    const chatInput = document.getElementById('chatInput');
+
+    // Initialize particles
+    function initParticles() {
+      const container = document.createElement('div');
+      container.className = 'particles';
+      app.appendChild(container);
+      
+      for (let i = 0; i < 50; i++) {
+        createParticle(container);
+      }
+    }
+
+    function createParticle(container) {
+      const particle = document.createElement('div');
+      particle.className = 'particle';
+      
+      // Random position
+      const posX = Math.random() * 100;
+      const posY = Math.random() * 100;
+      
+      // Random size
+      const size = Math.random() * 3 + 1;
+      
+      // Random animation duration and delay
+      const duration = Math.random() * 10 + 5;
+      const delay = Math.random() * 5;
+      
+      // Set particle style
+      particle.style.left = `${posX}%`;
+      particle.style.top = `${posY}%`;
+      particle.style.width = `${size}px`;
+      particle.style.height = `${size}px`;
+      particle.style.backgroundColor = getCurrentMoodConfig().particleColor;
+      particle.style.opacity = Math.random() * 0.5 + 0.1;
+      particle.style.setProperty('--tx', `${(Math.random() - 0.5) * 100}px`);
+      
+      // Set animation
+      particle.style.animation = `particleMove ${duration}s linear ${delay}s infinite`;
+      
+      container.appendChild(particle);
+      
+      // Remove particle after animation completes to prevent DOM bloat
+      setTimeout(() => {
+        particle.remove();
+        createParticle(container);
+      }, duration * 1000);
+    }
+
+    // Initialize visualizer bars
+    function initVisualizer() {
+      const container = document.createElement('div');
+      container.className = 'voice-visualizer';
+      
+      state.visualizerBars.forEach(() => {
+        const bar = document.createElement('div');
+        bar.className = 'visualizer-bar';
+        container.appendChild(bar);
+      });
+      
+      app.appendChild(container);
+    }
+
+    function updateVisualizer() {
+      const bars = document.querySelectorAll('.visualizer-bar');
+      if (bars.length) {
+        bars.forEach((bar, i) => {
+          // Create a wave-like pattern with some randomness
+          const baseHeight = (Math.sin(Date.now() / 200 + i * 0.3) * 0.5 + 0.5) * 80;
+          const randomFactor = state.isSpeaking ? Math.random() * 20 : Math.random() * 5;
+          const height = baseHeight + randomFactor;
+          
+          bar.style.height = `${height}px`;
+          bar.style.opacity = 0.3 + (height / 100) * 0.7;
+        });
+      }
+      
+      if (state.isSpeaking || state.isListening) {
+        requestAnimationFrame(updateVisualizer);
+      }
+    }
+
+    // Backend functionality from voice_mode.html
+    let pollingInterval = null;
+
+    function startPolling() {
+      if (pollingInterval) clearInterval(pollingInterval);
+      pollingInterval = setInterval(pollServer, 1000);
+    }
+
+    function stopPolling() {
+      if (pollingInterval) {
+        clearInterval(pollingInterval);
+        pollingInterval = null;
+      }
+    }
+
+    function pollServer() {
+      fetch('/serina-status')
+        .then(response => response.json())
+        .then(data => {
+          updateServerStatus(data.statusText, data.subtitle, data.statusType || null);
+          
+          if (data.mood) {
+            state.currentMood = data.mood.toLowerCase();
+          }
+
+          // Update conversation if new messages exist
+          if (data.conversation && JSON.stringify(data.conversation) !== JSON.stringify(state.conversation)) {
+            state.conversation = data.conversation;
+            renderConversation();
+          }
+
+          // Auto-wake if backend already started listening/speaking
+          if (!state.isAwake && (data.statusText.toLowerCase().includes("listening") || 
+                                data.statusText.toLowerCase().includes("speaking"))) {
+            state.isAwake = true;
+            updateAudioLevels();
+            if (data.statusText.toLowerCase().includes("speaking")) {
+              updateVisualizer();
+            }
+          }
+
+          render();
+        })
+        .catch(() => {
+          updateServerStatus("Connection Error", "Failed to fetch updates", "error");
+        });
+    }
+
+    function updateServerStatus(main, sub, type = null) {
+      state.statusText = main;
+      state.subtitle = sub;
+      
+      if (!type) {
+        if (main.toLowerCase().includes("speaking") || main.toLowerCase().includes("waking") || main.toLowerCase().includes("thinking")) {
+          type = "active";
+        } else if (main.toLowerCase().includes("listening") || main.toLowerCase().includes("ready") || main.toLowerCase().includes("waiting")) {
+          type = "standby";
+        } else {
+          type = "error";
+        }
+      }
+      
+      state.statusType = type;
+      
+      // Update visual state based on server status
+      if (type === 'active') {
+        if (main.toLowerCase().includes("speaking")) {
+          state.isSpeaking = true;
+          state.isListening = false;
+          updateVisualizer();
+        } else if (main.toLowerCase().includes("listening")) {
+          state.isListening = true;
+          state.isSpeaking = false;
+        }
+      } else {
+        state.isListening = false;
+        state.isSpeaking = false;
+      }
+      
+      render();
+    }
+
+    // Helper functions
+    function updateAudioLevels() {
+      if (state.isListening || state.isSpeaking) {
+        state.audioLevels = state.audioLevels.map(() => Math.random() * 100);
+      } else {
+        state.audioLevels = state.audioLevels.map(level => Math.max(0, level * 0.95));
+      }
+      
+      if (state.isAwake) {
+        state.animationRef = requestAnimationFrame(updateAudioLevels);
+      }
+      
+      renderAudioBars();
+    }
+
+    function renderAudioBars() {
+      const audioBars = document.querySelectorAll('.audio-bar');
+      if (audioBars.length) {
+        audioBars.forEach((bar, i) => {
+          const level = state.audioLevels[i] || 0;
+          bar.style.height = `${Math.max(4, level * 0.6)}px`;
+          bar.style.backgroundColor = level > 10 ? getCurrentMoodConfig().primary : getCurrentMoodConfig().accent;
+          bar.style.opacity = level > 5 ? 1 : 0.3;
+        });
+      }
+    }
+
+    function getCurrentMoodConfig() {
+      return moodConfig[state.currentMood] || moodConfig.love;
+    }
+
+    // Event handlers
+    function handleWakeUp() {
+      state.isAwake = true;
+      state.statusText = "Waking Up...";
+      state.subtitle = "Just a moment, my love 💖";
+      state.statusType = "active";
+      render();
+      
+      // Start voice and polling
+      fetch('/start-voice', { method: 'POST' })
+        .then(() => {
+          startPolling();
+          updateAudioLevels();
+          initVisualizer();
+        })
+        .catch(() => {
+          updateServerStatus("Error", "Failed to start voice mode", "error");
+        });
+    }
+
+    function handleSleep() {
+      // Stop voice and polling
+      fetch('/stop-voice', { method: 'POST' })
+        .then(() => {
+          stopPolling();
+          state.isAwake = false;
+          state.isListening = false;
+          state.isSpeaking = false;
+          state.statusText = "Voice Mode Ready";
+          state.subtitle = "Click 'Say Serina' to activate";
+          state.statusType = "standby";
+          if (state.animationRef) {
+            cancelAnimationFrame(state.animationRef);
+            state.animationRef = null;
+          }
+          render();
+        });
+    }
+
+    function handleInterrupt() {
+      fetch('/interrupt-speech', { method: 'POST' })
+        .then(() => {
+          updateServerStatus('Listening...', 'Speech interrupted. Talk now 💬', 'standby');
+        });
+    }
+
+    function goBack() {
+      fetch('/stop-voice', { method: 'POST' })
+        .then(() => {
+          updateServerStatus('Returning...', 'Going back to menu...', 'standby');
+          
+          setTimeout(() => {
+            const lastMenu = localStorage.getItem("lastMenuSkin");
+            if (lastMenu) {
+              window.location.href = lastMenu;
+            } else {
+              window.location.href = "/holo";
+            }
+          }, 1000);
+        })
+        .catch(() => {
+          const lastMenu = localStorage.getItem("lastMenuSkin");
+          if (lastMenu) {
+            window.location.href = lastMenu;
+          } else {
+            window.location.href = "/holo";
+          }
+        });
+    }
+
+    // Chat functionality
+    function toggleChat() {
+      state.chatBoxVisible = !state.chatBoxVisible;
+      chatBox.style.display = state.chatBoxVisible ? "block" : "none";
+      conversationDisplay.style.display = state.chatBoxVisible ? "block" : "none";
+      if (state.chatBoxVisible) {
+        chatInput.focus();
+      }
+      render();
+    }
+    
+    function sendChat() {
+      const message = chatInput.value.trim();
+      if (!message) return;
+
+      // Add user message to conversation
+      addToConversation('user', message);
+      
+      updateServerStatus("Thinking...", "Generating reply...", "active");
+
+      fetch('/voice-chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_input: message })
+      })
+      .then(res => res.json())
+      .then(data => {
+        updateServerStatus("Speaking...", "Serina: " + data.reply, "active");
+        addToConversation('ai', data.reply);
+      })
+      .catch(() => {
+        updateServerStatus("Error", "Couldn't reach Serina...", "error");
+      });
+
+      chatInput.value = "";
+    }
+
+    // Conversation management
+    function addToConversation(sender, text) {
+      state.conversation.push({
+        sender,
+        text,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      });
+      
+      // Keep only the last 10 messages
+      if (state.conversation.length > 10) {
+        state.conversation.shift();
+      }
+      
+      renderConversation();
+    }
+
+    function renderConversation() {
+      conversationDisplay.innerHTML = state.conversation.map(msg => `
+        <div class="message ${msg.sender === 'user' ? 'user-message' : 'ai-message'}">
+          <div>${msg.text}</div>
+          <div class="message-time">${msg.time} • ${msg.sender === 'user' ? 'You' : 'Serina'}</div>
+        </div>
+      `).join('');
+      
+      // Scroll to bottom
+      conversationDisplay.scrollTop = conversationDisplay.scrollHeight;
+    }
+
+    // Render functions
+    function renderSleepScreen() {
+      return `
+        <div class="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800 flex items-center justify-center relative overflow-hidden">
+          <!-- Ambient particles -->
+          <div class="absolute inset-0">
+            ${[...Array(20)].map((_, i) => `
+              <div
+                key="${i}"
+                class="absolute w-1 h-1 bg-white rounded-full animate-pulse opacity-20"
+                style="
+                  left: ${Math.random() * 100}%;
+                  top: ${Math.random() * 100}%;
+                  animation-delay: ${Math.random() * 3}s;
+                  animation-duration: ${2 + Math.random() * 3}s;
+                "
+              ></div>
+            `).join('')}
+          </div>
+
+          <!-- HUD corners -->
+          <div class="hud-corner hud-corner-tl"></div>
+          <div class="hud-corner hud-corner-tr"></div>
+          <div class="hud-corner hud-corner-bl"></div>
+          <div class="hud-corner hud-corner-br"></div>
+
+          <!-- Back button -->
+          <button class="sleep-back-btn" onclick="goBack()">← Back to Menu</button>
+          
+          <!-- Wake up interface -->
+          <div class="text-center z-10">
+            <div class="mb-8">
+              <div class="w-32 h-32 mx-auto rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center mb-6 animate-pulse relative">
+                <i data-lucide="heart" class="w-16 h-16 text-white"></i>
+                <div class="mood-pulse pulse-active" style="background: radial-gradient(circle, ${getCurrentMoodConfig().primary}, transparent 70%)"></div>
+              </div>
+              <h1 class="text-4xl font-bold text-white mb-2" style="font-family: 'Orbitron', sans-serif; text-shadow: 0 0 10px rgba(255, 45, 164, 0.7);">SERINA</h1>
+              <p class="text-gray-400 text-lg">Sleeping peacefully... waiting for your call</p>
+            </div>
+            <button onclick="handleWakeUp()" class="wake-button hover:scale-105">
+              Say "Serina" or Click to Wake Up
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderMainInterface() {
+      const mood = getCurrentMoodConfig();
+
+      return `
+        <div class="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800 text-white relative overflow-hidden">
+          <!-- Dynamic glow background -->
+          <div class="absolute inset-0 opacity-30">
+            <div class="absolute inset-0"
+              style="background: radial-gradient(circle at 50% 50%, ${mood.glow} 0%, transparent 70%)"></div>
+          </div>
+
+          <!-- HUD corners -->
+          <div class="hud-corner hud-corner-tl"></div>
+          <div class="hud-corner hud-corner-tr"></div>
+          <div class="hud-corner hud-corner-bl"></div>
+          <div class="hud-corner hud-corner-br"></div>
+
+          <!-- Name and mood indicator -->
+          <div class="name-mood-container">
+            <div class="w-12 h-12 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 flex items-center justify-center relative">
+              <i data-lucide="heart" class="w-6 h-6 text-white"></i>
+              <div class="mood-pulse ${state.isSpeaking || state.isListening ? 'pulse-active' : ''}" 
+                   style="background: radial-gradient(circle, ${mood.primary}, transparent 70%)"></div>
+            </div>
+            <div class="name-mood">
+              <h1 class="text-xl font-bold" style="font-family: 'Orbitron', sans-serif;">SERINA</h1>
+              <p class="text-sm" style="color:${mood.secondary}; text-shadow: 0 0 5px ${mood.glow}">${mood.name}</p>
+            </div>
+          </div>
+
+          <!-- Main voice core interface -->
+          <div class="flex items-center justify-center flex-col min-h-screen z-10 p-6">
+            <!-- Central mic + pulse -->
+            <div class="mb-8">
+              <div class="w-48 h-48 rounded-full flex items-center justify-center relative"
+                   style="background: conic-gradient(from 0deg, ${mood.primary}, ${mood.secondary}, ${mood.accent}, ${mood.primary}); box-shadow: 0 0 60px ${mood.glow};">
+                <div class="w-40 h-40 rounded-full bg-gray-900 flex items-center justify-center">
+                  ${state.isListening ? `<i data-lucide="mic" class="w-16 h-16" style="color:${mood.primary}"></i>` :
+                    state.isSpeaking ? `<i data-lucide="volume-2" class="w-16 h-16 animate-pulse" style="color:${mood.primary}"></i>` :
+                    `<i data-lucide="heart" class="w-16 h-16" style="color:${mood.primary}"></i>`}
+                </div>
+                ${(state.isListening || state.isSpeaking) ? `
+                  <div class="absolute inset-0 rounded-full animate-ping"
+                       style="border: 2px solid ${mood.primary}; animation-duration: 2s;"></div>
+                  <div class="absolute inset-4 rounded-full animate-ping"
+                       style="border: 1px solid ${mood.secondary}; animation-duration: 1.5s; animation-delay: 0.5s;"></div>
+                ` : ''}
+              </div>
+            </div>
+
+            <!-- Waveform bars -->
+            <div class="flex items-center justify-center space-x-1 mb-6 h-16">
+              ${state.audioLevels.map((_, i) => `<div class="audio-bar"></div>`).join('')}
+            </div>
+
+            <!-- Status message -->
+            <div class="text-center mb-6">
+              <p id="statusMessage" class="text-lg font-medium" style="color:${mood.secondary}; text-shadow: 0 0 5px ${mood.glow};">${state.subtitle}</p>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Render root
+    function render() {
+      if (!state.isAwake) {
+        app.innerHTML = renderSleepScreen();
+        document.getElementById("controlButtons").style.display = "none";
+        chatBox.style.display = "none";
+        conversationDisplay.style.display = "none";
+      } else {
+        app.innerHTML = renderMainInterface();
+        document.getElementById("controlButtons").style.display = "flex";
+        chatBox.style.display = state.chatBoxVisible ? "block" : "none";
+        conversationDisplay.style.display = state.chatBoxVisible ? "block" : "none";
+      }
+      lucide.createIcons();
+    }
+
+    // Handle Enter key in chat input
+    chatInput.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        sendChat();
+      }
+    });
+
+    // Kick things off
+    initParticles();
+    startPolling(); // Start polling immediately
+    render();
+  </script>
+</body>
+</html>

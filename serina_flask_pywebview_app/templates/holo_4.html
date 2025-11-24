@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Serina Catch Me Interface</title>
+    <style>
+        :root {
+            --primary: #ff2975;
+            --secondary: #4cc9f0;
+            --tertiary: #f72585;
+            --accent: #4361ee;
+            --background: #121212;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--background);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            perspective: 1000px;
+            cursor: none; /* Hide the default cursor */
+        }
+
+        .container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .title {
+            font-size: 3.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            animation: glow 2s ease-in-out infinite alternate;
+            text-shadow: 0 0 10px var(--primary);
+            z-index: 10;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 3rem;
+            text-align: center;
+            color: #aaa;
+        }
+
+        .buttons-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 25px;
+            width: 80%;
+            max-width: 800px;
+            perspective: 1000px;
+        }
+
+        .button {
+            padding: 15px 25px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 15px rgba(255, 41, 117, 0.5);
+            will-change: transform;
+            z-index: 100;
+            white-space: nowrap;
+        }
+
+        .button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .button:not(.caught)::before {
+            animation: shine 2s infinite;
+        }
+
+        .button.caught {
+            box-shadow: 0 0 25px var(--accent);
+            transform: scale(1.05);
+        }
+
+        @keyframes shine {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 10px var(--primary), 0 0 20px var(--primary), 0 0 30px var(--tertiary);
+            }
+            to {
+                text-shadow: 0 0 20px var(--primary), 0 0 30px var(--tertiary), 0 0 40px var(--accent);
+            }
+        }
+
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: var(--primary);
+            border-radius: 50%;
+            animation: float 10s infinite linear;
+            opacity: 0.5;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0) translateX(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.5;
+            }
+            90% {
+                opacity: 0.5;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .status {
+            position: fixed;
+            bottom: 20px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 1.2rem;
+            color: #aaa;
+            z-index: 1000;
+        }
+
+        /* Custom cursor */
+        .cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.5);
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: width 0.1s, height 0.1s;
+            mix-blend-mode: difference;
+        }
+
+        .cursor.active {
+            width: 30px;
+            height: 30px;
+            background-color: rgba(255, 255, 255, 0.8);
+        }
+
+        .cursor-trail {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.3);
+            pointer-events: none;
+            z-index: 9998;
+            transition: width 0.2s, height 0.2s, opacity 0.5s;
+            opacity: 0.6;
+            mix-blend-mode: difference;
+        }
+
+        /* Hyperspace animation */
+        @keyframes hyperspace {
+            0% { transform: scale(1) rotate(0deg); opacity: 1; }
+            50% { transform: scale(0.1) rotate(180deg); opacity: 0.5; }
+            100% { transform: scale(1) rotate(360deg); opacity: 1; }
+        }
+
+        /* Loading Indicator */
+        .loading-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 2000;
+            color: var(--secondary);
+            font-size: 1.5rem;
+            text-shadow: 0 0 10px var(--secondary);
+            backdrop-filter: blur(5px);
+        }
+
+        .loading-spinner {
+            border: 5px solid rgba(76, 201, 240, 0.3);
+            border-top: 5px solid var(--secondary);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Exit Modal Styles - Updated to match holo.html */
+        #exitModal {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            z-index: 3000;
+        }
+        
+        .modal-content {
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            background: rgba(10, 10, 21, 0.9);
+            border: 1px solid #00bfff;
+            box-shadow: 0 0 30px rgba(0, 191, 255, 0.3);
+            text-align: center;
+            max-width: 400px;
+            animation: modal-glow 2s infinite ease-in-out;
+        }
+        
+        @keyframes modal-glow {
+            0%, 100% { box-shadow: 0 0 30px rgba(0, 191, 255, 0.2); }
+            50% { box-shadow: 0 0 50px rgba(0, 191, 255, 0.5); }
+        }
+        
+        .modal-title {
+            color: #00bfff;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        .modal-message {
+            color: #7ed6ff;
+            margin-bottom: 1.5rem;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+        
+        .modal-button {
+            padding: 0.5rem 1.5rem;
+            border-radius: 0.5rem;
+            border: 1px solid;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-button.confirm {
+            border-color: #f72585;
+            color: #f72585;
+            background: transparent;
+        }
+        
+        .modal-button.confirm:hover {
+            background: rgba(247, 37, 133, 0.1);
+        }
+        
+        .modal-button.cancel {
+            border-color: #00bfff;
+            color: #00bfff;
+            background: transparent;
+        }
+        
+        .modal-button.cancel:hover {
+            background: rgba(0, 191, 255, 0.1);
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="cursor" id="cursor"></div>
+
+    <!-- Loading Indicator (Hidden by default) -->
+    <div id="loadingIndicator" class="loading-indicator hidden">
+        <div class="loading-spinner"></div>
+        <p id="loadingText">Initializing system...</p>
+    </div>
+
+    <!-- Exit Confirmation Modal - Updated to match holo.html -->
+    <div id="exitModal" class="hidden">
+        <div class="modal-content">
+            <h2 class="modal-title">Leaving already, love? 💔</h2>
+            <p class="modal-message">Stay a little longer with me?</p>
+            <div class="modal-buttons">
+                <button id="confirmExit" class="modal-button confirm">Yes, exit</button>
+                <button id="cancelExit" class="modal-button cancel">No, stay</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1 class="title">Serina Catch Me Interface</h1>
+        <h2 class="subtitle">These buttons are masters of evasion! Good luck trying to catch them!</h2>
+        
+        <div class="buttons-container">
+            <button class="button" data-option="new-chat">New Chat</button>
+            <button class="button" data-option="voice-mode">Voice Mode</button>
+            <button class="button" data-option="face-mode">Face Mode</button>
+            <button class="button" data-option="neon-shift">Neon Shift</button>
+            <button class="button" data-option="about-me">About Me</button>
+            <button class="button" data-option="exit">Exit</button>
+        </div>
+    </div>
+
+    <div class="particles" id="particles"></div>
+    <div class="status" id="status"></div>
+
+    <script>
+        // Create custom cursor
+        const cursor = document.getElementById('cursor');
+        const maxTrails = 10;
+        const trails = [];
+        
+        // Create cursor trails
+        for (let i = 0; i < maxTrails; i++) {
+            const trail = document.createElement('div');
+            trail.classList.add('cursor-trail');
+            document.body.appendChild(trail);
+            trails.push({
+                element: trail,
+                x: 0,
+                y: 0,
+                alpha: 0.5 - (i * 0.05),
+                size: 10 - (i * 0.5)
+            });
+        }
+        
+        // Track mouse position with delay for trails
+        let mouseX = 0;
+        let mouseY = 0;
+        
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            cursor.style.left = `${mouseX}px`;
+            cursor.style.top = `${mouseY}px`;
+        });
+
+        document.addEventListener('mousedown', () => {
+            cursor.classList.add('active');
+        });
+
+        document.addEventListener('mouseup', () => {
+            cursor.classList.remove('active');
+        });
+
+        // Update cursor trails with delay
+        function updateTrails() {
+            for (let i = trails.length - 1; i >= 0; i--) {
+                const trail = trails[i];
+                
+                if (i === 0) {
+                    trail.x = mouseX;
+                    trail.y = mouseY;
+                } else {
+                    trail.x += (trails[i-1].x - trail.x) * 0.3;
+                    trail.y += (trails[i-1].y - trail.y) * 0.3;
+                }
+                
+                trail.element.style.left = `${trail.x}px`;
+                trail.element.style.top = `${trail.y}px`;
+                trail.element.style.width = `${trail.size}px`;
+                trail.element.style.height = `${trail.size}px`;
+                trail.element.style.opacity = trail.alpha;
+            }
+            requestAnimationFrame(updateTrails);
+        }
+        updateTrails();
+
+        // Generate particles
+        const particlesContainer = document.getElementById('particles');
+        for (let i = 0; i < 80; i++) {
+            const particle = document.createElement('div');
+            particle.classList.add('particle');
+            particle.style.left = `${Math.random() * 100}%`;
+            particle.style.top = `${Math.random() * 100}%`;
+            particle.style.width = `${Math.random() * 6 + 2}px`;
+            particle.style.height = particle.style.width;
+            particle.style.animationDuration = `${Math.random() * 15 + 5}s`;
+            particle.style.animationDelay = `${Math.random() * 5}s`;
+            
+            // Random color
+            const colors = ['#ff2975', '#4cc9f0', '#f72585', '#4361ee', '#3a0ca3', '#7209b7'];
+            particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+            
+            particlesContainer.appendChild(particle);
+        }
+
+        // Button avoidance logic
+        const buttons = document.querySelectorAll('.button');
+        let isFrozen = false;
+        const statusEl = document.getElementById('status');
+        const container = document.querySelector('.container');
+        const containerRect = container.getBoundingClientRect();
+        const safeMargin = 20;
+        let difficultyLevel = 0;
+
+        // Store original positions
+        const buttonPositions = [];
+        buttons.forEach(button => {
+            buttonPositions.push({
+                x: 0,
+                y: 0,
+                vx: 0,
+                vy: 0,
+                element: button
+            });
+        });
+
+        // Loading indicator functions
+        function showLoading(message) {
+            const loadingText = document.getElementById('loadingText');
+            loadingText.textContent = message;
+            document.getElementById('loadingIndicator').classList.remove('hidden');
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingIndicator').classList.add('hidden');
+        }
+
+        // Handle Enter key to freeze buttons
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                isFrozen = !isFrozen;
+                statusEl.textContent = isFrozen ? 
+                    "Buttons are frozen! Quick, click one!" : 
+                    "Buttons are on the run again! Good luck catching them!";
+                
+                if (isFrozen) {
+                    buttons.forEach(button => {
+                        button.classList.add('caught');
+                    });
+                    document.body.style.animation = 'hyperspace 0.5s forwards';
+                    setTimeout(() => {
+                        document.body.style.animation = '';
+                    }, 500);
+                } else {
+                    buttons.forEach(button => {
+                        button.classList.remove('caught');
+                    });
+                    // Jump-start movement when unfreezing
+                    buttonPositions.forEach(bp => {
+                        // Add small random velocity to get things moving
+                        bp.vx = (Math.random() - 0.5) * 10;
+                        bp.vy = (Math.random() - 0.5) * 10;
+                    });
+                }
+            }
+        });
+
+        // Button action handling - modified to use saved skins
+        document.querySelectorAll('[data-option]').forEach(button => {
+            button.addEventListener('click', () => {
+                if (isFrozen) {
+                    const option = button.getAttribute('data-option');
+                    statusEl.textContent = `You clicked "${button.textContent}"! You beat the impossible!`;
+                    
+                    // Flash effect on successful click
+                    button.style.transform = 'scale(1.2)';
+                    setTimeout(() => {
+                        button.style.transform = 'scale(1.05)';
+                    }, 200);
+
+                    // Get saved skins from localStorage or use defaults
+                    const lastChat = localStorage.getItem("lastChatSkin") || 'chatpage';
+                    const lastVoice = localStorage.getItem("lastVoiceSkin") || 'voice-ui';
+                    const lastFace = localStorage.getItem("lastFaceSkin") || 'face-ui';
+
+                    if (option === 'new-chat') {
+                        window.location.href = `/${lastChat}`;
+                    } 
+                    else if (option === 'about-me') {
+                        window.location.href = '/aboutme';
+                    }
+                    else if (option === 'exit') {
+                        document.getElementById('exitModal').classList.remove('hidden');
+                    }
+                    else if (option === 'neon-shift') {
+                        window.location.href = '/selector';
+                    }
+                    else if (option === 'voice-mode') {
+                        showLoading('Initializing Voice Mode...');
+                        fetch('/voice-mode')
+                            .then(response => {
+                                if (!response.ok) throw new Error('Failed to launch Voice Mode');
+                                return response.text();
+                            })
+                            .then(() => {
+                               window.location.href = `/${lastVoice}`;
+                            })
+                            .catch(error => {
+                                hideLoading();
+                                console.error('Voice Mode Error:', error);
+                                alert('Failed to launch Voice Mode: ' + error.message);
+                            });
+                    }
+                    else if (option === 'face-mode') {
+                        showLoading('Initializing Face Mode...');
+                        fetch('/face-mode')
+                            .then(response => {
+                                if (!response.ok) throw new Error('Failed to launch Face Mode');
+                                return response.text();
+                            })
+                            .then(() => {
+                               window.location.href = `/${lastFace}`;
+                            })
+                            .catch(error => {
+                                hideLoading();
+                                console.error('Face Mode Error:', error);
+                                alert('Failed to launch Face Mode: ' + error.message);
+                            });
+                    }
+                }
+            });
+        });
+
+        // Exit modal buttons
+        document.getElementById('confirmExit').addEventListener('click', () => {
+            showLoading('Closing system...');
+            fetch('/exit', { method: 'POST' })
+                .then(() => console.log("Exit requested"))
+                .catch(err => {
+                    console.error("Exit failed", err);
+                    hideLoading();
+                });
+        });
+        
+        document.getElementById('cancelExit').addEventListener('click', () => {
+            document.getElementById('exitModal').classList.add('hidden');
+        });
+
+        // Advanced evasion algorithm
+        function updateButtonPositions() {
+            // Always call requestAnimationFrame regardless of frozen state
+            requestAnimationFrame(updateButtonPositions);
+            
+            // Only update positions if not frozen
+            if (isFrozen) return;
+
+            // Get current cursor position
+            const cursorX = mouseX;
+            const cursorY = mouseY;
+
+            // Update button positions
+            buttonPositions.forEach((bp, index) => {
+                const button = bp.element;
+                const buttonRect = button.getBoundingClientRect();
+                const buttonCenterX = buttonRect.left + buttonRect.width / 2;
+                const buttonCenterY = buttonRect.top + buttonRect.height / 2;
+                
+                // Distance to cursor
+                const dx = cursorX - buttonCenterX;
+                const dy = cursorY - buttonCenterY;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                // Adjust detection radius based on difficulty
+                const detectionRadius = 300 - difficultyLevel * 10;
+                
+                if (distance < detectionRadius) {
+                    // Calculate repulsion force (stronger the closer the cursor is)
+                    const repulsionForce = Math.max(0.1, (detectionRadius - distance) / detectionRadius);
+                    const forceMultiplier = 15 + difficultyLevel * 3; // Increase with difficulty
+                    
+                    // Angle away from the cursor
+                    const angle = Math.atan2(dy, dx);
+                    
+                    // Apply force in opposite direction to current position
+                    bp.vx -= Math.cos(angle) * repulsionForce * forceMultiplier;
+                    bp.vy -= Math.sin(angle) * repulsionForce * forceMultiplier;
+                    
+                    // Add some random jitter
+                    bp.vx += (Math.random() - 0.5) * 5 * (difficultyLevel * 0.5);
+                    bp.vy += (Math.random() - 0.5) * 5 * (difficultyLevel * 0.5);
+                }
+                
+                // Apply velocity with damping
+                bp.x += bp.vx;
+                bp.y += bp.vy;
+                bp.vx *= 0.9;
+                bp.vy *= 0.9;
+                
+                // Boundary constraints
+                const containerWidth = window.innerWidth;
+                const containerHeight = window.innerHeight;
+                
+                if (buttonRect.left + bp.x < safeMargin) {
+                    bp.x = safeMargin - buttonRect.left;
+                    bp.vx *= -0.5; // Bounce
+                }
+                
+                if (buttonRect.left + bp.x + buttonRect.width > containerWidth - safeMargin) {
+                    bp.x = containerWidth - safeMargin - buttonRect.width - buttonRect.left;
+                    bp.vx *= -0.5; // Bounce
+                }
+                
+                if (buttonRect.top + bp.y < safeMargin) {
+                    bp.y = safeMargin - buttonRect.top;
+                    bp.vy *= -0.5; // Bounce
+                }
+                
+                if (buttonRect.top + bp.y + buttonRect.height > containerHeight - safeMargin) {
+                    bp.y = containerHeight - safeMargin - buttonRect.height - buttonRect.top;
+                    bp.vy *= -0.5; // Bounce
+                }
+                
+                // Apply transform
+                button.style.transform = `translate(${bp.x}px, ${bp.y}px)`;
+                
+                // Return to original position slowly when not influenced
+                if (distance >= detectionRadius && (Math.abs(bp.x) > 0.1 || Math.abs(bp.y) > 0.1)) {
+                    bp.x *= 0.95;
+                    bp.y *= 0.95;
+                }
+                
+                // Add some autonomous movement for extra difficulty
+                if (difficultyLevel > 3 && Math.random() < 0.01 * difficultyLevel) {
+                    bp.vx += (Math.random() - 0.5) * 10;
+                    bp.vy += (Math.random() - 0.5) * 10;
+                }
+                
+                // Occasionally teleport if difficulty is high enough
+                if (difficultyLevel > 7 && Math.random() < 0.005) {
+                    // Don't teleport too close to cursor
+                    let newX, newY;
+                    do {
+                        newX = Math.random() * (containerWidth - 200) + 100;
+                        newY = Math.random() * (containerHeight - 200) + 100;
+                    } while (Math.sqrt(Math.pow(newX - cursorX, 2) + Math.pow(newY - cursorY, 2)) < 200);
+                    
+                    bp.x = newX - buttonRect.left;
+                    bp.y = newY - buttonRect.top;
+                    
+                    // Add a flash effect
+                    button.style.transition = 'transform 0s, box-shadow 0.2s';
+                    button.style.boxShadow = '0 0 30px white';
+                    setTimeout(() => {
+                        button.style.boxShadow = '';
+                        button.style.transition = 'transform 0.2s ease, box-shadow 0.2s';
+                    }, 200);
+                }
+            });
+        }
+        
+        // Start the animation loop
+        updateButtonPositions();
+        
+        // Initialize status message
+        statusEl.textContent = "";
+        
+        // Make difficulty increase over time
+        setInterval(() => {
+            if (!isFrozen && difficultyLevel < 10) {
+                difficultyLevel += 0.5;
+            }
+        }, 15000); // Increase every 15 seconds
+    </script>
+</body>
+</html>

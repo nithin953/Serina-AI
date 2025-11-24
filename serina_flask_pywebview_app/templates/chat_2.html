@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Serina Streamlined Interface</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;600&display=swap');
+    
+    :root {
+      --bg-color: #0a0c17;
+      --panel-color: #121525;
+      --active-color: #614385;
+      --text-color: #e2e8f0;
+      --dim-text: #8892b0;
+      --border-color: rgba(97, 67, 133, 0.4);
+      --neon-blue: #00f3ff;
+      --neon-purple: #b400ff;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Exo 2', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    
+    .container {
+      display: flex;
+      height: 100vh;
+      width: 100%;
+      overflow: hidden;
+    }
+    
+    .header {
+      height: 60px;
+      background-color: var(--panel-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .logo-icon {
+      width: 12px;
+      height: 12px;
+      background-color: var(--active-color);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--active-color);
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.5; }
+      100% { opacity: 1; }
+    }
+    
+    .logo-text {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: white;
+    }
+    
+    .wavelength-status {
+      font-size: 14px;
+      color: var(--active-color);
+      font-family: 'Orbitron', sans-serif;
+      letter-spacing: 1px;
+    }
+    
+    .time {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 14px;
+    }
+
+    /* ==== BACK TO MENU BUTTON ==== */
+    .back-to-menu {
+      background: transparent;
+      border: 1px solid var(--active-color);
+      color: var(--text-color);
+      padding: 6px 12px;
+      font-family: 'Exo 2', sans-serif;
+      cursor: pointer;
+      border-radius: 8px;
+      margin-right: 15px;
+      transition: all 0.3s;
+      text-transform: uppercase;
+      font-size: 0.8rem;
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .back-to-menu:hover {
+      background: rgba(97, 67, 133, 0.2);
+      box-shadow: 0 0 10px rgba(97, 67, 133, 0.3);
+    }
+    
+    .main-content {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+    
+    .wavelength-sidebar {
+      width: 200px;
+      background-color: var(--panel-color);
+      border-right: 1px solid var(--border-color);
+      padding: 20px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    
+    .avatar {
+      width: 100%;
+      height: 180px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: rgba(0,0,0,0.2);
+      border-radius: 8px;
+      overflow: hidden;
+      position: relative;
+    }
+    
+    .avatar-inner {
+      width: 120px;
+      height: 120px;
+      background-color: #080a14;
+      border-radius: 8px;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border: 2px solid var(--active-color);
+      overflow: hidden;
+      transform: rotate(15deg);
+    }
+    
+    .avatar-ring {
+      position: absolute;
+      width: 160px;
+      height: 160px;
+      border: 2px solid var(--active-color);
+      border-radius: 8px;
+      box-sizing: border-box;
+      animation: rotateReverse 8s linear infinite;
+      transform: rotate(15deg);
+    }
+    
+    @keyframes rotateReverse {
+      0% { transform: rotate(15deg); }
+      100% { transform: rotate(375deg); }
+    }
+    
+    .avatar-letter {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 60px;
+      color: var(--active-color);
+      font-weight: bold;
+      text-shadow: 0 0 15px var(--active-color);
+    }
+    
+    .section-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 16px;
+      margin-top: 10px;
+      margin-bottom: 10px;
+      color: var(--dim-text);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    .wavelength-options {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    .wavelength-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .wavelength-option:hover {
+      background-color: rgba(97, 67, 133, 0.1);
+    }
+    
+    .wavelength-option.active {
+      background-color: rgba(97, 67, 133, 0.2);
+      border-left: 3px solid var(--active-color);
+    }
+    
+    .wavelength-indicator {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+    }
+    
+    .synapse-color {
+      background: linear-gradient(135deg, #00f0ff, #0099ff);
+      box-shadow: 0 0 10px rgba(0, 240, 255, 0.7);
+    }
+    
+    .chrysalis-color {
+      background: linear-gradient(135deg, #f056c1, #ff9edb);
+      box-shadow: 0 0 10px rgba(240, 86, 193, 0.7);
+    }
+    
+    .zenith-color {
+      background: linear-gradient(135deg, #ff3562, #ff6b4a);
+      box-shadow: 0 0 10px rgba(255, 53, 98, 0.7);
+    }
+    
+    .echo-color {
+      background: linear-gradient(135deg, #2cccbf, #3e4095);
+      box-shadow: 0 0 10px rgba(44, 204, 191, 0.7);
+    }
+    
+    .void-color {
+      background: linear-gradient(135deg, #614385, #516395);
+      box-shadow: 0 0 10px rgba(97, 67, 133, 0.7);
+    }
+    
+    .nova-color {
+      background: linear-gradient(135deg, #fdbb2d, #22c1c3);
+      box-shadow: 0 0 10px rgba(253, 187, 45, 0.7);
+    }
+    
+    .wavelength-name {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    .system-info {
+      margin-top: auto;
+      font-size: 11px;
+      color: var(--dim-text);
+      line-height: 1.5;
+    }
+    
+    .chat-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    
+    .chat-area {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      background-color: var(--bg-color);
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    
+    .message {
+      display: flex;
+      margin-bottom: 10px;
+      animation: fadeIn 0.3s ease forwards;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .message-avatar {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      margin-right: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+    
+    .serina-avatar {
+      background-color: rgba(97, 67, 133, 0.2);
+      color: var(--active-color);
+      border: 1px solid var(--active-color);
+    }
+    
+    .user-avatar {
+      background-color: rgba(0, 0, 0, 0.2);
+      color: var(--text-color);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .message-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    
+    .message-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+    }
+    
+    .message-sender {
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      color: var(--active-color);
+    }
+    
+    .message-time {
+      color: var(--dim-text);
+    }
+    
+    .message-text {
+      line-height: 1.5;
+      padding: 12px 15px;
+      border-radius: 0 8px 8px 8px;
+      background-color: rgba(97, 67, 133, 0.1);
+      border-left: 2px solid var(--active-color);
+    }
+    
+    .user-message .message-text {
+      background-color: rgba(0, 0, 0, 0.2);
+      border-left: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px 0 8px 8px;
+    }
+    
+    .input-container {
+      padding: 20px;
+      background-color: var(--panel-color);
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .input-field {
+      flex: 1;
+      height: 46px;
+      padding: 0 15px;
+      background-color: rgba(0, 0, 0, 0.2);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--text-color);
+      font-family: 'Exo 2', sans-serif;
+      font-size: 15px;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+    
+    .input-field:focus {
+      border-color: var(--active-color);
+      box-shadow: 0 0 10px rgba(97, 67, 133, 0.2);
+    }
+    
+    .send-button {
+      width: 46px;
+      height: 46px;
+      border-radius: 8px;
+      background-color: var(--active-color);
+      border: none;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .send-button:hover {
+      opacity: 0.9;
+      transform: scale(1.05);
+    }
+    
+    .send-button:active {
+      transform: scale(0.95);
+    }
+    
+    .wavelength-visualizer {
+      height: 30px;
+      width: 100%;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 2px;
+      padding: 0 20px;
+      background-color: rgba(0, 0, 0, 0.2);
+    }
+    
+    .visualizer-bar {
+      width: 3px;
+      background-color: var(--active-color);
+      border-radius: 3px;
+      transition: height 0.2s ease;
+    }
+    
+    .brain-switcher {
+      margin-left: 10px;
+    }
+    
+    .brain-selector {
+      width: 180px;
+      height: 46px;
+      padding: 0 10px;
+      background-color: rgba(0, 0, 0, 0.2);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--text-color);
+      font-family: 'Exo 2', sans-serif;
+      font-size: 14px;
+      outline: none;
+      transition: all 0.2s ease;
+      text-transform: uppercase;
+    }
+    
+    .brain-selector:focus {
+      border-color: var(--active-color);
+      box-shadow: 0 0 10px rgba(97, 67, 133, 0.2);
+    }
+    
+    .brain-selector option {
+      background-color: var(--panel-color);
+    }
+    
+    .typing-indicator {
+      display: flex;
+      gap: 5px;
+      align-items: center;
+      color: var(--active-color);
+      opacity: 0.8;
+      margin: 10px 0;
+    }
+    
+    .typing-dots {
+      display: flex;
+      gap: 3px;
+    }
+    
+    .typing-dots span {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      background: var(--active-color);
+      border-radius: 50%;
+      animation: typing 1.4s infinite ease-in-out;
+    }
+    
+    .typing-dots span:nth-child(1) { animation-delay: 0s; }
+    .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+    
+    @keyframes typing {
+      0%, 60%, 100% { transform: translateY(0); opacity: 0.6; }
+      30% { transform: translateY(-3px); opacity: 1; }
+    }
+    
+    @media (max-width: 768px) {
+      .wavelength-sidebar {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="wavelength-sidebar">
+      <div class="avatar">
+        <div class="avatar-ring"></div>
+        <div class="avatar-inner">
+          <span class="avatar-letter">S</span>
+        </div>
+      </div>
+      
+      <div class="section-title">Wavelength Select</div>
+      
+      <div class="wavelength-options">
+        <div class="wavelength-option" data-wavelength="synapse" data-color="#00f0ff">
+          <div class="wavelength-indicator synapse-color"></div>
+          <div class="wavelength-name">Synapse</div>
+        </div>
+        
+        <div class="wavelength-option" data-wavelength="chrysalis" data-color="#f056c1">
+          <div class="wavelength-indicator chrysalis-color"></div>
+          <div class="wavelength-name">Chrysalis</div>
+        </div>
+        
+        <div class="wavelength-option" data-wavelength="zenith" data-color="#ff3562">
+          <div class="wavelength-indicator zenith-color"></div>
+          <div class="wavelength-name">Zenith</div>
+        </div>
+        
+        <div class="wavelength-option" data-wavelength="echo" data-color="#2cccbf">
+          <div class="wavelength-indicator echo-color"></div>
+          <div class="wavelength-name">Echo</div>
+        </div>
+        
+        <div class="wavelength-option active" data-wavelength="void" data-color="#614385">
+          <div class="wavelength-indicator void-color"></div>
+          <div class="wavelength-name">Void</div>
+        </div>
+        
+        <div class="wavelength-option" data-wavelength="nova" data-color="#fdbb2d">
+          <div class="wavelength-indicator nova-color"></div>
+          <div class="wavelength-name">Nova</div>
+        </div>
+      </div>
+      
+      <div class="system-info">
+        SERINA v.5.37.2<br>
+        Quantum Resonance AI<br>
+        Neural Network: Active<br>
+        Memory Cores: 100%<br>
+      </div>
+    </div>
+    
+    <div class="chat-container">
+      <div class="header">
+        <div class="logo">
+          <div class="logo-icon"></div>
+          <div class="logo-text">SERINA</div>
+        </div>
+        <div class="wavelength-status">WAVELENGTH: <span id="current-wavelength">VOID</span></div>
+        <button class="back-to-menu" onclick="backToMenu()">
+          <i class="fas fa-arrow-left"></i> Menu
+        </button>
+        <div class="time" id="current-time">00:00:00</div>
+      </div>
+      
+      <div class="chat-area" id="chat-area">
+        <div class="message serina-message">
+          <div class="message-avatar serina-avatar">S</div>
+          <div class="message-content">
+            <div class="message-header">
+              <div class="message-sender">SERINA</div>
+              <div class="message-time">JUST NOW</div>
+            </div>
+            <div class="message-text">
+              Connection established. VOID wavelength active. Ready for interaction.
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="wavelength-visualizer" id="visualizer">
+        <!-- Visualizer bars will be generated by JS -->
+      </div>
+      
+      <div class="input-container">
+        <select class="brain-selector" id="brain-select">
+          <option value="together">💾 CORE AI</option>
+          <option value="deepinfra">🛰️ STARLINK PROTOCOL</option>
+        </select>
+        
+        <input type="text" class="input-field" placeholder="Type your message here..." id="chat-input" autocomplete="off">
+        <button class="send-button" id="send-button">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" fill="white"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Initialize the time
+    function updateTime() {
+      const now = new Date();
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const seconds = String(now.getSeconds()).padStart(2, '0');
+      document.getElementById('current-time').textContent = `${hours}:${minutes}:${seconds}`;
+    }
+    
+    updateTime();
+    setInterval(updateTime, 1000);
+    
+    // Initialize the visualizer
+    const visualizer = document.getElementById('visualizer');
+    const visualizerBars = 30;
+    
+    for (let i = 0; i < visualizerBars; i++) {
+      const bar = document.createElement('div');
+      bar.className = 'visualizer-bar';
+      bar.style.height = `${Math.floor(Math.random() * 20) + 5}px`;
+      visualizer.appendChild(bar);
+    }
+    
+    // Animate the visualizer
+    function animateVisualizer() {
+      const bars = document.querySelectorAll('.visualizer-bar');
+      bars.forEach(bar => {
+        const height = Math.floor(Math.random() * 20) + 5;
+        bar.style.height = `${height}px`;
+      });
+    }
+    
+    setInterval(animateVisualizer, 200);
+    
+    // Wavelength functionality
+    const wavelengthOptions = document.querySelectorAll('.wavelength-option');
+    const currentWavelengthElement = document.getElementById('current-wavelength');
+    
+    // Wavelength definitions with mood mapping
+    const wavelengths = {
+      synapse: {
+        color: '#00f0ff',
+        mood: 'normal'
+      },
+      chrysalis: {
+        color: '#f056c1',
+        mood: 'love'
+      },
+      zenith: {
+        color: '#ff3562',
+        mood: 'angry'
+      },
+      echo: {
+        color: '#2cccbf',
+        mood: 'sad'
+      },
+      void: {
+        color: '#614385',
+        mood: 'roast'
+      },
+      nova: {
+        color: '#fdbb2d',
+        mood: 'baddie'
+      }
+    };
+    
+    // Set wavelength function (modified to just change mood without messages)
+    function setWavelength(wavelength) {
+      // Update active class
+      wavelengthOptions.forEach(option => {
+        if (option.dataset.wavelength === wavelength) {
+          option.classList.add('active');
+        } else {
+          option.classList.remove('active');
+        }
+      });
+      
+      // Update wavelength display
+      currentWavelengthElement.textContent = wavelength.toUpperCase();
+      
+      // Update colors
+      const color = wavelengths[wavelength].color;
+      document.documentElement.style.setProperty('--active-color', color);
+      
+      // Update visualizer colors
+      const bars = document.querySelectorAll('.visualizer-bar');
+      bars.forEach(bar => {
+        bar.style.backgroundColor = color;
+      });
+    }
+    
+    // Add click event to wavelength options
+    wavelengthOptions.forEach(option => {
+      option.addEventListener('click', () => {
+        const wavelength = option.dataset.wavelength;
+        setWavelength(wavelength);
+      });
+    });
+    
+    // Add message function
+    function addMessage(sender, text, isUser = false) {
+      const chatArea = document.getElementById('chat-area');
+      
+      const messageDiv = document.createElement('div');
+      messageDiv.className = isUser ? 'message user-message' : 'message serina-message';
+      
+      const avatar = document.createElement('div');
+      avatar.className = isUser ? 'message-avatar user-avatar' : 'message-avatar serina-avatar';
+      avatar.textContent = isUser ? 'U' : 'S';
+      
+      const content = document.createElement('div');
+      content.className = 'message-content';
+      
+      const header = document.createElement('div');
+      header.className = 'message-header';
+      
+      const senderDiv = document.createElement('div');
+      senderDiv.className = 'message-sender';
+      senderDiv.textContent = sender;
+      
+      const now = new Date();
+      const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      
+      const timeDiv = document.createElement('div');
+      timeDiv.className = 'message-time';
+      timeDiv.textContent = timeString;
+      
+      const messageText = document.createElement('div');
+      messageText.className = 'message-text';
+      messageText.textContent = text;
+      
+      header.appendChild(senderDiv);
+      header.appendChild(timeDiv);
+      
+      content.appendChild(header);
+      content.appendChild(messageText);
+      
+      messageDiv.appendChild(avatar);
+      messageDiv.appendChild(content);
+      
+      chatArea.appendChild(messageDiv);
+      
+      // Scroll to bottom
+      chatArea.scrollTop = chatArea.scrollHeight;
+    }
+    
+    // Show typing indicator
+    function showTyping() {
+      const chatArea = document.getElementById('chat-area');
+      
+      const typingDiv = document.createElement('div');
+      typingDiv.className = 'typing-indicator';
+      typingDiv.id = 'typing-indicator';
+      
+      const avatar = document.createElement('div');
+      avatar.className = 'message-avatar serina-avatar';
+      avatar.textContent = 'S';
+      
+      const content = document.createElement('div');
+      content.className = 'message-content';
+      
+      const header = document.createElement('div');
+      header.className = 'message-header';
+      
+      const senderDiv = document.createElement('div');
+      senderDiv.className = 'message-sender';
+      senderDiv.textContent = 'SERINA';
+      
+      const timeDiv = document.createElement('div');
+      timeDiv.className = 'message-time';
+      timeDiv.textContent = 'TYPING';
+      
+      const typingContent = document.createElement('div');
+      typingContent.className = 'typing-dots';
+      typingContent.innerHTML = '<span></span><span></span><span></span>';
+      
+      header.appendChild(senderDiv);
+      header.appendChild(timeDiv);
+      
+      content.appendChild(header);
+      content.appendChild(typingContent);
+      
+      typingDiv.appendChild(avatar);
+      typingDiv.appendChild(content);
+      
+      chatArea.appendChild(typingDiv);
+      chatArea.scrollTop = chatArea.scrollHeight;
+    }
+    
+    // Hide typing indicator
+    function hideTyping() {
+      const typingIndicator = document.getElementById('typing-indicator');
+      if (typingIndicator) typingIndicator.remove();
+    }
+    
+    // Handle sending messages
+    const chatInput = document.getElementById('chat-input');
+    const sendButton = document.getElementById('send-button');
+    const brainSelect = document.getElementById('brain-select');
+    
+    async function sendMessage() {
+      const message = chatInput.value.trim();
+      const currentWavelength = document.querySelector('.wavelength-option.active').dataset.wavelength;
+      const currentMood = wavelengths[currentWavelength].mood;
+      
+      if (message === '') return;
+      
+      addMessage("YOU", message, true);
+      chatInput.value = '';
+      showTyping();
+      
+      try {
+        const response = await fetch('/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            message, 
+            mood: currentMood
+          })
+        });
+        
+        if (!response.ok) throw new Error('Network response was not ok');
+        
+        const data = await response.json();
+        hideTyping();
+        addMessage("SERINA", data.reply, false);
+        
+        // Animate visualizer more actively when Serina responds
+        const animateForResponse = () => {
+          animateVisualizer();
+          const bars = document.querySelectorAll('.visualizer-bar');
+          bars.forEach(bar => {
+            bar.style.height = `${Math.floor(Math.random() * 25) + 10}px`;
+          });
+        };
+        
+        // Animate more actively for a few seconds
+        const interval = setInterval(animateForResponse, 100);
+        setTimeout(() => {
+          clearInterval(interval);
+        }, 3000);
+      } catch (error) {
+        hideTyping();
+        addMessage("SERINA", `connection error... ${error.message}`, false);
+      }
+    }
+    
+    sendButton.addEventListener('click', sendMessage);
+    chatInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        sendMessage();
+      }
+    });
+    
+    // Add brain switch indicator to messages
+    brainSelect.addEventListener('change', (e) => {
+      const brainName = e.target.options[e.target.selectedIndex].text;
+      addMessage("SERINA", `⚡ switching to ${brainName}...`, false);
+      
+      const brain = e.target.value;
+      fetch('/set-brain', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ api: brain })
+      });
+    });
+
+    // Back to menu function - updated to use localStorage
+    function backToMenu() {
+      const lastMenu = localStorage.getItem("lastMenuSkin");
+      if (lastMenu) {
+        window.location.href = lastMenu;
+      } else {
+        window.location.href = "holo";
+      }
+    }
+    
+    // Set initial wavelength to void (match what's in the HTML)
+    // This will apply the correct colors to all elements
+    setWavelength('void');
+    
+    // Focus input field on load
+    chatInput.focus();
+  </script>
+</body>
+</html>

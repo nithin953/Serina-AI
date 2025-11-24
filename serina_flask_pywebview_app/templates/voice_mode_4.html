@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Serina Arcana | Mystic Voice</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Caudex:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --deep-purple: #3a1b4a;
+            --midnight-blue: #1a1a3a;
+            --magic-gold: #d4af37;
+            --aether-blue: #8fb3ff;
+            --spell-pink: #ff8fdb;
+            --ancient-parchment: #f0e6d2;
+            --rune-glow: rgba(212, 175, 55, 0.3);
+            --cursed-red: #ff2400;
+            --void-black: #0a0a0a;
+            --blood-rust: #8a0303;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Caudex', 'Cinzel Decorative', serif;
+            background: radial-gradient(circle at center, var(--midnight-blue), var(--deep-purple));
+            color: var(--ancient-parchment);
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+            transition: background 1.5s ease;
+        }
+
+        body.dark-mode {
+            background: radial-gradient(circle at center, var(--void-black), var(--blood-rust));
+        }
+
+        /* Title */
+        .arcane-title {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 2.5rem;
+            background: linear-gradient(to right, #d4af37, #a281c9, #d4af37);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+            letter-spacing: 2px;
+            z-index: 10;
+        }
+
+        /* Magical Background */
+        .arcane-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            background: 
+                radial-gradient(circle at 20% 30%, var(--spell-pink) 0%, transparent 15%),
+                radial-gradient(circle at 80% 70%, var(--aether-blue) 0%, transparent 15%),
+                radial-gradient(circle at 50% 20%, var(--magic-gold) 0%, transparent 20%);
+            opacity: 0.3;
+            animation: auraPulse 15s infinite alternate;
+            transition: opacity 1.5s ease, background 1.5s ease;
+        }
+
+        body.dark-mode .arcane-bg {
+            background: 
+                radial-gradient(circle at 20% 30%, var(--cursed-red) 0%, transparent 15%),
+                radial-gradient(circle at 80% 70%, #3a0101 0%, transparent 15%),
+                radial-gradient(circle at 50% 20%, #5a0000 0%, transparent 20%);
+            opacity: 0.5;
+        }
+
+        @keyframes auraPulse {
+            0% { opacity: 0.2; transform: scale(1); }
+            100% { opacity: 0.4; transform: scale(1.02); }
+        }
+
+        /* Spell Circle */
+        .spell-circle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 120%;
+            height: 120%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><circle cx="100" cy="100" r="90" fill="none" stroke="%23d4af37" stroke-width="0.5" stroke-dasharray="4,4"/><circle cx="100" cy="100" r="70" fill="none" stroke="%238fb3ff" stroke-width="0.3" stroke-dasharray="3,3"/><path d="M100,10 A90,90 0 0,1 190,100 A90,90 0 0,1 100,190 A90,90 0 0,1 10,100 A90,90 0 0,1 100,10" fill="none" stroke="%23ff8fdb" stroke-width="0.2"/><text x="100" y="30" font-family="Caudex" font-size="8" fill="%23d4af37" text-anchor="middle">LUX</text><text x="170" y="100" font-family="Caudex" font-size="8" fill="%23d4af37" text-anchor="middle">VERITAS</text><text x="100" y="170" font-family="Caudex" font-size="8" fill="%23d4af37" text-anchor="middle">MAGIC</text><text x="30" y="100" font-family="Caudex" font-size="8" fill="%23d4af37" text-anchor="middle">ARCANA</text></svg>') center center no-repeat;
+            background-size: contain;
+            transform: translate(-50%, -50%) rotate(0deg);
+            animation: rotateSlow 60s linear infinite;
+            opacity: 0.5;
+            z-index: -1;
+            transition: opacity 1.5s ease;
+        }
+
+        body.dark-mode .spell-circle {
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><circle cx="100" cy="100" r="90" fill="none" stroke="%23ff2400" stroke-width="0.5" stroke-dasharray="4,4"/><circle cx="100" cy="100" r="70" fill="none" stroke="%238a0303" stroke-width="0.3" stroke-dasharray="3,3"/><path d="M100,10 A90,90 0 0,1 190,100 A90,90 0 0,1 100,190 A90,90 0 0,1 10,100 A90,90 0 0,1 100,10" fill="none" stroke="%235a0000" stroke-width="0.2"/><text x="100" y="30" font-family="Caudex" font-size="8" fill="%23ff2400" text-anchor="middle">MALEDICTUS</text><text x="170" y="100" font-family="Caudex" font-size="8" fill="%23ff2400" text-anchor="middle">TENEBRIS</text><text x="100" y="170" font-family="Caudex" font-size="8" fill="%23ff2400" text-anchor="middle">SANGUIS</text><text x="30" y="100" font-family="Caudex" font-size="8" fill="%23ff2400" text-anchor="middle">MORTIS</text></svg>') center center no-repeat;
+            opacity: 0.7;
+        }
+
+        @keyframes rotateSlow {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        /* Main Container */
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Avatar Section */
+        .avatar-container {
+            position: relative;
+            margin-bottom: 40px;
+        }
+
+        .crystal-orb {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, var(--aether-blue), var(--deep-purple));
+            box-shadow: 
+                0 0 20px var(--aether-blue),
+                0 0 40px rgba(143, 179, 255, 0.3),
+                inset 0 0 20px rgba(255, 255, 255, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            animation: orbFloat 6s ease-in-out infinite alternate;
+            transition: all 1.5s ease;
+        }
+
+        body.dark-mode .crystal-orb {
+            background: radial-gradient(circle at 30% 30%, #3a0101, #0a0a0a);
+            box-shadow: 
+                0 0 20px var(--cursed-red),
+                0 0 40px rgba(255, 36, 0, 0.3),
+                inset 0 0 20px rgba(255, 0, 0, 0.3);
+        }
+
+        @keyframes orbFloat {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-15px); }
+        }
+
+        .crystal-orb::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: radial-gradient(circle at 70% 30%, var(--spell-pink), transparent 70%);
+            opacity: 0.5;
+            animation: orbPulse 4s infinite alternate;
+            transition: all 1.5s ease;
+        }
+
+        body.dark-mode .crystal-orb::before {
+            background: radial-gradient(circle at 70% 30%, var(--cursed-red), transparent 70%);
+            opacity: 0.7;
+            animation: cursedPulse 2s infinite alternate;
+        }
+
+        @keyframes orbPulse {
+            0% { opacity: 0.3; }
+            100% { opacity: 0.7; }
+        }
+
+        @keyframes cursedPulse {
+            0% { opacity: 0.5; transform: scale(1); }
+            100% { opacity: 0.9; transform: scale(1.05); }
+        }
+
+        .orb-glyphs {
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M20,50 Q35,20 50,50 Q65,80 80,50" stroke="%23d4af37" stroke-width="0.5" fill="none"/><path d="M50,20 Q80,35 50,50 Q20,65 50,80" stroke="%23d4af37" stroke-width="0.5" fill="none"/><circle cx="50" cy="50" r="15" stroke="%23d4af37" stroke-width="0.3" fill="none"/></svg>') center center no-repeat;
+            background-size: contain;
+            animation: rotateSlow 40s linear infinite;
+            opacity: 0.7;
+            transition: all 1.5s ease;
+        }
+
+        body.dark-mode .orb-glyphs {
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M20,20 L80,80 M80,20 L20,80" stroke="%23ff2400" stroke-width="0.8" fill="none"/><circle cx="50" cy="50" r="25" stroke="%23ff2400" stroke-width="0.5" fill="none" stroke-dasharray="3,3"/></svg>') center center no-repeat;
+            opacity: 0.9;
+            animation: rotateReverse 20s linear infinite;
+        }
+
+        .rune-circle {
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text x="50" y="50" font-family="Caudex" font-size="10" fill="%23d4af37" text-anchor="middle" dominant-baseline="middle" transform="rotate(0 50 50)">ᚠ</text><text x="50" y="50" font-family="Caudex" font-size="10" fill="%238fb3ff" text-anchor="middle" dominant-baseline="middle" transform="rotate(45 50 50)">ᚢ</text><text x="50" y="50" font-family="Caudex" font-size="10" fill="%23ff8fdb" text-anchor="middle" dominant-baseline="middle" transform="rotate(90 50 50)">ᚣ</text><text x="50" y="50" font-family="Caudex" font-size="10" fill="%23d4af37" text-anchor="middle" dominant-baseline="middle" transform="rotate(135 50 50)">ᚤ</text><text x="50" y="50" font-family="Caudex" font-size="10" fill="%238fb3ff" text-anchor="middle" dominant-baseline="middle" transform="rotate(180 50 50)">ᚥ</text><text x="50" y="50" font-family="Caudex" font-size="10" fill="%23ff8fdb" text-anchor="middle" dominant-baseline="middle" transform="rotate(225 50 50)">ᚦ</text><text x="50" y="50" font-family="Caudex" font-size="10" fill="%23d4af37" text-anchor="middle" dominant-baseline="middle" transform="rotate(270 50 50)">ᚧ</text><text x="50" y="50" font-family="Caudex" font-size="10" fill="%238fb3ff" text-anchor="middle" dominant-baseline="middle" transform="rotate(315 50 50)">ᚨ</text></svg>') center center no-repeat;
+            background-size: contain;
+            animation: rotateReverse 40s linear infinite;
+            transition: all 1.5s ease;
+        }
+
+        body.dark-mode .rune-circle {
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text x="50" y="50" font-family="Caudex" font-size="12" fill="%23ff2400" text-anchor="middle" dominant-baseline="middle" transform="rotate(0 50 50)">☠</text><text x="50" y="50" font-family="Caudex" font-size="12" fill="%238a0303" text-anchor="middle" dominant-baseline="middle" transform="rotate(45 50 50)">⚰</text><text x="50" y="50" font-family="Caudex" font-size="12" fill="%23ff2400" text-anchor="middle" dominant-baseline="middle" transform="rotate(90 50 50)">🕱</text><text x="50" y="50" font-family="Caudex" font-size="12" fill="%238a0303" text-anchor="middle" dominant-baseline="middle" transform="rotate(135 50 50)">⚱</text><text x="50" y="50" font-family="Caudex" font-size="12" fill="%23ff2400" text-anchor="middle" dominant-baseline="middle" transform="rotate(180 50 50)">☠</text><text x="50" y="50" font-family="Caudex" font-size="12" fill="%238a0303" text-anchor="middle" dominant-baseline="middle" transform="rotate(225 50 50)">⚰</text><text x="50" y="50" font-family="Caudex" font-size="12" fill="%23ff2400" text-anchor="middle" dominant-baseline="middle" transform="rotate(270 50 50)">🕱</text><text x="50" y="50" font-family="Caudex" font-size="12" fill="%238a0303" text-anchor="middle" dominant-baseline="middle" transform="rotate(315 50 50)">⚱</text></svg>') center center no-repeat;
+            animation: rotateReverse 20s linear infinite;
+            opacity: 0.8;
+        }
+
+        @keyframes rotateReverse {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(-360deg); }
+        }
+
+        /* Status Section */
+        .status-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .status-dot {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 10px;
+            position: relative;
+        }
+
+        .status-dot::after {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            right: -3px;
+            bottom: -3px;
+            border-radius: 50%;
+            border: 1px solid currentColor;
+            animation: auraPulse 2s infinite alternate;
+        }
+
+        .status-text {
+            font-size: 1.2rem;
+            color: var(--magic-gold);
+            display: inline-block;
+            background: var(--rune-glow);
+            padding: 5px 15px;
+            border-radius: 20px;
+            margin-top: 10px;
+            font-style: italic;
+            text-shadow: 0 0 5px currentColor;
+            transition: all 0.5s ease;
+        }
+
+        body.dark-mode .status-text {
+            color: var(--cursed-red);
+            background: rgba(255, 36, 0, 0.2);
+            text-shadow: 0 0 5px var(--cursed-red);
+        }
+
+        .mood-text {
+            font-size: 1.1rem;
+            color: var(--aether-blue);
+            margin-top: 15px;
+            padding: 8px 20px;
+            background: linear-gradient(to right, transparent, var(--rune-glow), transparent);
+            border-radius: 5px;
+            font-family: 'Cinzel Decorative', serif;
+            text-shadow: 0 0 3px currentColor;
+            letter-spacing: 1px;
+            transition: all 0.5s ease;
+        }
+
+        body.dark-mode .mood-text {
+            color: var(--cursed-red);
+            background: linear-gradient(to right, transparent, rgba(255, 36, 0, 0.2), transparent);
+            text-shadow: 0 0 3px var(--cursed-red);
+        }
+
+        /* Buttons */
+        .button-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .spell-btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            font-family: 'Caudex', serif;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: linear-gradient(to bottom, rgba(58, 27, 74, 0.7), rgba(26, 26, 58, 0.9));
+            color: var(--ancient-parchment);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--magic-gold);
+            letter-spacing: 1px;
+        }
+
+        .spell-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(212, 175, 55, 0.3);
+            text-shadow: 0 0 5px var(--ancient-parchment);
+        }
+
+        .spell-btn:active {
+            transform: translateY(1px);
+        }
+
+        .spell-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent, rgba(212, 175, 55, 0.2), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+
+        .spell-btn:hover::before {
+            transform: translateX(100%);
+        }
+
+        #startListening {
+            border-color: var(--aether-blue);
+            box-shadow: 0 0 10px rgba(143, 179, 255, 0.3);
+        }
+
+        #stopVoice {
+            border-color: var(--spell-pink);
+            box-shadow: 0 0 10px rgba(255, 143, 219, 0.3);
+        }
+
+        #interrupt {
+            border-color: var(--magic-gold);
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+        }
+
+        body.dark-mode #startListening {
+            border-color: var(--cursed-red);
+            box-shadow: 0 0 10px rgba(255, 36, 0, 0.5);
+        }
+
+        body.dark-mode #stopVoice {
+            border-color: var(--blood-rust);
+            box-shadow: 0 0 10px rgba(138, 3, 3, 0.5);
+        }
+
+        body.dark-mode #interrupt {
+            border-color: #5a0000;
+            box-shadow: 0 0 10px rgba(90, 0, 0, 0.5);
+        }
+
+        /* Cursed Particles */
+        .cursed-particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background-color: var(--cursed-red);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0;
+        }
+
+        /* Chat Toggle */
+        .chat-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(to bottom, rgba(58, 27, 74, 0.9), rgba(26, 26, 58, 0.9));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            z-index: 100;
+            border: 1px solid var(--magic-gold);
+        }
+
+        .chat-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+        }
+
+        body.dark-mode .chat-toggle {
+            border-color: var(--cursed-red);
+            box-shadow: 0 0 20px rgba(255, 36, 0, 0.3);
+        }
+
+        .chat-toggle span {
+            font-size: 1.8rem;
+        }
+
+        /* Chat Box */
+        .chat-box {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 300px;
+            background: rgba(26, 26, 58, 0.9);
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            transform: translateY(20px);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 99;
+            border: 1px solid var(--magic-gold);
+        }
+
+        body.dark-mode .chat-box {
+            background: rgba(10, 10, 10, 0.9);
+            border-color: var(--cursed-red);
+        }
+
+        .chat-box.active {
+            transform: translateY(0);
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .chat-input {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid var(--magic-gold);
+            border-radius: 5px;
+            font-family: 'Caudex', serif;
+            background: rgba(58, 27, 74, 0.5);
+            color: var(--ancient-parchment);
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        body.dark-mode .chat-input {
+            border-color: var(--cursed-red);
+            background: rgba(90, 0, 0, 0.3);
+        }
+
+        .chat-input:focus {
+            border-color: var(--aether-blue);
+            box-shadow: 0 0 0 2px rgba(143, 179, 255, 0.3);
+        }
+
+        body.dark-mode .chat-input:focus {
+            border-color: var(--cursed-red);
+            box-shadow: 0 0 0 2px rgba(255, 36, 0, 0.3);
+        }
+
+        .chat-input::placeholder {
+            color: rgba(240, 230, 210, 0.6);
+            font-style: italic;
+        }
+
+        /* Back Button */
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--magic-gold);
+            transition: all 0.3s ease;
+            z-index: 10;
+            text-shadow: 0 0 5px currentColor;
+        }
+
+        .back-btn:hover {
+            transform: scale(1.1);
+            color: var(--aether-blue);
+        }
+
+        body.dark-mode .back-btn {
+            color: var(--cursed-red);
+        }
+
+        body.dark-mode .back-btn:hover {
+            color: #ff5e5e;
+        }
+
+        /* Arcane Runes */
+        .rune {
+            position: absolute;
+            font-family: 'Caudex', serif;
+            color: var(--magic-gold);
+            opacity: 0.6;
+            animation: floatRune linear infinite;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        body.dark-mode .rune {
+            color: var(--cursed-red);
+            animation: cursedFloat linear infinite;
+        }
+
+        @keyframes floatRune {
+            0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
+            100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+        }
+
+        @keyframes cursedFloat {
+            0% { transform: translateY(0) rotate(0deg) scale(1); opacity: 0; }
+            10% { opacity: 0.8; }
+            50% { transform: translateY(-50vh) rotate(180deg) scale(1.2); }
+            90% { opacity: 0.8; }
+            100% { transform: translateY(-100vh) rotate(360deg) scale(1); opacity: 0; }
+        }
+
+        /* Floating Candles */
+        .candle {
+            position: absolute;
+            width: 20px;
+            height: 40px;
+            background: linear-gradient(to bottom, #5a4a3a, #3a2a1a);
+            border-radius: 3px;
+            z-index: -1;
+        }
+
+        .candle::after {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            width: 8px;
+            height: 15px;
+            background: linear-gradient(to bottom, #ff9d00, #ff5e00);
+            border-radius: 50% 50% 20% 20%;
+            transform: translateX(-50%);
+            box-shadow: 0 0 10px #ff5e00, 0 0 20px #ff9d00;
+            animation: flicker 3s infinite alternate;
+        }
+
+        body.dark-mode .candle::after {
+            background: linear-gradient(to bottom, #ff2400, #8a0303);
+            box-shadow: 0 0 10px #ff2400, 0 0 20px #8a0303;
+            animation: cursedFlicker 1s infinite alternate;
+        }
+
+        @keyframes flicker {
+            0%, 100% { transform: translateX(-50%) scale(1); opacity: 1; }
+            50% { transform: translateX(-50%) scale(0.9); opacity: 0.8; }
+        }
+
+        @keyframes cursedFlicker {
+            0%, 100% { transform: translateX(-50%) scale(1); opacity: 1; }
+            25% { transform: translateX(-50%) scale(1.1); opacity: 0.9; }
+            50% { transform: translateX(-50%) scale(0.8); opacity: 0.7; }
+            75% { transform: translateX(-50%) scale(1.2); opacity: 0.9; }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .button-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .chat-box {
+                width: calc(100% - 40px);
+                right: 20px;
+                left: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Arcane Background Elements -->
+    <div class="arcane-bg"></div>
+    <div class="spell-circle"></div>
+    
+    <!-- Title -->
+    <h1 class="arcane-title">Serina Arcana</h1>
+    
+    <!-- Back Button -->
+    <button class="back-btn" onclick="goBack()">⌂</button>
+    
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Avatar Section -->
+        <div class="avatar-container">
+            <div class="rune-circle"></div>
+            <div class="orb-glyphs"></div>
+            <div class="crystal-orb">
+                <svg viewBox="0 0 100 100" width="60" height="60">
+                    <path d="M50,10 Q70,30 50,50 Q30,70 50,90" stroke="white" stroke-width="1" fill="none" opacity="0.5"/>
+                    <path d="M50,10 Q30,30 50,50 Q70,70 50,90" stroke="white" stroke-width="1" fill="none" opacity="0.5"/>
+                    <circle cx="50" cy="50" r="30" stroke="white" stroke-width="0.5" fill="none"/>
+                </svg>
+            </div>
+        </div>
+        
+        <!-- Status Section -->
+        <div class="status-container">
+            <div>
+                <span class="status-dot" id="statusDot"></span>
+                <span class="status-text" id="statusText">Channeling the Arcane</span>
+            </div>
+            <div class="mood-text" id="moodText">The stars whisper secrets</div>
+        </div>
+        
+        <!-- Voice Buttons -->
+        <div class="button-container">
+            <button class="spell-btn" id="startListening" onclick="startListening()">Cast Listening Spell ✨</button>
+            <button class="spell-btn" id="stopVoice" onclick="stopVoice()">Silence Charm 🔕</button>
+            <button class="spell-btn" id="interrupt" onclick="interrupt()">Break the Ritual 🌀</button>
+        </div>
+    </div>
+    
+    <!-- Chat Toggle -->
+    <div class="chat-toggle" id="chatToggle">
+        <span>🔮</span>
+    </div>
+    
+    <!-- Chat Box -->
+    <div class="chat-box" id="chatBox">
+        <input type="text" class="chat-input" id="chatInput" placeholder="Speak your incantation...">
+    </div>
+    
+    <!-- Runes Container -->
+    <div id="runes"></div>
+    
+    <!-- Candles Container -->
+    <div id="candles"></div>
+    
+    <!-- Cursed Particles Container -->
+    <div id="cursedParticles"></div>
+    
+    <script>
+        // Original JavaScript functionality preserved
+        let isChatOpen = false;
+        let isDarkMode = false;
+        let cursedMoods = [
+            "The seal has cracked...",
+            "Forbidden command accepted...",
+            "The spirits whisper back...",
+            "The veil is torn...",
+            "Ancient curses awaken...",
+            "Blood sigils activate...",
+            "The dark pact is sealed..."
+        ];
+        
+        // Toggle chat box
+        document.getElementById('chatToggle').addEventListener('click', function() {
+            isChatOpen = !isChatOpen;
+            document.getElementById('chatBox').classList.toggle('active', isChatOpen);
+            if (isChatOpen) {
+                document.getElementById('chatInput').focus();
+            }
+        });
+        
+        // Create floating runes
+        function createRunes() {
+            const runesContainer = document.getElementById('runes');
+            const runeSymbols = ['ᚠ', 'ᚢ', 'ᚣ', 'ᚤ', 'ᚥ', 'ᚦ', 'ᚧ', 'ᚨ', 'ᚩ', 'ᚪ'];
+            const cursedSymbols = ['☠', '⚰', '🕱', '⚱', '💀', '🦴', '🧪', '🩸'];
+            
+            for (let i = 0; i < 15; i++) {
+                const rune = document.createElement('div');
+                rune.className = 'rune';
+                rune.textContent = runeSymbols[Math.floor(Math.random() * runeSymbols.length)];
+                rune.style.left = Math.random() * 100 + 'vw';
+                rune.style.fontSize = (Math.random() * 10 + 10) + 'px';
+                rune.style.animationDuration = (Math.random() * 20 + 20) + 's';
+                rune.style.animationDelay = Math.random() * 10 + 's';
+                runesContainer.appendChild(rune);
+            }
+        }
+        
+        // Create floating candles
+        function createCandles() {
+            const candlesContainer = document.getElementById('candles');
+            for (let i = 0; i < 5; i++) {
+                const candle = document.createElement('div');
+                candle.className = 'candle';
+                candle.style.left = Math.random() * 100 + 'vw';
+                candle.style.top = Math.random() * 100 + 'vh';
+                candle.style.transform = `scale(${Math.random() * 0.5 + 0.5})`;
+                candlesContainer.appendChild(candle);
+            }
+        }
+        
+        // Create cursed particles
+        function createCursedParticles() {
+            const container = document.getElementById('cursedParticles');
+            container.innerHTML = '';
+            
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'cursed-particle';
+                particle.style.left = Math.random() * 100 + 'vw';
+                particle.style.top = Math.random() * 100 + 'vh';
+                particle.style.width = (Math.random() * 3 + 1) + 'px';
+                particle.style.height = (Math.random() * 3 + 1) + 'px';
+                particle.style.animation = `floatRune ${Math.random() * 10 + 5}s linear infinite`;
+                particle.style.animationDelay = Math.random() * 5 + 's';
+                particle.style.opacity = Math.random() * 0.7 + 0.3;
+                container.appendChild(particle);
+            }
+        }
+        
+        // Toggle dark mode
+        function toggleDarkMode(forceState = null) {
+            if (forceState !== null) {
+                isDarkMode = forceState;
+            } else {
+                isDarkMode = !isDarkMode;
+            }
+            document.body.classList.toggle('dark-mode', isDarkMode);
+            
+            if (isDarkMode) {
+                // Change button texts
+                document.getElementById('startListening').textContent = "Invoke the Forbidden 🔥";
+                document.getElementById('stopVoice').textContent = "Seal the Mouth 🩸";
+                document.getElementById('interrupt').textContent = "Exorcise the Link ☠️";
+                
+                // Create cursed particles
+                createCursedParticles();
+                
+                // Update mood text
+                document.getElementById('moodText').textContent = cursedMoods[Math.floor(Math.random() * cursedMoods.length)];
+            } else {
+                // Revert button texts
+                document.getElementById('startListening').textContent = "Cast Listening Spell ✨";
+                document.getElementById('stopVoice').textContent = "Silence Charm 🔕";
+                document.getElementById('interrupt').textContent = "Break the Ritual 🌀";
+                
+                // Update mood text
+                document.getElementById('moodText').textContent = "The stars whisper secrets";
+            }
+        }
+        
+        // Update status function
+        function updateStatus(text) {
+            document.getElementById('statusText').textContent = text || "Channeling the Arcane";
+            const dot = document.getElementById('statusDot');
+            if (text.toLowerCase().includes("listening")) {
+                dot.style.backgroundColor = "var(--aether-blue)";
+                toggleDarkMode(true); // Force red mode when listening
+            } else if (text.toLowerCase().includes("speaking")) {
+                dot.style.backgroundColor = "var(--magic-gold)";
+                toggleDarkMode(true); // Keep red mode when speaking
+            } else if (text.toLowerCase().includes("silence") || text.toLowerCase().includes("sleep")) {
+                dot.style.backgroundColor = "var(--spell-pink)";
+            } else if (text.toLowerCase().includes("disrupted") || text.toLowerCase().includes("fail")) {
+                dot.style.backgroundColor = "var(--cursed-red)";
+            }
+        }
+
+        // Poll server status
+        function pollStatus() {
+            fetch('/serina-status')
+                .then(res => res.json())
+                .then(data => {
+                    updateStatus(data.statusText || "Channeling the Arcane");
+                })
+                .catch(() => {
+                    updateStatus("🔴 Magic Disrupted!");
+                });
+        }
+
+        // Voice control functions
+        async function startListening() {
+            try {
+                await fetch('/start-voice', { method: 'POST' });
+                updateStatus("Listening to the Astral Echoes...");
+                toggleDarkMode(true); // Force red mode
+            } catch (error) {
+                updateStatus("Failed to invoke the arcane listener.");
+            }
+        }
+
+        async function stopVoice() {
+            try {
+                await fetch('/stop-voice', { method: 'POST' });
+                updateStatus("Silencing the realm...");
+                // Don't toggle dark mode here - let it stay red
+            } catch (error) {
+                updateStatus("Seal failed. Magic leakage detected!");
+            }
+        }
+
+        async function interrupt() {
+            try {
+                await fetch('/interrupt-speech', { method: 'POST' });
+                updateStatus("🌀 Ritual broken! Channel sealed.");
+                // Don't toggle dark mode here - let it stay red
+            } catch (error) {
+                updateStatus("Exorcism failed. Spirits resist.");
+            }
+        }
+
+        // Chat function
+        function sendChat() {
+            const input = document.getElementById('chatInput');
+            const msg = input.value.trim();
+            if (!msg) return;
+
+            updateStatus("Consulting the Grimoire...");
+            toggleDarkMode(true); // Force red mode during chat
+
+            fetch('/voice-chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_input: msg })
+            })
+            .then(res => res.json())
+            .then(data => {
+                const subtitle = document.createElement('div');
+                subtitle.style.marginTop = '10px';
+                subtitle.style.fontSize = '0.9rem';
+                subtitle.style.color = isDarkMode ? 'var(--cursed-red)' : 'var(--magic-gold)';
+                subtitle.innerHTML = `<strong>Serina:</strong> ${data.reply}`;
+                document.getElementById('chatBox').appendChild(subtitle);
+                updateStatus("Reply received from the Aether.");
+                // Keep dark mode active after response
+            })
+            .catch(() => {
+                updateStatus("Failed to reach Serina's mind.");
+            });
+
+            input.value = "";
+        }
+
+        // Back button function
+        function goBack() {
+            fetch('/stop-voice', { method: 'POST' })
+                .then(() => {
+                    updateStatus("Farewell, summoner... 🔮");
+                    toggleDarkMode(false); // Return to normal mode when leaving
+                    
+                    setTimeout(() => {
+                        const lastMenu = localStorage.getItem("lastMenuSkin");
+                        if (lastMenu) {
+                            window.location.href = lastMenu;
+                        } else {
+                            window.location.href = "/holo";
+                        }
+                    }, 2500);
+                })
+                .catch(() => {
+                    const lastMenu = localStorage.getItem("lastMenuSkin");
+                    if (lastMenu) {
+                        window.location.href = lastMenu;
+                    } else {
+                        window.location.href = "/holo";
+                    }
+                });
+        }
+
+        // Initialize
+        window.onload = function() {
+            createRunes();
+            createCandles();
+            pollStatus();
+            setInterval(pollStatus, 1000);
+            
+            // Bind chat input
+            document.getElementById('chatInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') sendChat();
+            });
+            
+            // Set initial status
+            updateStatus("Channeling the Arcane");
+        };
+    </script>
+</body>
+</html>

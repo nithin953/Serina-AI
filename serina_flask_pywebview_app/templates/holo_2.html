@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI EYE INTERFACE v2.0 - ALMIGHTY MODE</title>
+    <style> 
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&display=swap');
+        
+        :root {
+            --neon-blue: #0ff0fc;
+            --neon-pink: #ff00ff;
+            --neon-purple: #9600ff;
+            --glow-intensity: 1;
+            --pupil-size: 30%;
+            --almighty-red: #ff0000;
+            --almighty-dark: #300000;
+            --almighty-pupil-color: radial-gradient(circle at 35% 35%, #ff0000 0%, #8b0000 50%, #000 90%);
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #0a0a12;
+            color: white;
+            font-family: 'Orbitron', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            perspective: 1000px;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(15, 240, 252, 0.05) 0%, transparent 20%),
+                radial-gradient(circle at 80% 70%, rgba(255, 0, 255, 0.05) 0%, transparent 20%),
+                linear-gradient(to bottom, #0a0a12 0%, #12121a 100%);
+            transition: background-color 1s ease;
+        }
+        
+        /* YHWACH ALMIGHTY MODE STYLES */
+        body.almighty {
+            background-color: #0a0005 !important;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(255, 0, 0, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 80% 70%, rgba(139, 0, 0, 0.1) 0%, transparent 20%),
+                linear-gradient(to bottom, #0a0005 0%, #1a000a 100%) !important;
+        }
+
+        .almighty .title {
+            color: var(--almighty-red) !important;
+            text-shadow: 0 0 15px var(--almighty-red), 0 0 30px #8b0000 !important;
+        }
+
+        .almighty .subtitle {
+            color: #ff5555 !important;
+            text-shadow: 0 0 10px var(--almighty-red) !important;
+        }
+
+        /* ALMIGHTY EYES */
+        .almighty .eye {
+            background: var(--almighty-dark) !important;
+            border: 2px solid var(--almighty-red) !important;
+            box-shadow: 
+                inset 0 0 30px rgba(0, 0, 0, 0.8),
+                0 0 40px rgba(255, 0, 0, 0.6) !important;
+        }
+
+        .almighty .eye::before {
+            background: radial-gradient(circle at center, #500000 0%, var(--almighty-dark) 70%) !important;
+            box-shadow: 
+                inset 0 0 15px rgba(0, 0, 0, 0.8),
+                0 0 30px rgba(255, 0, 0, 0.4) !important;
+        }
+
+        .almighty .pupil {
+            background: var(--almighty-pupil-color) !important;
+            box-shadow: 
+                0 0 15px rgba(255, 0, 0, 0.9),
+                inset 0 0 8px rgba(255, 0, 0, 0.6) !important;
+            clip-path: polygon(
+                50% 0%, 100% 50%, 50% 100%, 0% 50%
+            ); /* Cross-shaped pupil */
+        }
+
+        .almighty .label {
+            color: var(--almighty-red) !important;
+            text-shadow: 0 0 10px var(--almighty-red) !important;
+        }
+
+        .almighty .circuit-line, .almighty .circuit-vertical {
+            background: var(--almighty-red) !important;
+            box-shadow: 0 0 5px var(--almighty-red) !important;
+        }
+        
+        .title {
+            font-size: 3rem;
+            margin-bottom: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5rem;
+            text-shadow: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-pink);
+            animation: pulse 3s infinite alternate, glitch-effect 5s infinite alternate;
+            position: relative;
+            z-index: 10;
+            font-weight: 900;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 3rem;
+            opacity: 0.7;
+            text-align: center;
+            max-width: 60%;
+            line-height: 1.5;
+            position: relative;
+            animation: subtitle-float 8s ease-in-out infinite;
+        }
+        
+        .subtitle::before, .subtitle::after {
+            content: "❖";
+            position: absolute;
+            opacity: 0.3;
+            animation: spin 10s linear infinite;
+        }
+        
+        .subtitle::before {
+            left: -2.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        .subtitle::after {
+            right: -2.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        .eye-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 3rem;
+            padding: 3rem;
+            position: relative;
+            z-index: 5;
+        }
+        
+        .eye-container {
+            position: relative;
+            width: 180px;
+            height: 180px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            filter: drop-shadow(0 0 5px rgba(15, 240, 252, 0.5));
+            transform-style: preserve-3d;
+        }
+        
+        .eye-container:hover {
+            transform: scale(1.15) translateZ(20px);
+            filter: drop-shadow(0 0 25px rgba(255, 0, 255, 0.9));
+        }
+        
+        .eye-container:hover .pupil {
+            --pupil-size: 40%;
+            background: radial-gradient(circle at 35% 35%, #0ff0fc 0%, #ff00ff 50%, #000 90%);
+        }
+        
+        .eye {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: #12121a;
+            overflow: hidden;
+            box-shadow: 
+                inset 0 0 30px rgba(0, 0, 0, 0.8),
+                0 0 40px rgba(15, 240, 252, 0.4);
+            border: 2px solid rgba(15, 240, 252, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        .eye::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60%;
+            height: 60%;
+            background: radial-gradient(circle at center, #1a1a2e 0%, #0a0a12 70%);
+            border-radius: 50%;
+            box-shadow: 
+                inset 0 0 15px rgba(0, 0, 0, 0.8),
+                0 0 30px rgba(15, 240, 252, 0.3);
+            z-index: 2;
+            transition: all 0.3s ease;
+        }
+        
+        .pupil {
+            position: absolute;
+            width: var(--pupil-size);
+            height: var(--pupil-size);
+            background: radial-gradient(circle at 35% 35%, #0ff0fc 0%, #9600ff 50%, #000 90%);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.2s ease;
+            z-index: 3;
+            box-shadow: 
+                0 0 15px rgba(15, 240, 252, 0.7),
+                inset 0 0 8px rgba(255, 255, 255, 0.4);
+        }
+        
+        .eyelid {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: #12121a;
+            border-radius: 50%;
+            top: -100%;
+            left: 0;
+            z-index: 4;
+            transition: top 0.3s ease-out; /* Slower blink */
+            box-shadow: inset 0 -10px 20px rgba(0, 0, 0, 0.5);
+        }
+        
+        .eye-lashes {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+        
+        .lash {
+            position: absolute;
+            background: rgba(15, 240, 252, 0.4);
+            width: 3px;
+            height: 20px;
+            border-radius: 1px;
+            transform-origin: bottom center;
+            transition: all 0.3s ease;
+        }
+        
+        .eye-container:hover .lash {
+            background: rgba(255, 0, 255, 0.6);
+            height: 25px;
+        }
+        
+        .label {
+            position: absolute;
+            bottom: -2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2rem;
+            color: var(--neon-blue);
+            text-shadow: 0 0 8px var(--neon-blue);
+            opacity: 0.7;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .eye-container:hover .label {
+            opacity: 1;
+            text-shadow: 0 0 15px var(--neon-pink);
+            transform: translateX(-50%) scale(1.1);
+            letter-spacing: 0.3rem;
+        }
+        
+        .circuit-lines {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            opacity: 0.15;
+        }
+        
+        .circuit-line {
+            position: absolute;
+            background: var(--neon-blue);
+            height: 1px;
+            width: 100%;
+            box-shadow: 0 0 5px var(--neon-blue);
+        }
+        
+        .circuit-line:nth-child(1) {
+            top: 20%;
+        }
+        
+        .circuit-line:nth-child(2) {
+            top: 40%;
+        }
+        
+        .circuit-line:nth-child(3) {
+            top: 60%;
+        }
+        
+        .circuit-line:nth-child(4) {
+            top: 80%;
+        }
+        
+        .circuit-vertical {
+            position: absolute;
+            background: var(--neon-blue);
+            width: 1px;
+            height: 100%;
+            left: 50%;
+            box-shadow: 0 0 5px var(--neon-blue);
+        }
+        
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+        }
+        
+        .particle {
+            position: absolute;
+            background: var(--neon-blue);
+            border-radius: 50%;
+            opacity: 0;
+            animation: particle-fade 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                text-shadow: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-pink);
+            }
+            50% {
+                text-shadow: 0 0 20px var(--neon-pink), 0 0 40px var(--neon-purple);
+            }
+            100% {
+                text-shadow: 0 0 10px var(--neon-purple), 0 0 20px var(--neon-blue);
+            }
+        }
+        
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-15px);
+            }
+        }
+        
+        @keyframes subtitle-float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+        
+        @keyframes spin {
+            from {
+                transform: translateY(-50%) rotate(0deg);
+            }
+            to {
+                transform: translateY(-50%) rotate(360deg);
+            }
+        }
+        
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .neon-shift, .almighty-btn {
+            position: fixed;
+            bottom: 2rem;
+            padding: 0.8rem 1.5rem;
+            background: transparent;
+            color: var(--neon-blue);
+            border: 2px solid var(--neon-blue);
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.2rem;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            box-shadow: 0 0 15px rgba(15, 240, 252, 0.5));
+            z-index: 100;
+            font-size: 1rem;
+            font-weight: 700;
+            border-radius: 50px;
+            overflow: hidden;
+        }
+        
+        .almighty-btn {
+            color: var(--almighty-red);
+            border-color: var(--almighty-red);
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.5));
+        }
+        
+        .neon-shift::before, .almighty-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(15, 240, 252, 0.2), transparent);
+            transition: all 0.6s ease;
+        }
+        
+        .almighty-btn::before {
+            background: linear-gradient(90deg, transparent, rgba(255, 0, 0, 0.2), transparent);
+        }
+        
+        .neon-shift:hover, .almighty-btn:hover {
+            color: var(--neon-pink);
+            border-color: var(--neon-pink);
+            box-shadow: 0 0 30px rgba(255, 0, 255, 0.8));
+            transform: translateY(-3px);
+        }
+        
+        .almighty-btn:hover {
+            color: #ff5555;
+            border-color: #ff5555;
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.8));
+        }
+        
+        .neon-shift:hover::before, .almighty-btn:hover::before {
+            left: 100%;
+        }
+        
+        /* Enhanced whisper message styling */
+        .whisper {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            font-size: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5rem;
+            color: var(--neon-blue);
+            text-shadow: 0 0 20px var(--neon-blue);
+            font-weight: 700;
+            z-index: 1000;
+            text-align: center;
+            width: 100%;
+            pointer-events: none;
+            padding: 1rem;
+            background: rgba(10, 10, 18, 0.7);
+            backdrop-filter: blur(5px);
+            border-radius: 10px;
+            max-width: 80%;
+        }
+        
+        .almighty .whisper {
+            color: var(--almighty-red);
+            text-shadow: 0 0 20px var(--almighty-red);
+            background: rgba(10, 0, 5, 0.7);
+        }
+        
+        .active-whisper {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+        
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                to bottom,
+                rgba(15, 240, 252, 0.05) 1px,
+                transparent 1px
+            );
+            background-size: 100% 3px;
+            pointer-events: none;
+            z-index: 5;
+            animation: scanline 8s linear infinite;
+        }
+        
+        .almighty .scanlines {
+            background: linear-gradient(
+                to bottom,
+                rgba(255, 0, 0, 0.05) 1px,
+                transparent 1px
+            );
+        }
+        
+        @keyframes scanline {
+            0% {
+                background-position: 0 0;
+            }
+            100% {
+                background-position: 0 100%;
+            }
+        }
+        
+        .glitch {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23noise)" opacity="0.08"/></svg>');
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .binary-rain {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.15;
+        }
+        
+        .almighty .binary-rain {
+            opacity: 0.25;
+        }
+        
+        .binary-digit {
+            position: absolute;
+            color: var(--neon-blue);
+            font-size: 1.2rem;
+            animation: fall linear infinite;
+            text-shadow: 0 0 5px var(--neon-blue);
+            font-weight: 700;
+        }
+        
+        .almighty .binary-digit {
+            color: var(--almighty-red);
+            text-shadow: 0 0 5px var(--almighty-red);
+        }
+        
+        @keyframes fall {
+            to {
+                transform: translateY(100vh);
+            }
+        }
+        
+        @keyframes particle-fade {
+            0% {
+                opacity: 0;
+                transform: scale(0);
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+                transform: scale(1.5);
+            }
+        }
+        
+        @keyframes glitch-effect {
+            0%, 100% {
+                transform: translate(0);
+            }
+            20% {
+                transform: translate(-3px, 3px);
+            }
+            40% {
+                transform: translate(-3px, -3px);
+            }
+            60% {
+                transform: translate(3px, 3px);
+            }
+            80% {
+                transform: translate(3px, -3px);
+            }
+        }
+        
+        .holographic-effect {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(135deg, rgba(15, 240, 252, 0.05) 0%, transparent 50%),
+                linear-gradient(-135deg, rgba(255, 0, 255, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 2;
+            animation: hologram-pulse 6s infinite alternate;
+        }
+        
+        .almighty .holographic-effect {
+            background: 
+                linear-gradient(135deg, rgba(255, 0, 0, 0.05) 0%, transparent 50%),
+                linear-gradient(-135deg, rgba(139, 0, 0, 0.05) 0%, transparent 50%);
+        }
+        
+        @keyframes hologram-pulse {
+            0% {
+                opacity: 0.3;
+            }
+            100% {
+                opacity: 0.7;
+            }
+        }
+
+        /* Exit Modal Styles */
+        #exitModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+            display: none;
+        }
+        
+        .modal-content {
+            padding: 2rem;
+            border-radius: 0.5rem;
+            background: #0a0a15;
+            border: 1px solid var(--neon-blue);
+            max-width: 400px;
+            text-align: center;
+            animation: modal-glow 2s infinite ease-in-out;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .modal-content h2 {
+            color: var(--neon-blue);
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1rem;
+        }
+        
+        .modal-content p {
+            color: rgba(15, 240, 252, 0.8);
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .modal-btn {
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid;
+            background: transparent;
+        }
+        
+        .modal-btn.confirm {
+            color: #ff00ff;
+            border-color: #ff00ff;
+            box-shadow: 0 0 15px rgba(255, 0, 255, 0.5);
+        }
+        
+        .modal-btn.cancel {
+            color: var(--neon-blue);
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 15px rgba(15, 240, 252, 0.5);
+        }
+        
+        .modal-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 25px currentColor;
+        }
+        
+        .modal-btn.confirm:hover {
+            background: rgba(255, 0, 255, 0.1);
+        }
+        
+        .modal-btn.cancel:hover {
+            background: rgba(15, 240, 252, 0.1);
+        }
+        
+        @keyframes modal-glow {
+            0%, 100% { box-shadow: 0 0 30px rgba(15, 240, 252, 0.2); }
+            50% { box-shadow: 0 0 50px rgba(15, 240, 252, 0.5); }
+        }
+        
+        /* Loading Indicator */
+        .loading-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 2000;
+            color: var(--neon-blue);
+            font-size: 1.5rem;
+            text-shadow: 0 0 10px var(--neon-blue);
+            backdrop-filter: blur(5px);
+            display: none;
+        }
+        
+        .loading-spinner {
+            border: 5px solid rgba(0, 191, 255, 0.3);
+            border-top: 5px solid var(--neon-blue);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 1200px) {
+            .eye-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 2rem;
+            }
+            
+            .title {
+                font-size: 2.5rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .eye-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .eye-container {
+                width: 150px;
+                height: 150px;
+            }
+            
+            .title {
+                font-size: 2rem;
+                letter-spacing: 0.3rem;
+            }
+            
+            .subtitle {
+                max-width: 80%;
+                font-size: 1rem;
+            }
+            
+            .whisper {
+                font-size: 1.5rem;
+                letter-spacing: 0.3rem;
+            }
+            
+            .modal-content {
+                max-width: 90%;
+                padding: 1.5rem;
+            }
+            
+            .modal-buttons {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .modal-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="glitch"></div>
+    <div class="scanlines"></div>
+    <div class="holographic-effect"></div>
+    <div class="binary-rain" id="binaryRain"></div>
+    
+    <h1 class="title floating">SERINA AI EYE INTERFACE</h1>
+    <p class="subtitle">"The eyes perceive all... they respond to your presence."<br>Hover to interact, click to activate.</p>
+    
+    <div class="eye-grid">
+        <!-- New Chat Eye -->
+        <div class="eye-container" id="newChat" data-option="new-chat">
+            <div class="eye">
+                <div class="eye-lashes" id="lashes-newChat"></div>
+                <div class="pupil" id="pupil-newChat"></div>
+                <div class="eyelid" id="eyelid-newChat"></div>
+            </div>
+            <span class="label">NEW CHAT</span>
+        </div>
+        
+        <!-- Voice Mode Eye -->
+        <div class="eye-container" id="voiceMode" data-option="voice-mode">
+            <div class="eye">
+                <div class="eye-lashes" id="lashes-voiceMode"></div>
+                <div class="pupil" id="pupil-voiceMode"></div>
+                <div class="eyelid" id="eyelid-voiceMode"></div>
+            </div>
+            <span class="label">VOICE MODE</span>
+        </div>
+        
+        <!-- Face Mode Eye -->
+        <div class="eye-container" id="faceMode" data-option="face-mode">
+            <div class="eye">
+                <div class="eye-lashes" id="lashes-faceMode"></div>
+                <div class="pupil" id="pupil-faceMode"></div>
+                <div class="eyelid" id="eyelid-faceMode"></div>
+            </div>
+            <span class="label">FACE MODE</span>
+        </div>
+        
+        <!-- About Me Eye -->
+        <div class="eye-container" id="aboutMe" data-option="about-me">
+            <div class="eye">
+                <div class="eye-lashes" id="lashes-aboutMe"></div>
+                <div class="pupil" id="pupil-aboutMe"></div>
+                <div class="eyelid" id="eyelid-aboutMe"></div>
+            </div>
+            <span class="label">ABOUT ME</span>
+        </div>
+        
+        <!-- Neon Shift Eye -->
+        <div class="eye-container" id="neonShift" data-option="neon-shift">
+            <div class="eye">
+                <div class="eye-lashes" id="lashes-neonShift"></div>
+                <div class="pupil" id="pupil-neonShift"></div>
+                <div class="eyelid" id="eyelid-neonShift"></div>
+            </div>
+            <span class="label">NEON SHIFT</span>
+        </div>
+        
+        <!-- Exit Eye -->
+        <div class="eye-container" id="exit" data-option="exit">
+            <div class="eye">
+                <div class="eye-lashes" id="lashes-exit"></div>
+                <div class="pupil" id="pupil-exit"></div>
+                <div class="eyelid" id="eyelid-exit"></div>
+            </div>
+            <span class="label">EXIT</span>
+        </div>
+    </div>
+    
+    <div class="whisper" id="whisper"></div>
+    
+    <button class="almighty-btn" id="almightyBtn">ALMIGHTY</button>
+
+    <!-- Exit Confirmation Modal -->
+    <div id="exitModal">
+        <div class="modal-content">
+            <h2>Leaving already, love? 💔</h2>
+            <p>Stay a little longer with me?</p>
+            <div class="modal-buttons">
+                <button id="confirmExit" class="modal-btn confirm">Yes, exit</button>
+                <button id="cancelExit" class="modal-btn cancel">No, stay</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Indicator -->
+    <div id="loadingIndicator" class="loading-indicator">
+        <div class="loading-spinner"></div>
+        <p id="loadingText">Initializing system...</p>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Create binary rain
+            createBinaryRain();
+            
+            // Create eyelashes for all eyes
+            createEyelashes();
+            
+            // Set up eye tracking
+            document.addEventListener('mousemove', trackEyes);
+            
+            // Set up blinking (slower now)
+            setInterval(randomBlink, 4000); // Reduced blink frequency
+            
+            // Set up hover effects
+            setupHoverEffects();
+            
+            // Set up click events
+            setupEyeClicks();
+            
+            // Set up Almighty button
+            document.getElementById('almightyBtn').addEventListener('click', toggleAlmightyMode);
+            
+            // Add subtle floating effect to eyes
+            const eyes = document.querySelectorAll('.eye-container');
+            eyes.forEach((eye, index) => {
+                eye.style.animationDelay = `${index * 0.2}s`;
+                eye.classList.add('floating');
+            });
+            
+            // Create particles occasionally
+            setInterval(createParticles, 1000);
+        });
+        
+        function createBinaryRain() {
+            const binaryRain = document.getElementById('binaryRain');
+            const characters = ['0', '1', '#', '$', '%', '&', '*'];
+            
+            for (let i = 0; i < 150; i++) {
+                const digit = document.createElement('div');
+                digit.className = 'binary-digit';
+                digit.textContent = characters[Math.floor(Math.random() * characters.length)];
+                digit.style.left = `${Math.random() * 100}%`;
+                digit.style.top = `${Math.random() * -100}px`;
+                digit.style.animationDuration = `${3 + Math.random() * 10}s`;
+                digit.style.animationDelay = `${Math.random() * 5}s`;
+                digit.style.opacity = Math.random() * 0.5 + 0.1;
+                binaryRain.appendChild(digit);
+            }
+        }
+        
+        function createEyelashes() {
+            const eyeIds = ['newChat', 'voiceMode', 'faceMode', 'aboutMe', 'neonShift', 'exit'];
+            
+            eyeIds.forEach(id => {
+                const lashesContainer = document.getElementById(`lashes-${id}`);
+                const lashCount = 24;
+                
+                for (let i = 0; i < lashCount; i++) {
+                    const lash = document.createElement('div');
+                    lash.className = 'lash';
+                    const angle = (i / lashCount) * Math.PI * 2;
+                    const radius = 90;
+                    
+                    lash.style.left = `${50 + Math.cos(angle) * radius}%`;
+                    lash.style.top = `${50 + Math.sin(angle) * radius}%`;
+                    lash.style.transform = `rotate(${angle + Math.PI/2}rad)`;
+                    lash.style.height = `${12 + Math.random() * 15}px`;
+                    lash.style.opacity = 0.3 + Math.random() * 0.7;
+                    lash.style.width = `${1 + Math.random() * 2}px`;
+                    
+                    lashesContainer.appendChild(lash);
+                }
+            });
+        }
+        
+        function trackEyes(e) {
+            const eyeIds = ['newChat', 'voiceMode', 'faceMode', 'aboutMe', 'neonShift', 'exit'];
+            
+            eyeIds.forEach(id => {
+                const eye = document.getElementById(id);
+                const pupil = document.getElementById(`pupil-${id}`);
+                const eyeRect = eye.getBoundingClientRect();
+                const eyeCenterX = eyeRect.left + eyeRect.width / 2;
+                const eyeCenterY = eyeRect.top + eyeRect.height / 2;
+                
+                // More aggressive tracking
+                const angle = Math.atan2(e.clientY - eyeCenterY, e.clientX - eyeCenterX);
+                const distance = Math.min(
+                    Math.sqrt(Math.pow(e.clientX - eyeCenterX, 2) + Math.pow(e.clientY - eyeCenterY, 2)) / 30, // More sensitive
+                    15
+                );
+                
+                const pupilX = Math.cos(angle) * distance;
+                const pupilY = Math.sin(angle) * distance;
+                
+                pupil.style.transform = `translate(calc(-50% + ${pupilX}px), calc(-50% + ${pupilY}px))`;
+            });
+        }
+        
+        function randomBlink() {
+            const eyeIds = ['newChat', 'voiceMode', 'faceMode', 'aboutMe', 'neonShift', 'exit'];
+            const randomEyeIndex = Math.floor(Math.random() * eyeIds.length);
+            const eyelid = document.getElementById(`eyelid-${eyeIds[randomEyeIndex]}`);
+            
+            // Slower blink animation
+            eyelid.style.top = '0';
+            setTimeout(() => {
+                eyelid.style.top = '-100%';
+            }, 200); // Longer blink duration
+            
+            // Schedule next blink (less frequent)
+            setTimeout(randomBlink, 3000 + Math.random() * 5000);
+        }
+        
+        function setupHoverEffects() {
+            const eyeIds = ['newChat', 'voiceMode', 'faceMode', 'aboutMe', 'neonShift', 'exit'];
+            
+            eyeIds.forEach(id => {
+                const eye = document.getElementById(id);
+                
+                eye.addEventListener('mouseenter', function() {
+                    // Create particles
+                    createParticles(eye);
+                });
+            });
+        }
+        
+        function setupEyeClicks() {
+            const exitModal = document.getElementById('exitModal');
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const loadingText = document.getElementById('loadingText');
+            const whisper = document.getElementById('whisper');
+            
+            // Loading indicator functions
+            function showLoading(message) {
+                loadingText.textContent = message;
+                loadingIndicator.style.display = 'flex';
+            }
+
+            function hideLoading() {
+                loadingIndicator.style.display = 'none';
+            }
+            
+            document.querySelectorAll('.eye-container[data-option]').forEach(eye => {
+                eye.addEventListener('click', function() {
+                    const option = this.getAttribute('data-option');
+                    
+                    // Get saved interface selections from localStorage
+                    const lastChat = localStorage.getItem("lastChatSkin") || 'chatpage';
+                    const lastVoice = localStorage.getItem("lastVoiceSkin") || 'voice-ui';
+                    const lastFace = localStorage.getItem("lastFaceSkin") || 'face-ui';
+                    
+                    // Show specific message for each eye
+                    const eyeMessages = {
+                        'new-chat': "NEW CHAT INITIALIZED",
+                        'voice-mode': "VOICE MODE ACTIVATED",
+                        'face-mode': "FACE RECOGNITION ENGAGED",
+                        'about-me': "ACCESSING SYSTEM INFO",
+                        'neon-shift': "NEON SHIFT ENGAGED",
+                        'exit': "SYSTEM SHUTDOWN SEQUENCE"
+                    };
+                    
+                    whisper.textContent = eyeMessages[option];
+                    whisper.classList.add('active-whisper');
+                    
+                    // Blink on click
+                    const eyelid = this.querySelector('.eyelid');
+                    eyelid.style.top = '0';
+                    setTimeout(() => {
+                        eyelid.style.top = '-100%';
+                    }, 100);
+                    
+                    // Hide whisper after delay
+                    setTimeout(() => {
+                        whisper.classList.remove('active-whisper');
+                    }, 2000);
+                    
+                    // Create burst of particles
+                    createParticles(this, 20);
+                    
+                    // Handle the actual functionality
+                    switch(option) {
+                        case "new-chat":
+                            window.location.href = `/${lastChat}`;
+                            break;
+                        case "voice-mode":
+                            showLoading('Initializing Voice Mode...');
+                            fetch('/voice-mode')
+                                .then(response => {
+                                    if (!response.ok) throw new Error('Failed to launch Voice Mode');
+                                    return response.text();
+                                })
+                                .then(() => {
+                                    window.location.href = `/${lastVoice}`;
+                                })
+                                .catch(error => {
+                                    hideLoading();
+                                    console.error('Voice Mode Error:', error);
+                                });
+                            break;
+                        case "face-mode":
+                            showLoading('Initializing Face Mode...');
+                            fetch('/face-mode')
+                                .then(response => {
+                                    if (!response.ok) throw new Error('Failed to launch Face Mode');
+                                    return response.text();
+                                })
+                                .then(() => {
+                                    window.location.href = `/${lastFace}`;
+                                })
+                                .catch(error => {
+                                    hideLoading();
+                                    console.error('Face Mode Error:', error);
+                                });
+                            break;
+                        case "about-me":
+                            window.location.href = '/aboutme';
+                            break;
+                        case "neon-shift":
+                            window.location.href = '/selector';
+                            break;
+                        case "exit":
+                            exitModal.style.display = 'flex';
+                            break;
+                    }
+                });
+            });
+            
+            // Exit modal buttons
+            document.getElementById('confirmExit').addEventListener('click', () => {
+                showLoading('Closing system...');
+                fetch('/exit', { method: 'POST' })
+                    .then(() => console.log("Exit requested"))
+                    .catch(err => {
+                        console.error("Exit failed", err);
+                        hideLoading();
+                    });
+            });
+            
+            document.getElementById('cancelExit').addEventListener('click', () => {
+                exitModal.style.display = 'none';
+            });
+        }
+        
+        function toggleAlmightyMode() {
+            const body = document.body;
+            const title = document.querySelector('.title');
+            const subtitle = document.querySelector('.subtitle');
+            const almightyBtn = document.getElementById('almightyBtn');
+            const isAlmighty = body.classList.contains('almighty');
+            
+            if (!isAlmighty) {
+                // Enter Almighty Mode
+                body.classList.add('almighty');
+                title.textContent = "SERINA ALMIGHTY";
+                subtitle.textContent = '"All things in this world are mine to claim."';
+                almightyBtn.textContent = "RETURN";
+                
+                // Show confirmation whisper
+                const whisper = document.getElementById('whisper');
+                whisper.textContent = "THE ALMIGHTY ACTIVATES";
+                whisper.classList.add('active-whisper');
+                setTimeout(() => {
+                    whisper.classList.remove('active-whisper');
+                }, 2000);
+            } else {
+                // Exit Almighty Mode
+                body.classList.remove('almighty');
+                title.textContent = "SERINA AI EYE INTERFACE";
+                subtitle.textContent = '"The eyes perceive all... they respond to your presence."';
+                almightyBtn.textContent = "ALMIGHTY";
+                
+                // Show confirmation whisper
+                const whisper = document.getElementById('whisper');
+                whisper.textContent = "ALMIGHTY DEACTIVATED";
+                whisper.classList.add('active-whisper');
+                setTimeout(() => {
+                    whisper.classList.remove('active-whisper');
+                }, 2000);
+            }
+            
+            // Create burst of particles
+            createParticles(document.querySelector('.eye-grid'), 30);
+        }
+        
+        function createParticles(element = document.body, count = 5) {
+            const container = element || document.body;
+            const rect = container.getBoundingClientRect();
+            
+            for (let i = 0; i < count; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                
+                // Random position within element
+                const x = rect.left + (Math.random() * rect.width);
+                const y = rect.top + (Math.random() * rect.height);
+                
+                particle.style.left = `${x}px`;
+                particle.style.top = `${y}px`;
+                
+                // Random size and color
+                const size = Math.random() * 5 + 2;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                
+                const colors = document.body.classList.contains('almighty') 
+                    ? ['#ff0000', '#8b0000', '#ff5555', '#ffffff'] 
+                    : ['#0ff0fc', '#ff00ff', '#9600ff', '#ffffff'];
+                
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                
+                particle.style.animationDuration = `${Math.random() * 2 + 1}s`;
+                
+                document.body.appendChild(particle);
+                
+                // Remove after animation
+                setTimeout(() => {
+                    particle.remove();
+                }, 2000);
+            }
+        }
+    </script>
+</body>
+</html>

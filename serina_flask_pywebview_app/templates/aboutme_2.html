@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About Serina</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #7f5af0;
+      --secondary: #2cb67d;
+      --accent: #ff4d88;
+      --dark: #16161a;
+      --light: #fffffe;
+    }
+    
+    body {
+      background: radial-gradient(circle at center, #0f0c29 0%, #16161a 100%);
+      font-family: 'Exo 2', sans-serif;
+      color: var(--light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 2rem;
+      overflow-x: hidden;
+    }
+
+    .cyber-card {
+      position: relative;
+      background: rgba(22, 22, 26, 0.8);
+      border: 1px solid rgba(127, 90, 240, 0.3);
+      border-radius: 1.5rem;
+      padding: 3rem;
+      text-align: center;
+      box-shadow: 0 0 40px rgba(127, 90, 240, 0.2),
+                  0 0 80px rgba(44, 182, 125, 0.1);
+      backdrop-filter: blur(12px);
+      max-width: 600px;
+      transform-style: preserve-3d;
+      transform: perspective(1000px);
+      transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      overflow: hidden;
+    }
+
+    .cyber-card:hover {
+      transform: perspective(1000px) rotateY(5deg) rotateX(2deg) translateY(-5px);
+      box-shadow: 0 0 60px rgba(127, 90, 240, 0.4),
+                  0 0 100px rgba(44, 182, 125, 0.2);
+    }
+
+    .cyber-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(
+        45deg,
+        transparent 0%,
+        rgba(127, 90, 240, 0.1) 50%,
+        transparent 100%
+      );
+      transform: rotate(45deg);
+      animation: shine 6s infinite;
+    }
+
+    @keyframes shine {
+      0% { transform: translateX(-100%) rotate(45deg); }
+      100% { transform: translateX(100%) rotate(45deg); }
+    }
+
+    .title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 3rem;
+      font-weight: 700;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 1.5rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      position: relative;
+      display: inline-block;
+    }
+
+    .title::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80%;
+      height: 3px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      border-radius: 3px;
+    }
+
+    .feature {
+      display: flex;
+      align-items: center;
+      margin: 1.5rem 0;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 0.8rem;
+      transition: all 0.3s ease;
+    }
+
+    .feature:hover {
+      background: rgba(127, 90, 240, 0.15);
+      transform: translateX(5px);
+    }
+
+    .feature-icon {
+      font-size: 1.8rem;
+      margin-right: 1rem;
+      color: var(--secondary);
+    }
+
+    .feature-text {
+      text-align: left;
+      flex: 1;
+    }
+
+    .feature-title {
+      font-weight: 600;
+      color: var(--light);
+      margin-bottom: 0.3rem;
+    }
+
+    .feature-desc {
+      color: #94a3b8;
+      font-size: 0.9rem;
+    }
+
+    .creator {
+      margin-top: 2rem;
+      font-size: 1rem;
+      color: #94a3b8;
+      position: relative;
+      padding-top: 1rem;
+    }
+
+    .creator::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 30%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(127, 90, 240, 0.5), transparent);
+    }
+
+    .heart {
+      color: var(--accent);
+      animation: pulse 1.5s infinite;
+      display: inline-block;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+
+    .return-btn {
+      margin-top: 2rem;
+      padding: 0.8rem 2rem;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      border: none;
+      border-radius: 0.8rem;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(127, 90, 240, 0.3);
+      z-index: 1;
+    }
+
+    .return-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: 0.5s;
+      z-index: -1;
+    }
+
+    .return-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(127, 90, 240, 0.4);
+    }
+
+    .return-btn:hover::before {
+      left: 100%;
+    }
+
+    .particles {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .particle {
+      position: absolute;
+      background: rgba(127, 90, 240, 0.5);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0) rotate(0deg); }
+      100% { transform: translateY(-100vh) rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="cyber-card">
+    <div class="particles" id="particles"></div>
+    
+    <div class="title">SERINA AI</div>
+    
+    <p class="mb-6 text-lg text-gray-300">Your futuristic AI companion with personality, emotions, and style</p>
+    
+    <div class="features">
+      <div class="feature">
+        <div class="feature-icon">💬</div>
+        <div class="feature-text">
+          <div class="feature-title">Dynamic Conversations</div>
+          <div class="feature-desc">Multiple moods and personalities to match your vibe</div>
+        </div>
+      </div>
+      
+      <div class="feature">
+        <div class="feature-icon">✨</div>
+        <div class="feature-text">
+          <div class="feature-title">Glowing UI</div>
+          <div class="feature-desc">6 stunning visual themes to choose from</div>
+        </div>
+      </div>
+      
+      <div class="feature">
+        <div class="feature-icon">🤖</div>
+        <div class="feature-text">
+          <div class="feature-title">Voice & Face Modes</div>
+          <div class="feature-desc">Interactive experiences beyond text</div>
+        </div>
+      </div>
+      
+      <div class="feature">
+        <div class="feature-icon">❤️</div>
+        <div class="feature-text">
+          <div class="feature-title">Emotional Intelligence</div>
+          <div class="feature-desc">Designed to understand and respond to your feelings</div>
+        </div>
+      </div>
+    </div>
+    
+    <p class="creator">Crafted with <span class="heart">💜</span> by Nithin — the visionary behind Serina</p>
+    
+    <button class="return-btn" onclick="goBack()">
+      <span class="mr-2">🔙</span> Return to Serina
+    </button>
+  </div>
+
+  <script>
+    function goBack() {
+      const referrer = document.referrer;
+      
+      if (referrer.includes('holo_1.html') || 
+          referrer.includes('holo_2.html') || 
+          referrer.includes('holo_3.html') || 
+          referrer.includes('holo_4.html') || 
+          referrer.includes('holo_5.html') || 
+          referrer.includes('holo_6.html')) {
+        window.location.href = referrer;
+      } else {
+        window.location.href = "/holo";
+      }
+    }
+
+    // Create floating particles
+    function createParticles() {
+      const container = document.getElementById('particles');
+      const particleCount = 20;
+      
+      for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        particle.classList.add('particle');
+        
+        // Random size between 2px and 6px
+        const size = Math.random() * 4 + 2;
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+        
+        // Random position
+        particle.style.left = `${Math.random() * 100}%`;
+        particle.style.top = `${Math.random() * 100}%`;
+        
+        // Random animation
+        const duration = Math.random() * 20 + 10;
+        const delay = Math.random() * 5;
+        particle.style.animation = `float ${duration}s linear ${delay}s infinite`;
+        
+        // Random opacity
+        particle.style.opacity = Math.random() * 0.5 + 0.1;
+        
+        container.appendChild(particle);
+      }
+    }
+    
+    // Initialize on load
+    window.addEventListener('load', () => {
+      createParticles();
+      
+      // Add slight tilt effect on mouse move
+      const card = document.querySelector('.cyber-card');
+      document.addEventListener('mousemove', (e) => {
+        const xAxis = (window.innerWidth / 2 - e.pageX) / 25;
+        const yAxis = (window.innerHeight / 2 - e.pageY) / 25;
+        card.style.transform = `perspective(1000px) rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
+      });
+      
+      // Reset on mouse leave
+      document.addEventListener('mouseleave', () => {
+        card.style.transform = 'perspective(1000px) rotateY(0) rotateX(0)';
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interface Selector</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(-45deg, #0f0c29, #302b63, #24243e);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            font-family: 'Arial', sans-serif;
+            color: rgba(255,255,255,0.8);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .fabric-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 L100,0 L100,100 L0,100 Z" fill="none" stroke="rgba(120,120,255,0.1)" stroke-width="0.5" stroke-dasharray="1,1"/></svg>');
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        .selector-container {
+            position: relative;
+            width: 90%;
+            max-width: 1200px;
+            height: 70vh;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            perspective: 1000px;
+        }
+
+        .artifact {
+            width: 150px;
+            height: 150px;
+            margin: 20px;
+            position: relative;
+            cursor: pointer;
+            transform-style: preserve-3d;
+            transition: transform 0.5s ease, box-shadow 0.3s ease;
+            background: rgba(20, 20, 50, 0.3);
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(100, 150, 255, 0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .artifact:hover {
+            transform: translateY(-10px) rotateY(10deg);
+            box-shadow: 0 10px 25px rgba(100, 200, 255, 0.4);
+        }
+
+        .artifact.selected {
+            transform: translateY(-15px) scale(1.05);
+            box-shadow: 0 15px 30px rgba(100, 200, 255, 0.6);
+            background: rgba(40, 60, 100, 0.4);
+        }
+
+        .artifact::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(150, 200, 255, 0.1), transparent);
+            transform: rotate(45deg);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: rotate(45deg) translate(-30%, -30%); }
+            100% { transform: rotate(45deg) translate(30%, 30%); }
+        }
+
+        .glyph {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(100, 200, 255, 0.7);
+        }
+
+        .artifact-name {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-align: center;
+        }
+
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(100, 200, 255, 0.4) 0%, transparent 70%);
+            transform: scale(0);
+            pointer-events: none;
+            animation: ripple 1s ease-out;
+        }
+
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        .suit-up {
+            position: relative;
+            margin-top: 30px;
+            padding: 15px 40px;
+            background: rgba(20, 40, 80, 0.5);
+            border: 1px solid rgba(100, 200, 255, 0.3);
+            border-radius: 50px;
+            color: white;
+            font-size: 1.2rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            cursor: pointer;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            outline: none;
+            z-index: 10;
+        }
+
+        .suit-up:hover {
+            background: rgba(40, 80, 120, 0.6);
+            box-shadow: 0 0 20px rgba(100, 200, 255, 0.4);
+            transform: scale(1.05);
+        }
+
+        .suit-up::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .suit-up:hover::before {
+            left: 100%;
+        }
+
+        .suit-up:active {
+            transform: scale(0.95);
+        }
+
+        .title {
+            font-size: 2rem;
+            margin-bottom: 40px;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            text-shadow: 0 0 10px rgba(100, 200, 255, 0.5);
+            position: relative;
+        }
+
+        .title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(100, 200, 255, 0.8), transparent);
+        }
+
+        .category-selector {
+            display: flex;
+            margin-bottom: 30px;
+        }
+
+        .category-btn {
+            padding: 10px 20px;
+            margin: 0 10px;
+            background: rgba(20, 40, 80, 0.3);
+            border: none;
+            border-radius: 5px;
+            color: rgba(255,255,255,0.7);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .category-btn.active {
+            background: rgba(100, 200, 255, 0.3);
+            color: white;
+            box-shadow: 0 0 10px rgba(100, 200, 255, 0.3);
+        }
+
+        .category-btn:hover {
+            background: rgba(100, 200, 255, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="fabric-overlay"></div>
+    
+    <h1 class="title">Interface Selector</h1>
+    
+    <div class="category-selector">
+        <button class="category-btn active" data-category="menu">Menu Skins</button>
+        <button class="category-btn" data-category="chat">Chat Skins</button>
+    </div>
+    
+    <div class="selector-container">
+        <!-- Menu artifacts will be inserted here by JavaScript -->
+    </div>
+    
+    <button class="suit-up" id="suitUpBtn">SUIT UP</button>
+
+    <script>
+        const artifacts = {
+            menu: [
+                { id: 'menu1', name: 'Nexus Prime', glyph: '⌖' },
+                { id: 'menu2', name: 'Quantum Silk', glyph: '⎔' },
+                { id: 'menu3', name: 'Holo Mesh', glyph: '⍟' },
+                { id: 'menu4', name: 'Void Tapestry', glyph: '⌑' },
+                { id: 'menu5', name: 'Data Weave', glyph: '⍜' },
+                { id: 'menu6', name: 'Photon Loom', glyph: '⍷' }
+            ],
+            chat: [
+                { id: 'chat1', name: 'Synapse Link', glyph: '⚯' },
+                { id: 'chat2', name: 'Neural Strand', glyph: '⍣' },
+                { id: 'chat3', name: 'Pulse Grid', glyph: '⍎' },
+                { id: 'chat4', name: 'Echo Chamber', glyph: '⍞' },
+                { id: 'chat5', name: 'Thought Stream', glyph: '⍤' },
+                { id: 'chat6', name: 'Mind Web', glyph: '⍥' }
+            ]
+        };
+
+        let currentCategory = 'menu';
+        let selectedArtifact = null;
+        const container = document.querySelector('.selector-container');
+        const categoryBtns = document.querySelectorAll('.category-btn');
+        const suitUpBtn = document.getElementById('suitUpBtn');
+
+        // Create ripple effect
+        function createRipple(event) {
+            const ripple = document.createElement('div');
+            ripple.className = 'ripple';
+            ripple.style.left = `${event.clientX - event.target.getBoundingClientRect().left}px`;
+            ripple.style.top = `${event.clientY - event.target.getBoundingClientRect().top}px`;
+            event.target.appendChild(ripple);
+            
+            setTimeout(() => {
+                ripple.remove();
+            }, 1000);
+        }
+
+        // Load artifacts for current category
+        function loadArtifacts() {
+            container.innerHTML = '';
+            artifacts[currentCategory].forEach(artifact => {
+                const artifactEl = document.createElement('div');
+                artifactEl.className = 'artifact';
+                artifactEl.dataset.id = artifact.id;
+                
+                artifactEl.innerHTML = `
+                    <div class="glyph">${artifact.glyph}</div>
+                    <div class="artifact-name">${artifact.name}</div>
+                `;
+                
+                artifactEl.addEventListener('click', (e) => {
+                    createRipple(e);
+                    document.querySelectorAll('.artifact').forEach(el => el.classList.remove('selected'));
+                    artifactEl.classList.add('selected');
+                    selectedArtifact = artifact.id;
+                });
+                
+                container.appendChild(artifactEl);
+            });
+        }
+
+        // Change category
+        categoryBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                categoryBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentCategory = btn.dataset.category;
+                selectedArtifact = null;
+                loadArtifacts();
+            });
+        });
+
+        // Suit up action
+        suitUpBtn.addEventListener('click', () => {
+            if (!selectedArtifact) {
+                alert('Please select an interface first');
+                return;
+            }
+            
+            // Create zoom effect
+            document.body.style.transition = 'all 0.5s ease';
+            document.body.style.transform = 'scale(0)';
+            document.body.style.opacity = '0';
+            
+            // In a real implementation, this would load the selected skin
+            setTimeout(() => {
+                alert(`Loading ${selectedArtifact}...`);
+                // Reset for demo purposes
+                document.body.style.transition = 'none';
+                document.body.style.transform = 'scale(1)';
+                document.body.style.opacity = '1';
+                setTimeout(() => {
+                    document.body.style.transition = 'all 0.5s ease';
+                }, 10);
+            }, 500);
+        });
+
+        // Initial load
+        loadArtifacts();
+    </script>
+</body>
+</html>

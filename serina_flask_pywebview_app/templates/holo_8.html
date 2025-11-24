@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cosmic Interface</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Exo 2', sans-serif;
+    }
+    
+    @import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;700&display=swap');
+    
+    body {
+      background: #000;
+      overflow: hidden;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+    }
+    
+    #canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 0;
+    }
+    
+    .content {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      width: 100%;
+    }
+    
+    h1 {
+      font-size: 3.5rem;
+      margin-bottom: 2rem;
+      text-shadow: 0 0 10px rgba(116, 0, 255, 0.8);
+      letter-spacing: 3px;
+      background: linear-gradient(45deg, #03e5ff, #ff03e2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: title-glow 5s ease-in-out infinite alternate;
+    }
+    
+    @keyframes title-glow {
+      0% {
+        text-shadow: 0 0 10px rgba(116, 0, 255, 0.8);
+      }
+      50% {
+        text-shadow: 0 0 30px rgba(255, 3, 226, 0.8);
+      }
+      100% {
+        text-shadow: 0 0 15px rgba(3, 229, 255, 0.8);
+      }
+    }
+    
+    .button-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1.5rem;
+      max-width: 800px;
+    }
+    
+    .button {
+      position: relative;
+      width: 180px;
+      height: 180px;
+      background: rgba(15, 15, 20, 0.7);
+      border-radius: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      overflow: hidden;
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    }
+    
+    .button:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(circle at center, transparent 30%, rgba(0, 0, 0, 0.5) 100%);
+      opacity: 0;
+      transition: opacity 0.3s;
+      z-index: -1;
+    }
+    
+    .button:after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 20px;
+      padding: 2px;
+      background: linear-gradient(225deg, var(--border-color-1), var(--border-color-2));
+      -webkit-mask: 
+        linear-gradient(#fff 0 0) content-box, 
+        linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      opacity: 0.7;
+      transition: opacity 0.4s;
+    }
+    
+    .button:hover {
+      transform: translateY(-5px) scale(1.05);
+      box-shadow: 0 15px 25px rgba(0, 0, 0, 0.6);
+    }
+    
+    .button:hover:after {
+      opacity: 1;
+    }
+    
+    .button:active {
+      transform: translateY(2px) scale(0.98);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+    }
+    
+    .button-icon {
+      font-size: 3rem;
+      margin-bottom: 0.75rem;
+      background: linear-gradient(var(--icon-color-1), var(--icon-color-2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 0 5px var(--glow-color));
+      transition: all 0.3s;
+    }
+    
+    .button:hover .button-icon {
+      transform: scale(1.2);
+      filter: drop-shadow(0 0 10px var(--glow-color));
+    }
+    
+    .button-title {
+      font-weight: 700;
+      font-size: 1.2rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      transition: all 0.3s;
+      text-shadow: 0 0 5px var(--glow-color);
+    }
+    
+    .button:hover .button-title {
+      transform: scale(1.1);
+      text-shadow: 0 0 8px var(--glow-color);
+    }
+    
+    /* Individual button styling */
+    .new-chat {
+      --border-color-1: #00eeff;
+      --border-color-2: #2600ff;
+      --icon-color-1: #00eeff;
+      --icon-color-2: #2600ff;
+      --glow-color: rgba(0, 238, 255, 0.6);
+    }
+    
+    .voice-mode {
+      --border-color-1: #ff00e6;
+      --border-color-2: #7a00ff;
+      --icon-color-1: #ff00e6;
+      --icon-color-2: #7a00ff;
+      --glow-color: rgba(255, 0, 230, 0.6);
+    }
+    
+    .face-mode {
+      --border-color-1: #00ff88;
+      --border-color-2: #00b3ff;
+      --icon-color-1: #00ff88;
+      --icon-color-2: #00b3ff;
+      --glow-color: rgba(0, 255, 136, 0.6);
+    }
+    
+    .neon-shift {
+      --border-color-1: #ff9900;
+      --border-color-2: #ff0059;
+      --icon-color-1: #ff9900;
+      --icon-color-2: #ff0059;
+      --glow-color: rgba(255, 153, 0, 0.6);
+    }
+    
+    .about-me {
+      --border-color-1: #8e2de2;
+      --border-color-2: #4a00e0;
+      --icon-color-1: #8e2de2;
+      --icon-color-2: #4a00e0;
+      --glow-color: rgba(142, 45, 226, 0.6);
+    }
+    
+    .exit {
+      --border-color-1: #ff0059;
+      --border-color-2: #ff5e00;
+      --icon-color-1: #ff0059;
+      --icon-color-2: #ff5e00;
+      --glow-color: rgba(255, 0, 89, 0.6);
+    }
+    
+    /* Button press effect */
+    @keyframes button-press {
+      0% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(0.9);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+    
+    .press-animation {
+      animation: button-press 0.3s forwards;
+    }
+    
+    /* Ripple effect */
+    .ripple {
+      position: absolute;
+      border-radius: 50%;
+      transform: scale(0);
+      background: rgba(255, 255, 255, 0.5);
+      animation: ripple 0.6s linear;
+      pointer-events: none;
+    }
+    
+    @keyframes ripple {
+      to {
+        transform: scale(4);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="canvas"></canvas>
+  
+  <div class="content">
+    <h1>COSMIC INTERFACE</h1>
+    
+    <div class="button-container">
+      <div class="button new-chat" onclick="handleButtonClick(this, 'new-chat')">
+        <div class="button-icon">✨</div>
+        <div class="button-title">New Chat</div>
+      </div>
+      
+      <div class="button voice-mode" onclick="handleButtonClick(this, 'voice-mode')">
+        <div class="button-icon">🎙️</div>
+        <div class="button-title">Voice Mode</div>
+      </div>
+      
+      <div class="button face-mode" onclick="handleButtonClick(this, 'face-mode')">
+        <div class="button-icon">👤</div>
+        <div class="button-title">Face Mode</div>
+      </div>
+      
+      <div class="button neon-shift" onclick="handleButtonClick(this, 'neon-shift')">
+        <div class="button-icon">🌈</div>
+        <div class="button-title">Neon Shift</div>
+      </div>
+      
+      <div class="button about-me" onclick="handleButtonClick(this, 'about-me')">
+        <div class="button-icon">ℹ️</div>
+        <div class="button-title">About Me</div>
+      </div>
+      
+      <div class="button exit" onclick="handleButtonClick(this, 'exit')">
+        <div class="button-icon">🚪</div>
+        <div class="button-title">Exit</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Particle background
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    
+    const particles = [];
+    const particleCount = 100;
+    const connectionDistance = 150;
+    
+    class Particle {
+      constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 2 + 1;
+        this.speedX = Math.random() * 1 - 0.5;
+        this.speedY = Math.random() * 1 - 0.5;
+        this.color = this.getRandomColor();
+      }
+      
+      getRandomColor() {
+        const colors = [
+          'rgba(0, 238, 255, ',
+          'rgba(255, 0, 230, ',
+          'rgba(0, 255, 136, ',
+          'rgba(255, 153, 0, ',
+          'rgba(142, 45, 226, ',
+          'rgba(255, 0, 89, '
+        ];
+        return colors[Math.floor(Math.random() * colors.length)];
+      }
+      
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        
+        if (this.x < 0 || this.x > canvas.width) {
+          this.speedX = -this.speedX;
+        }
+        
+        if (this.y < 0 || this.y > canvas.height) {
+          this.speedY = -this.speedY;
+        }
+      }
+      
+      draw() {
+        ctx.fillStyle = this.color + '0.8)';
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+    
+    function init() {
+      for (let i = 0; i < particleCount; i++) {
+        particles.push(new Particle());
+      }
+    }
+    
+    function connectParticles() {
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          
+          if (distance < connectionDistance) {
+            const opacity = 1 - (distance / connectionDistance);
+            ctx.strokeStyle = particles[i].color + opacity + ')';
+            ctx.lineWidth = 0.5;
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.stroke();
+          }
+        }
+      }
+    }
+    
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      for (let i = 0; i < particles.length; i++) {
+        particles[i].update();
+        particles[i].draw();
+      }
+      
+      connectParticles();
+      requestAnimationFrame(animate);
+    }
+    
+    window.addEventListener('resize', function() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+    
+    init();
+    animate();
+    
+    // Button click handling
+    function handleButtonClick(element, action) {
+      // Create ripple effect
+      const ripple = document.createElement('span');
+      ripple.classList.add('ripple');
+      element.appendChild(ripple);
+      
+      const rect = element.getBoundingClientRect();
+      const size = Math.max(rect.width, rect.height);
+      
+      ripple.style.width = ripple.style.height = size + 'px';
+      ripple.style.left = (event.clientX - rect.left - size/2) + 'px';
+      ripple.style.top = (event.clientY - rect.top - size/2) + 'px';
+      
+      // Add press animation
+      element.classList.add('press-animation');
+      
+      // Action based on button clicked
+      console.log(`Button clicked: ${action}`);
+      
+      // Demo actions
+      switch(action) {
+        case 'new-chat':
+          alert('Starting new chat...');
+          break;
+        case 'voice-mode':
+          alert('Activating voice mode...');
+          break;
+        case 'face-mode':
+          alert('Switching to face mode...');
+          break;
+        case 'neon-shift':
+          shiftColors();
+          break;
+        case 'about-me':
+          alert('About me section...');
+          break;
+        case 'exit':
+          if (confirm('Are you sure you want to exit?')) {
+            alert('Exiting application...');
+          }
+          break;
+      }
+      
+      // Remove ripple and animation class after animation completes
+      setTimeout(() => {
+        ripple.remove();
+        element.classList.remove('press-animation');
+      }, 600);
+    }
+    
+    // Neon shift function to change color schemes
+    function shiftColors() {
+      const buttons = document.querySelectorAll('.button');
+      const colors = [
+        ['#00eeff', '#2600ff'],
+        ['#ff00e6', '#7a00ff'],
+        ['#00ff88', '#00b3ff'],
+        ['#ff9900', '#ff0059'],
+        ['#8e2de2', '#4a00e0'],
+        ['#ff0059', '#ff5e00']
+      ];
+      
+      buttons.forEach((button, index) => {
+        const randomIndex = Math.floor(Math.random() * colors.length);
+        const [color1, color2] = colors[randomIndex];
+        
+        button.style.setProperty('--border-color-1', color1);
+        button.style.setProperty('--border-color-2', color2);
+        button.style.setProperty('--icon-color-1', color1);
+        button.style.setProperty('--icon-color-2', color2);
+        button.style.setProperty('--glow-color', `${color1}99`);
+      });
+    }
+  </script>
+</body>
+</html>

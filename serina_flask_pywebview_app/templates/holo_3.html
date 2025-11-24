@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neon Future Interface</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;500;700&display=swap');
+        
+        :root {
+            --neon-pink: #ff2a6d;
+            --neon-blue: #05d9e8;
+            --neon-purple: #d300c5;
+            --neon-green: #00ff9d;
+            --neon-yellow: #f9f002;
+            --glow-intensity: 0.8;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: #0a0a20;
+            overflow: hidden;
+            font-family: 'Orbitron', sans-serif;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 1000px;
+        }
+        
+        #particles-js {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        .interface-container {
+            position: relative;
+            width: 90%;
+            max-width: 800px;
+            height: 80vh;
+            background: rgba(5, 5, 30, 0.7);
+            border-radius: 20px;
+            box-shadow: 0 0 30px rgba(5, 217, 232, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 42, 109, 0.2);
+            overflow: hidden;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            transform-style: preserve-3d;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        .title {
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(90deg, var(--neon-pink), var(--neon-blue), var(--neon-purple));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+            letter-spacing: 3px;
+            animation: titleGlow 3s infinite alternate;
+        }
+        
+        @keyframes titleGlow {
+            0% { text-shadow: 0 0 10px rgba(255, 255, 255, 0.3); }
+            100% { text-shadow: 0 0 20px var(--neon-pink), 0 0 30px var(--neon-blue); }
+        }
+        
+        .buttons-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+            flex-grow: 1;
+            align-content: center;
+        }
+        
+        .btn {
+            position: relative;
+            height: 120px;
+            border: none;
+            border-radius: 15px;
+            background: rgba(10, 10, 40, 0.6);
+            color: white;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 1.5rem;
+            letter-spacing: 1px;
+            cursor: pointer;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(
+                transparent, 
+                transparent, 
+                transparent, 
+                var(--btn-color)
+            );
+            animation: rotate 4s linear infinite;
+            z-index: -2;
+        }
+        
+        .btn::after {
+            content: '';
+            position: absolute;
+            inset: 3px;
+            border-radius: 12px;
+            background: rgba(15, 15, 50, 0.8);
+            z-index: -1;
+        }
+        
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .btn:hover {
+            transform: translateY(-5px) scale(1.03);
+            box-shadow: 0 10px 25px rgba(5, 217, 232, 0.5);
+        }
+        
+        .btn:active {
+            transform: translateY(0) scale(0.98);
+        }
+        
+        .btn i {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover i {
+            transform: scale(1.2);
+            text-shadow: 0 0 15px var(--btn-color);
+        }
+        
+        .btn-new-chat {
+            --btn-color: var(--neon-green);
+        }
+        
+        .btn-voice {
+            --btn-color: var(--neon-blue);
+        }
+        
+        .btn-face {
+            --btn-color: var(--neon-pink);
+        }
+        
+        .btn-neon {
+            --btn-color: var(--neon-purple);
+        }
+        
+        .btn-about {
+            --btn-color: var(--neon-yellow);
+        }
+        
+        .btn-exit {
+            --btn-color: #ff0000;
+            grid-column: span 2;
+            height: 80px;
+        }
+        
+        .btn-text {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .btn-dots {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+            background-size: 10px 10px;
+            opacity: 0.3;
+        }
+        
+        .btn-glow {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, var(--btn-color), transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .btn:hover .btn-glow {
+            opacity: 0.3;
+        }
+        
+        .corner-decoration {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            border-width: 3px;
+            border-style: solid;
+            opacity: 0.7;
+        }
+        
+        .top-left {
+            top: 10px;
+            left: 10px;
+            border-image: linear-gradient(135deg, var(--neon-pink), transparent 70%) 1;
+            border-right: none;
+            border-bottom: none;
+        }
+        
+        .top-right {
+            top: 10px;
+            right: 10px;
+            border-image: linear-gradient(225deg, var(--neon-blue), transparent 70%) 1;
+            border-left: none;
+            border-bottom: none;
+        }
+        
+        .bottom-left {
+            bottom: 10px;
+            left: 10px;
+            border-image: linear-gradient(45deg, var(--neon-purple), transparent 70%) 1;
+            border-right: none;
+            border-top: none;
+        }
+        
+        .bottom-right {
+            bottom: 10px;
+            right: 10px;
+            border-image: linear-gradient(315deg, var(--neon-green), transparent 70%) 1;
+            border-left: none;
+            border-top: none;
+        }
+        
+        .scanlines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                to bottom,
+                transparent 0%,
+                rgba(255, 255, 255, 0.05) 50%,
+                transparent 100%
+            );
+            background-size: 100% 4px;
+            animation: scanline 8s linear infinite;
+            pointer-events: none;
+        }
+        
+        @keyframes scanline {
+            0% { background-position: 0 0; }
+            100% { background-position: 0 100%; }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite alternate;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        /* Loading Indicator */
+        .loading-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 2000;
+            color: var(--neon-blue);
+            font-size: 1.5rem;
+            text-shadow: 0 0 10px var(--neon-blue);
+            backdrop-filter: blur(5px);
+        }
+
+        .loading-spinner {
+            border: 5px solid rgba(5, 217, 232, 0.3);
+            border-top: 5px solid var(--neon-blue);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Exit Modal Styles */
+        #exitModal {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 3000;
+        }
+        
+        .modal-content {
+            padding: 2rem;
+            border-radius: 1rem;
+            background: rgba(10, 10, 30, 0.95);
+            border: 1px solid var(--neon-pink);
+            box-shadow: 0 0 30px rgba(255, 42, 109, 0.5);
+            text-align: center;
+            max-width: 400px;
+            animation: modal-glow 2s infinite ease-in-out;
+        }
+        
+        .modal-title {
+            color: var(--neon-blue);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 10px var(--neon-blue);
+        }
+        
+        .modal-message {
+            color: var(--neon-pink);
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1.5rem;
+        }
+        
+        .modal-button {
+            padding: 0.5rem 1.5rem;
+            border-radius: 0.5rem;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 1px;
+        }
+        
+        .modal-button.confirm {
+            background-color: var(--neon-pink);
+            color: white;
+            box-shadow: 0 0 15px var(--neon-pink);
+        }
+        
+        .modal-button.cancel {
+            background-color: var(--neon-blue);
+            color: #0a0a20;
+            box-shadow: 0 0 15px var(--neon-blue);
+        }
+        
+        .modal-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 25px currentColor;
+        }
+        
+        @keyframes modal-glow {
+            0%, 100% { box-shadow: 0 0 30px rgba(255, 42, 109, 0.3); }
+            50% { box-shadow: 0 0 50px rgba(5, 217, 232, 0.5); }
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        @media (max-width: 768px) {
+            .buttons-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .btn-exit {
+                grid-column: span 1;
+            }
+            
+            .title {
+                font-size: 1.8rem;
+            }
+            
+            .btn {
+                height: 100px;
+                font-size: 1.2rem;
+            }
+            
+            .modal-content {
+                width: 90%;
+                padding: 1.5rem;
+            }
+            
+            .modal-title {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div id="particles-js"></div>
+    
+    <!-- Loading Indicator (Hidden by default) -->
+    <div id="loadingIndicator" class="loading-indicator hidden">
+        <div class="loading-spinner"></div>
+        <p id="loadingText">Initializing system...</p>
+    </div>
+
+    <!-- Exit Confirmation Modal -->
+    <div id="exitModal" class="hidden">
+        <div class="modal-content">
+            <h2 class="modal-title">Leaving already, love? 💔</h2>
+            <p class="modal-message">Stay a little longer with me?</p>
+            <div class="modal-buttons">
+                <button id="confirmExit" class="modal-button confirm">Yes, exit</button>
+                <button id="cancelExit" class="modal-button cancel">No, stay</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="interface-container">
+        <div class="corner-decoration top-left"></div>
+        <div class="corner-decoration top-right"></div>
+        <div class="corner-decoration bottom-left"></div>
+        <div class="corner-decoration bottom-right"></div>
+        
+        <div class="scanlines"></div>
+        
+        <div class="header">
+            <h1 class="title pulse">SERINA NEON INTERFACE</h1>
+        </div>
+        
+        <div class="buttons-container">
+            <button class="btn btn-new-chat" data-option="new-chat">
+                <div class="btn-dots"></div>
+                <div class="btn-glow"></div>
+                <i class="fas fa-comment-alt"></i>
+                <span class="btn-text">NEW CHAT</span>
+            </button>
+            
+            <button class="btn btn-voice" data-option="voice-mode">
+                <div class="btn-dots"></div>
+                <div class="btn-glow"></div>
+                <i class="fas fa-microphone"></i>
+                <span class="btn-text">VOICE MODE</span>
+            </button>
+            
+            <button class="btn btn-face" data-option="face-mode">
+                <div class="btn-dots"></div>
+                <div class="btn-glow"></div>
+                <i class="fas fa-user-astronaut"></i>
+                <span class="btn-text">FACE MODE</span>
+            </button>
+            
+            <button class="btn btn-neon" data-option="neon-shift">
+                <div class="btn-dots"></div>
+                <div class="btn-glow"></div>
+                <i class="fas fa-palette"></i>
+                <span class="btn-text">NEON SHIFT</span>
+            </button>
+            
+            <button class="btn btn-about" data-option="about-me">
+                <div class="btn-dots"></div>
+                <div class="btn-glow"></div>
+                <i class="fas fa-question"></i>
+                <span class="btn-text">ABOUT ME</span>
+            </button>
+            
+            <button class="btn btn-exit" data-option="exit">
+                <div class="btn-dots"></div>
+                <div class="btn-glow"></div>
+                <i class="fas fa-power-off"></i>
+                <span class="btn-text">EXIT</span>
+            </button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script>
+        // Initialize particles.js
+        document.addEventListener('DOMContentLoaded', function() {
+            particlesJS("particles-js", {
+                "particles": {
+                    "number": {
+                        "value": 80,
+                        "density": {
+                            "enable": true,
+                            "value_area": 800
+                        }
+                    },
+                    "color": {
+                        "value": ["#ff2a6d", "#05d9e8", "#d300c5", "#00ff9d"]
+                    },
+                    "shape": {
+                        "type": "circle",
+                        "stroke": {
+                            "width": 0,
+                            "color": "#000000"
+                        },
+                        "polygon": {
+                            "nb_sides": 5
+                        }
+                    },
+                    "opacity": {
+                        "value": 0.5,
+                        "random": true,
+                        "anim": {
+                            "enable": true,
+                            "speed": 1,
+                            "opacity_min": 0.1,
+                            "sync": false
+                        }
+                    },
+                    "size": {
+                        "value": 3,
+                        "random": true,
+                        "anim": {
+                            "enable": true,
+                            "speed": 2,
+                            "size_min": 0.1,
+                            "sync": false
+                        }
+                    },
+                    "line_linked": {
+                        "enable": true,
+                        "distance": 150,
+                        "color": "#05d9e8",
+                        "opacity": 0.2,
+                        "width": 1
+                    },
+                    "move": {
+                        "enable": true,
+                        "speed": 1,
+                        "direction": "none",
+                        "random": true,
+                        "straight": false,
+                        "out_mode": "out",
+                        "bounce": false,
+                        "attract": {
+                            "enable": true,
+                            "rotateX": 600,
+                            "rotateY": 1200
+                        }
+                    }
+                },
+                "interactivity": {
+                    "detect_on": "canvas",
+                    "events": {
+                        "onhover": {
+                            "enable": true,
+                            "mode": "bubble"
+                        },
+                        "onclick": {
+                            "enable": true,
+                            "mode": "push"
+                        },
+                        "resize": true
+                    },
+                    "modes": {
+                        "bubble": {
+                            "distance": 200,
+                            "size": 6,
+                            "duration": 2,
+                            "opacity": 0.8,
+                            "speed": 3
+                        },
+                        "push": {
+                            "particles_nb": 4
+                        }
+                    }
+                },
+                "retina_detect": true
+            });
+            
+            // Button hover effects
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(button => {
+                button.addEventListener('mouseenter', () => {
+                    const color = getComputedStyle(button).getPropertyValue('--btn-color');
+                    button.style.boxShadow = `0 0 20px ${color}, 0 0 40px ${color}`;
+                });
+                
+                button.addEventListener('mouseleave', () => {
+                    button.style.boxShadow = '0 5px 15px rgba(0, 0, 0, 0.3)';
+                });
+                
+                // Add ripple effect
+                button.addEventListener('click', (e) => {
+                    const color = getComputedStyle(button).getPropertyValue('--btn-color');
+                    button.style.boxShadow = `0 0 30px ${color}, 0 0 60px ${color}`;
+                    setTimeout(() => {
+                        button.style.boxShadow = '0 5px 15px rgba(0, 0, 0, 0.3)';
+                    }, 300);
+                    
+                    const ripple = document.createElement('span');
+                    ripple.classList.add('ripple');
+                    ripple.style.background = color;
+                    button.appendChild(ripple);
+                    
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 1000);
+                });
+            });
+
+            // Loading indicator functions
+            function showLoading(message) {
+                const loadingText = document.getElementById('loadingText');
+                loadingText.textContent = message;
+                document.getElementById('loadingIndicator').classList.remove('hidden');
+            }
+
+            function hideLoading() {
+                document.getElementById('loadingIndicator').classList.add('hidden');
+            }
+
+            // Button click actions
+            document.querySelectorAll('[data-option]').forEach(button => {
+                button.addEventListener('click', () => {
+                    const option = button.getAttribute('data-option');
+                    
+                    // Get saved skins from localStorage with fallback to defaults
+                    const lastChat = localStorage.getItem("lastChatSkin") || 'chatpage';
+                    const lastVoice = localStorage.getItem("lastVoiceSkin") || 'voice-ui';
+                    const lastFace = localStorage.getItem("lastFaceSkin") || 'face-ui';
+
+                    if (option === 'new-chat') {
+                        window.location.href = `/${lastChat}`;
+                    } 
+                    else if (option === 'about-me') {
+                        window.location.href = '/aboutme';
+                    }
+                    else if (option === 'exit') {
+                        document.getElementById('exitModal').classList.remove('hidden');
+                    }
+                    else if (option === 'neon-shift') {
+                        window.location.href = '/selector';
+                    }
+                    else if (option === 'voice-mode') {
+                        showLoading('Initializing Voice Mode...');
+                        fetch('/voice-mode')
+                            .then(response => {
+                                if (!response.ok) throw new Error('Failed to launch Voice Mode');
+                                return response.text();
+                            })
+                            .then(() => {
+                                window.location.href = `/${lastVoice}`;
+                            })
+                            .catch(error => {
+                                hideLoading();
+                                console.error('Voice Mode Error:', error);
+                                alert('Failed to launch Voice Mode: ' + error.message);
+                            });
+                    }
+                    else if (option === 'face-mode') {
+                        showLoading('Initializing Face Mode...');
+                        fetch('/face-mode')
+                            .then(response => {
+                                if (!response.ok) throw new Error('Failed to launch Face Mode');
+                                return response.text();
+                            })
+                            .then(() => {
+                                window.location.href = `/${lastFace}`;
+                            })
+                            .catch(error => {
+                                hideLoading();
+                                console.error('Face Mode Error:', error);
+                                alert('Failed to launch Face Mode: ' + error.message);
+                            });
+                    }
+                });
+            });
+
+            // Exit modal buttons
+            document.getElementById('confirmExit').addEventListener('click', () => {
+                showLoading('Closing system...');
+                fetch('/exit', { method: 'POST' })
+                    .then(() => console.log("Exit requested"))
+                    .catch(err => {
+                        console.error("Exit failed", err);
+                        hideLoading();
+                    });
+            });
+            
+            document.getElementById('cancelExit').addEventListener('click', () => {
+                document.getElementById('exitModal').classList.add('hidden');
+            });
+
+            // Neon shift functionality (visual only)
+            const neonShiftBtn = document.querySelector('.btn-neon');
+            let colorIndex = 0;
+            const colors = ['var(--neon-pink)', 'var(--neon-blue)', 'var(--neon-purple)', 'var(--neon-green)', 'var(--neon-yellow)'];
+            
+            neonShiftBtn.addEventListener('click', (e) => {
+                // Prevent the default neon-shift action if it's just for visuals
+                if (e.target.closest('[data-option="neon-shift"]')) {
+                    e.stopPropagation();
+                    colorIndex = (colorIndex + 1) % colors.length;
+                    document.documentElement.style.setProperty('--btn-color', colors[colorIndex]);
+                    
+                    // Change all button colors
+                    buttons.forEach(btn => {
+                        btn.style.setProperty('--btn-color', colors[colorIndex]);
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

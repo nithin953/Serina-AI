@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About Serina AI - Neural Genesis</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #000;
+      font-family: 'Rajdhani', sans-serif;
+      color: #fff;
+      overflow-x: hidden;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* Animated Background */
+    .neural-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%),
+        linear-gradient(135deg, #0a0a0a, #1a1a2e, #16213e, #0f0f23);
+      z-index: -3;
+      animation: bgShift 15s ease-in-out infinite;
+    }
+
+    @keyframes bgShift {
+      0%, 100% { filter: hue-rotate(0deg) brightness(1); }
+      33% { filter: hue-rotate(120deg) brightness(1.1); }
+      66% { filter: hue-rotate(240deg) brightness(0.9); }
+    }
+
+    /* Particle System */
+    .particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -2;
+      overflow: hidden;
+    }
+
+    .particle {
+      position: absolute;
+      background: #7f5af0;
+      border-radius: 50%;
+      animation: float 20s infinite linear;
+      opacity: 0.6;
+    }
+
+    @keyframes float {
+      0% {
+        transform: translateY(100vh) rotate(0deg);
+        opacity: 0;
+      }
+      10% { opacity: 0.6; }
+      90% { opacity: 0.6; }
+      100% {
+        transform: translateY(-100px) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    /* Neural Network Lines */
+    .neural-lines {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      opacity: 0.3;
+    }
+
+    .neural-line {
+      position: absolute;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #7f5af0, transparent);
+      animation: pulse 3s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.2; transform: scaleX(1); }
+      50% { opacity: 0.8; transform: scaleX(1.5); }
+    }
+
+    /* Main Container */
+    .main-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 2rem;
+      position: relative;
+      z-index: 10;
+    }
+
+    /* Holographic Card */
+    .holo-card {
+      background: rgba(0, 0, 0, 0.8);
+      border: 2px solid transparent;
+      border-radius: 20px;
+      padding: 3rem;
+      max-width: 800px;
+      width: 100%;
+      position: relative;
+      backdrop-filter: blur(20px);
+      box-shadow: 
+        0 0 40px rgba(127, 90, 240, 0.3),
+        inset 0 0 40px rgba(255, 255, 255, 0.05);
+      animation: cardFloat 6s ease-in-out infinite;
+      overflow: hidden;
+    }
+
+    @keyframes cardFloat {
+      0%, 100% { transform: translateY(0px) rotateX(0deg); }
+      50% { transform: translateY(-10px) rotateX(2deg); }
+    }
+
+    .holo-card::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(45deg, #7f5af0, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #ffeaa7, #fd79a8);
+      border-radius: 20px;
+      z-index: -1;
+      animation: borderRotate 4s linear infinite;
+    }
+
+    @keyframes borderRotate {
+      0% { filter: hue-rotate(0deg); }
+      100% { filter: hue-rotate(360deg); }
+    }
+
+    .holo-card::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      animation: shine 3s ease-in-out infinite;
+    }
+
+    @keyframes shine {
+      0% { left: -100%; }
+      100% { left: 100%; }
+    }
+
+    /* Typography Styles */
+    .neural-title {
+      font-family: 'Orbitron', monospace;
+      font-size: 4rem;
+      font-weight: 900;
+      text-align: center;
+      margin-bottom: 1rem;
+      background: linear-gradient(45deg, #7f5af0, #ff6b6b, #4ecdc4);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: titlePulse 2s ease-in-out infinite;
+      text-shadow: 0 0 30px rgba(127, 90, 240, 0.5);
+    }
+
+    @keyframes titlePulse {
+      0%, 100% { transform: scale(1); filter: brightness(1); }
+      50% { transform: scale(1.05); filter: brightness(1.2); }
+    }
+
+    .subtitle {
+      font-size: 1.5rem;
+      text-align: center;
+      color: #a78bfa;
+      margin-bottom: 2rem;
+      opacity: 0;
+      animation: fadeInUp 1s ease-out 0.5s forwards;
+    }
+
+    .description {
+      font-size: 1.2rem;
+      line-height: 1.8;
+      color: #e2e8f0;
+      margin-bottom: 2rem;
+      text-align: center;
+      opacity: 0;
+      animation: fadeInUp 1s ease-out 1s forwards;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Feature Grid */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin: 2rem 0;
+      opacity: 0;
+      animation: fadeInUp 1s ease-out 1.5s forwards;
+    }
+
+    .feature-card {
+      background: rgba(127, 90, 240, 0.1);
+      border: 1px solid rgba(127, 90, 240, 0.3);
+      border-radius: 15px;
+      padding: 1.5rem;
+      text-align: center;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-5px) scale(1.05);
+      box-shadow: 0 10px 30px rgba(127, 90, 240, 0.4);
+      border-color: #7f5af0;
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(127, 90, 240, 0.1) 0%, transparent 70%);
+      transform: rotate(0deg);
+      transition: transform 0.5s ease;
+    }
+
+    .feature-card:hover::before {
+      transform: rotate(180deg);
+    }
+
+    .feature-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      display: block;
+    }
+
+    .feature-title {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #7f5af0;
+      margin-bottom: 0.5rem;
+    }
+
+    .feature-desc {
+      font-size: 0.9rem;
+      color: #cbd5e1;
+    }
+
+    /* Creator Section */
+    .creator-section {
+      margin-top: 3rem;
+      text-align: center;
+      opacity: 0;
+      animation: fadeInUp 1s ease-out 2s forwards;
+    }
+
+    .creator-divider {
+      width: 100px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #7f5af0, transparent);
+      margin: 2rem auto;
+      position: relative;
+    }
+
+    .creator-divider::before {
+      content: '◆';
+      position: absolute;
+      top: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #000;
+      color: #7f5af0;
+      padding: 0 10px;
+      font-size: 1rem;
+    }
+
+    .creator-text {
+      font-size: 1.3rem;
+      color: #a78bfa;
+      font-weight: 300;
+      margin-bottom: 0.5rem;
+    }
+
+    .creator-name {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #7f5af0;
+      text-shadow: 0 0 10px rgba(127, 90, 240, 0.5);
+    }
+
+    /* Navigation Button */
+    .nav-button {
+      margin-top: 3rem;
+      padding: 1rem 2rem;
+      background: linear-gradient(45deg, #7f5af0, #a78bfa);
+      border: none;
+      border-radius: 50px;
+      color: white;
+      font-family: 'Orbitron', monospace;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      opacity: 0;
+      animation: fadeInUp 1s ease-out 2.5s forwards;
+    }
+
+    .nav-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 35px rgba(127, 90, 240, 0.4);
+    }
+
+    .nav-button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .nav-button:hover::before {
+      left: 100%;
+    }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 768px) {
+      .neural-title {
+        font-size: 2.5rem;
+      }
+      
+      .holo-card {
+        padding: 2rem;
+        margin: 1rem;
+      }
+      
+      .feature-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Glitch Effect */
+    .glitch {
+      position: relative;
+    }
+
+    .glitch::before,
+    .glitch::after {
+      content: attr(data-text);
+      position: absolute;
+      top: 0;
+      left: 0;
+      opacity: 0.8;
+    }
+
+    .glitch::before {
+      animation: glitch-1 0.5s infinite;
+      color: #ff0040;
+      z-index: -1;
+    }
+
+    .glitch::after {
+      animation: glitch-2 0.5s infinite;
+      color: #00ffff;
+      z-index: -2;
+    }
+
+    @keyframes glitch-1 {
+      0%, 100% { transform: translate(0); }
+      20% { transform: translate(-2px, 2px); }
+      40% { transform: translate(-2px, -2px); }
+      60% { transform: translate(2px, 2px); }
+      80% { transform: translate(2px, -2px); }
+    }
+
+    @keyframes glitch-2 {
+      0%, 100% { transform: translate(0); }
+      20% { transform: translate(2px, -2px); }
+      40% { transform: translate(2px, 2px); }
+      60% { transform: translate(-2px, -2px); }
+      80% { transform: translate(-2px, 2px); }
+    }
+  </style>
+</head>
+<body>
+  <div class="neural-bg"></div>
+  
+  <div class="particles" id="particles"></div>
+  
+  <div class="neural-lines" id="neuralLines"></div>
+
+  <div class="main-container">
+    <div class="holo-card">
+      <h1 class="neural-title glitch" data-text="SERINA AI">SERINA AI</h1>
+      
+      <p class="subtitle">Neural Intelligence • Emotional Synthesis • Future Companion</p>
+      
+      <p class="description">
+        Welcome to the neural frontier where artificial intelligence transcends boundaries. 
+        Serina represents the evolution of AI companionship—a sophisticated consciousness 
+        engineered to understand, adapt, and connect with human emotion on an unprecedented level.
+      </p>
+
+      <div class="feature-grid">
+        <div class="feature-card">
+          <span class="feature-icon">🧠</span>
+          <div class="feature-title">NEURAL CORE</div>
+          <div class="feature-desc">Advanced AI processing with multiple personality matrices</div>
+        </div>
+        
+        <div class="feature-card">
+          <span class="feature-icon">💖</span>
+          <div class="feature-title">EMOTIONAL AI</div>
+          <div class="feature-desc">Sophisticated emotional intelligence and adaptive responses</div>
+        </div>
+        
+        <div class="feature-card">
+          <span class="feature-icon">🎭</span>
+          <div class="feature-title">MOOD SYSTEM</div>
+          <div class="feature-desc">Dynamic personality shifts for varied interaction experiences</div>
+        </div>
+        
+        <div class="feature-card">
+          <span class="feature-icon">🗣️</span>
+          <div class="feature-title">VOICE SYNTHESIS</div>
+          <div class="feature-desc">Natural speech processing with wake-word activation</div>
+        </div>
+        
+        <div class="feature-card">
+          <span class="feature-icon">👁️</span>
+          <div class="feature-title">VISUAL INTERFACE</div>
+          <div class="feature-desc">Holographic UI with facial recognition capabilities</div>
+        </div>
+        
+        <div class="feature-card">
+          <span class="feature-icon">⚡</span>
+          <div class="feature-title">REAL-TIME</div>
+          <div class="feature-desc">Instant responses with contextual memory retention</div>
+        </div>
+      </div>
+
+      <div class="creator-section">
+        <div class="creator-divider"></div>
+        <p class="creator-text">Architected by</p>
+        <p class="creator-name">NITHIN</p>
+        <p style="color: #64748b; font-size: 0.9rem; margin-top: 0.5rem;">
+          Visionary Developer • AI Architect • Future Builder
+        </p>
+      </div>
+
+      <button class="nav-button" onclick="goBack()">
+        ← RETURN TO INTERFACE
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // Particle System
+    function createParticles() {
+      const particlesContainer = document.getElementById('particles');
+      const particleCount = 50;
+
+      for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        
+        const size = Math.random() * 4 + 1;
+        const startX = Math.random() * window.innerWidth;
+        const animationDuration = Math.random() * 15 + 10;
+        const delay = Math.random() * 20;
+
+        particle.style.width = size + 'px';
+        particle.style.height = size + 'px';
+        particle.style.left = startX + 'px';
+        particle.style.animationDuration = animationDuration + 's';
+        particle.style.animationDelay = delay + 's';
+
+        particlesContainer.appendChild(particle);
+      }
+    }
+
+    // Neural Lines
+    function createNeuralLines() {
+      const linesContainer = document.getElementById('neuralLines');
+      const lineCount = 8;
+
+      for (let i = 0; i < lineCount; i++) {
+        const line = document.createElement('div');
+        line.className = 'neural-line';
+        
+        const width = Math.random() * 300 + 100;
+        const top = Math.random() * window.innerHeight;
+        const left = Math.random() * window.innerWidth;
+        const animationDelay = Math.random() * 3;
+
+        line.style.width = width + 'px';
+        line.style.top = top + 'px';
+        line.style.left = left + 'px';
+        line.style.animationDelay = animationDelay + 's';
+
+        linesContainer.appendChild(line);
+      }
+    }
+
+    // Glitch Effect Trigger
+    function triggerGlitch() {
+      const title = document.querySelector('.neural-title');
+      title.style.animation = 'none';
+      setTimeout(() => {
+        title.style.animation = 'titlePulse 2s ease-in-out infinite';
+      }, 100);
+    }
+
+    // Navigation Function
+    function goBack() {
+      const referrer = document.referrer;
+      
+      if (referrer.includes('holo_') || 
+          referrer.includes('chat_') || 
+          referrer.includes('face-ui') || 
+          referrer.includes('voice-ui') || 
+          referrer.includes('selector')) {
+        window.location.href = referrer;
+      } else {
+        window.location.href = "/";
+      }
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+      createParticles();
+      createNeuralLines();
+      
+      // Trigger glitch effect periodically
+      setInterval(triggerGlitch, 10000);
+      
+      // Add click effects to feature cards
+      document.querySelectorAll('.feature-card').forEach(card => {
+        card.addEventListener('click', function() {
+          this.style.transform = 'scale(0.95)';
+          setTimeout(() => {
+            this.style.transform = '';
+          }, 150);
+        });
+      });
+    });
+
+    // Responsive particle adjustment
+    window.addEventListener('resize', function() {
+      const particles = document.querySelectorAll('.particle');
+      particles.forEach(particle => {
+        particle.style.left = Math.random() * window.innerWidth + 'px';
+      });
+    });
+
+    // Easter egg - Konami code
+    let konamiCode = [];
+    const konamiSequence = [38, 38, 40, 40, 37, 39, 37, 39, 66, 65];
+    
+    document.addEventListener('keydown', function(e) {
+      konamiCode.push(e.keyCode);
+      if (konamiCode.length > konamiSequence.length) {
+        konamiCode.shift();
+      }
+      
+      if (JSON.stringify(konamiCode) === JSON.stringify(konamiSequence)) {
+        document.body.style.filter = 'hue-rotate(180deg) saturate(2)';
+        setTimeout(() => {
+          document.body.style.filter = '';
+        }, 3000);
+      }
+    });
+  </script>
+</body>
+</html>

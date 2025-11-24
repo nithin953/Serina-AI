@@ -1,0 +1,35 @@
+# Web backend
+Flask==2.3.3
+flask_cors==4.0.0
+
+# Voice and speech
+pygame==2.5.2
+SpeechRecognition==3.10.1
+pyaudio==0.2.13
+edge-tts==6.1.4
+
+# Wake word
+pvporcupine==3.0.3
+
+# NLP and API
+requests==2.31.0
+fuzzywuzzy==0.18.0
+python-Levenshtein==0.23.0
+
+# Face, eye, and gesture tracking
+opencv-python==4.9.0.80
+mediapipe==0.10.9
+dlib==19.24.2
+imutils==0.5.4
+numpy==1.26.4
+
+# GUI / desktop interaction
+pyautogui==0.9.54
+keyboard==0.13.5
+
+# Environment handling (optional safety)
+platformdirs==3.10.0
+
+# Utilities
+certifi
+colorama

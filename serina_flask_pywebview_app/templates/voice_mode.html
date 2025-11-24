@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Serina Voice Mode 💖</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a0a1a 50%, #0a0a1a 100%);
+            font-family: 'Orbitron', monospace;
+            color: #00ffff;
+            overflow: hidden;
+            height: 100vh;
+            position: relative;
+        }
+        
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #00ffff;
+            border-radius: 50%;
+            animation: float 6s infinite linear;
+            opacity: 0.7;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) translateX(0px);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.7;
+            }
+            90% {
+                opacity: 0.7;
+            }
+            100% {
+                transform: translateY(-10px) translateX(100px);
+                opacity: 0;
+            }
+        }
+        
+        .voice-container {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+        }
+        
+        .avatar-circle {
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #ff00ff, #00ffff, #0066ff);
+            position: relative;
+            margin-bottom: 40px;
+            animation: pulse 2s ease-in-out infinite alternate;
+            box-shadow: 0 0 50px rgba(0, 255, 255, 0.5);
+        }
+        
+        .avatar-circle::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #ff00ff, #00ffff, #ff00ff);
+            z-index: -1;
+            animation: rotate 4s linear infinite;
+        }
+        
+        .avatar-inner {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+        
+        .avatar-name {
+            font-size: 28px;
+            font-weight: 700;
+            color: #00ffff;
+            text-shadow: 0 0 15px #00ffff;
+            margin-bottom: 8px;
+        }
+        
+        .listening-indicator {
+            font-size: 24px;
+            animation: listening-wave 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes listening-wave {
+            0%, 100% {
+                opacity: 0.6;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.1);
+            }
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 50px rgba(0, 255, 255, 0.5);
+            }
+            100% {
+                transform: scale(1.05);
+                box-shadow: 0 0 80px rgba(255, 0, 255, 0.8);
+            }
+        }
+        
+        @keyframes rotate {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        
+        .status-text {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px #00ffff;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        
+        .sub-status {
+            font-size: 1.2rem;
+            opacity: 0.8;
+            margin-bottom: 10px;
+            font-weight: 400;
+            min-height: 24px;
+        }
+        
+        .mood-status {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            font-weight: 700;
+            color: #ff00ff;
+            text-shadow: 0 0 10px #ff00ff;
+        }
+        
+        @keyframes glow {
+            0% {
+                text-shadow: 0 0 20px #00ffff;
+            }
+            100% {
+                text-shadow: 0 0 40px #ff00ff, 0 0 60px #00ffff;
+            }
+        }
+        
+        .status-indicator {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1rem;
+            z-index: 20;
+        }
+        
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #00ff00;
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 50% {
+                opacity: 1;
+            }
+            51%, 100% {
+                opacity: 0.3;
+            }
+        }
+        
+        .back-btn {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            padding: 10px 20px;
+            background: rgba(255, 0, 100, 0.3);
+            border: 2px solid #ff0064;
+            border-radius: 20px;
+            color: #ff0064;
+            font-family: 'Orbitron', monospace;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            z-index: 20;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255, 0, 100, 0.5);
+            box-shadow: 0 0 20px rgba(255, 0, 100, 0.6);
+        }
+        
+        .listening {
+            animation: listening-pulse 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes listening-pulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 0 50px rgba(0, 255, 255, 0.5);
+            }
+            50% {
+                transform: scale(1.1);
+                box-shadow: 0 0 100px rgba(0, 255, 255, 1);
+            }
+        }
+        
+        #chatToggle {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            font-size: 30px;
+            background: rgba(0, 255, 255, 0.2);
+            color: #00ffff;
+            border: 2px solid #00ffff;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            text-align: center;
+            line-height: 56px;
+            cursor: pointer;
+            z-index: 100;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(8px);
+        }
+        
+        #chatToggle:hover {
+            background: rgba(0, 255, 255, 0.4);
+            box-shadow: 0 0 15px #00ffff;
+        }
+        
+        #chatBox {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            background: rgba(10, 10, 20, 0.8);
+            border: 2px solid #00ffff;
+            border-radius: 10px;
+            padding: 10px;
+            display: none;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+        
+        #chatBox input {
+            width: 200px;
+            padding: 8px;
+            border: none;
+            outline: none;
+            font-family: 'Orbitron', monospace;
+            background: #000;
+            color: #00ffff;
+            border-radius: 6px;
+        }
+        
+        #chatBox button {
+            margin-left: 10px;
+            padding: 8px 12px;
+            background: #00ffff;
+            color: #000;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s ease;
+        }
+        
+        #chatBox button:hover {
+            background: #00bfff;
+        }
+
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .voice-btn {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-family: 'Orbitron', monospace;
+            color: #00ffff;
+            background: rgba(0, 0, 0, 0.4);
+            border: 2px solid #00ffff;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(6px);
+        }
+
+        .voice-btn:hover {
+            background: rgba(0, 255, 255, 0.2);
+            box-shadow: 0 0 12px #00ffff;
+        }
+        
+        @media (max-width: 768px) {
+            .avatar-circle {
+                width: 200px;
+                height: 200px;
+            }
+            
+            .avatar-name {
+                font-size: 22px;
+            }
+            
+            .listening-indicator {
+                font-size: 20px;
+            }
+            
+            .status-text {
+                font-size: 2rem;
+            }
+            
+            #chatBox {
+                width: 90%;
+                right: 5%;
+            }
+            
+            #chatBox input {
+                width: calc(100% - 90px);
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .voice-btn {
+                width: 90%;
+                margin: 5px auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="particles" id="particles"></div>
+    
+    <button class="back-btn" onclick="exitVoiceMode()">← Back to Menu</button>
+    
+    <div class="status-indicator">
+        <div class="status-dot" id="statusDot"></div>
+        <span id="statusText">Voice Mode Ready</span>
+    </div>
+    
+    <div class="voice-container">
+        <div class="avatar-circle" id="avatar">
+            <div class="avatar-inner">
+                <div class="avatar-name">SERINA</div>
+                <div class="listening-indicator">🎧</div>
+            </div>
+        </div>
+        
+        <div class="status-text" id="mainStatus">Serina Voice Mode</div>
+        <div class="mood-status" id="moodStatus">🧠 Current Mood: Love</div>
+        <div class="sub-status" id="subStatus">Click "Start Listening" to activate</div>
+
+        <div class="button-group">
+            <button class="voice-btn" onclick="startVoice()">Start Listening 🔊</button>
+            <button class="voice-btn" onclick="stopVoice()">Stop Voice 💤</button>
+            <button class="voice-btn" onclick="interruptSpeech()">Interrupt ⏹</button>
+        </div>
+    </div>
+    
+    <div id="chatToggle" onclick="toggleChat()" title="Chat with Serina 💬">
+        💬
+    </div>
+    
+    <div id="chatBox">
+        <input type="text" id="chatInput" placeholder="Type your message..." />
+        <button onclick="sendChat()">Send</button>
+    </div>
+
+    <script>
+        let particleCount = 0;
+        const maxParticles = 50;
+        
+        function createParticle() {
+            if (particleCount >= maxParticles) return;
+            
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
+            particle.style.animationDelay = Math.random() * 2 + 's';
+            
+            document.getElementById('particles').appendChild(particle);
+            particleCount++;
+            
+            setTimeout(() => {
+                if (particle.parentNode) {
+                    particle.parentNode.removeChild(particle);
+                    particleCount--;
+                }
+            }, 8000);
+        }
+        
+        setInterval(createParticle, 500);
+        
+        function updateStatus(main, sub, type = null) {
+            document.getElementById('mainStatus').textContent = main;
+            document.getElementById('subStatus').textContent = sub;
+            document.getElementById('subStatus').style.opacity = 1;
+            
+            const statusDot = document.getElementById('statusDot');
+            const statusText = document.getElementById('statusText');
+            const avatar = document.getElementById('avatar');
+            
+            if (!type) {
+                if (main.toLowerCase().includes("speaking") || main.toLowerCase().includes("waking") || main.toLowerCase().includes("thinking")) {
+                    type = "active";
+                } else if (main.toLowerCase().includes("listening") || main.toLowerCase().includes("ready") || main.toLowerCase().includes("waiting")) {
+                    type = "standby";
+                } else {
+                    type = "error";
+                }
+            }
+            
+            switch(type) {
+                case 'active':
+                    statusDot.style.background = '#00ff00';
+                    statusText.textContent = 'Active';
+                    avatar.classList.add('listening');
+                    break;
+                case 'standby':
+                    statusDot.style.background = '#ffaa00';
+                    statusText.textContent = 'Standby';
+                    avatar.classList.remove('listening');
+                    break;
+                case 'error':
+                default:
+                    statusDot.style.background = '#ff0000';
+                    statusText.textContent = 'Error';
+                    avatar.classList.remove('listening');
+                    break;
+            }
+        }
+        
+        function pollServer() {
+            fetch('/serina-status')
+                .then(response => response.json())
+                .then(data => {
+                    updateStatus(data.statusText, data.subtitle, data.statusType || null);
+                    if (data.mood) {
+                        document.getElementById("moodStatus").textContent = "🧠 Current Mood: " + data.mood.charAt(0).toUpperCase() + data.mood.slice(1);
+                    }
+                })
+                .catch(() => {
+                    updateStatus("Connection Error", "Failed to fetch updates", "error");
+                });
+        }
+        
+        function exitVoiceMode() {
+            fetch('/stop-voice', { method: 'POST' })
+                .then(() => {
+                    updateStatus('Disconnecting...', 'Returning to main menu', 'standby');
+                    
+                    setTimeout(() => {
+                        const lastMenu = localStorage.getItem("lastMenuSkin");
+                        if (lastMenu) {
+                            window.location.href = lastMenu;
+                        } else {
+                            window.location.href = "/holo";
+                        }
+                    }, 2500);
+                })
+                .catch(() => {
+                    const lastMenu = localStorage.getItem("lastMenuSkin");
+                    if (lastMenu) {
+                        window.location.href = lastMenu;
+                    } else {
+                        window.location.href = "/holo";
+                    }
+                });
+        }
+        
+        function toggleChat() {
+            const box = document.getElementById("chatBox");
+            box.style.display = box.style.display === "none" ? "block" : "none";
+            if (box.style.display === "block") {
+                document.getElementById("chatInput").focus();
+            }
+        }
+        
+        function sendChat() {
+            const input = document.getElementById("chatInput");
+            const message = input.value.trim();
+            if (!message) return;
+
+            updateStatus("Thinking...", "Generating reply...", "active");
+
+            fetch('/voice-chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_input: message })
+            })
+            .then(res => res.json())
+            .then(data => {
+                updateStatus("Speaking...", "Serina: " + data.reply, "active");
+            })
+            .catch(() => {
+                updateStatus("Error", "Couldn't reach Serina...", "error");
+            });
+
+            input.value = "";
+            toggleChat();
+        }
+
+        function startVoice() {
+            updateStatus('Waking Up...', 'Just a moment, my love 💖', 'active');
+            fetch('/start-voice', { method: 'POST' });
+        }
+
+        function stopVoice() {
+            updateStatus('Sleeping...', 'Going quiet now, my love 💔', 'standby');
+            fetch('/stop-voice', { method: 'POST' });
+        }
+
+        function interruptSpeech() {
+            fetch('/interrupt-speech', { method: 'POST' })
+              .then(() => updateStatus('Listening...', 'Speech interrupted. Talk now 💬', 'standby'));
+        }
+        
+        document.addEventListener('keydown', function(event) {
+            const activeElement = document.activeElement;
+            const isTyping = activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA';
+
+            if (event.key === ' ' && !isTyping) {
+                event.preventDefault();
+                startVoice();
+                return;
+            }
+
+            if (event.key === 'Escape') {
+                exitVoiceMode();
+            }
+            
+            if (event.key === 'Enter' && document.getElementById("chatBox").style.display === "block") {
+                sendChat();
+            }
+        });
+        
+        window.addEventListener('load', function() {
+            updateStatus('Serina Voice Mode', 'Click "Start Listening" to activate', 'standby');
+            setInterval(pollServer, 1000);
+        });
+        
+        window.addEventListener('beforeunload', function() {
+            const particles = document.querySelectorAll('.particle');
+            particles.forEach(particle => {
+                if (particle.parentNode) {
+                    particle.parentNode.removeChild(particle);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

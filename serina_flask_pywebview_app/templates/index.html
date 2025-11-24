@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BLADE RUNNER 2049 MODE</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      perspective: 1000px;
+      background:
+        radial-gradient(circle at 20% 30%, rgba(0, 80, 120, 0.2) 0%, transparent 40%),
+        radial-gradient(circle at 80% 70%, rgba(150, 0, 80, 0.2) 0%, transparent 40%),
+        linear-gradient(to bottom, #000000, #0a0a20);
+      overflow: hidden;
+      font-family: 'Courier New', monospace;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .cyber-background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -2;
+      background:
+        linear-gradient(rgba(0, 191, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(138, 43, 226, 0.05) 1px, transparent 1px),
+        radial-gradient(circle at 10% 90%, rgba(0, 150, 255, 0.1) 0%, transparent 20%),
+        radial-gradient(circle at 90% 10%, rgba(255, 0, 150, 0.1) 0%, transparent 20%);
+      background-size:
+        50px 50px,
+        50px 50px,
+        300px 300px,
+        300px 300px;
+    }
+    .holo-rain {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent,
+        transparent 1px,
+        rgba(0, 191, 255, 0.03) 1px,
+        rgba(0, 191, 255, 0.03) 2px
+      );
+      animation: rain-fall 1s linear infinite;
+      z-index: -1;
+    }
+    @keyframes rain-fall {
+      from { background-position: 0 0; }
+      to { background-position: 0 20px; }
+    }
+    .kanji-signs {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+    }
+    .kanji {
+      position: absolute;
+      color: rgba(0, 191, 255, 0.15);
+      font-size: 2rem;
+      animation: float-kanji 15s infinite linear;
+    }
+    @keyframes float-kanji {
+      0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+      10% { opacity: 0.3; }
+      90% { opacity: 0.3; }
+      100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+    }
+    .scanlines {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: repeating-linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0.15),
+        rgba(0, 0, 0, 0.15) 1px,
+        transparent 1px,
+        transparent 2px
+      );
+      pointer-events: none;
+      z-index: 1;
+    }
+    .hologram-container {
+      transform-style: preserve-3d;
+      animation: float 6s ease-in-out infinite;
+      filter: drop-shadow(0 0 30px rgba(0, 191, 255, 0.3));
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0) rotateX(0deg) rotateY(0deg); }
+      50% { transform: translateY(-20px) rotateX(5deg) rotateY(5deg); }
+    }
+    .hologram-card {
+      background: rgba(10, 10, 30, 0.5);
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(0, 191, 255, 0.5);
+      box-shadow:
+        0 0 50px rgba(0, 191, 255, 0.3),
+        inset 0 0 30px rgba(138, 43, 226, 0.4);
+      transform: translateZ(50px);
+    }
+    .hologram-avatar {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 2px solid transparent;
+      background: linear-gradient(45deg, #00bfff, #8a2be2) border-box;
+      animation: spin-border 6s linear infinite;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 0 30px rgba(0, 191, 255, 0.5);
+    }
+    .hologram-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      animation: pulse 1.5s infinite alternate;
+      filter: hue-rotate(0deg);
+    }
+    @keyframes spin-border {
+      to { transform: rotate(360deg); }
+    }
+    @keyframes pulse {
+      from { opacity: 0.8; filter: hue-rotate(0deg) drop-shadow(0 0 10px #00bfff); }
+      to { opacity: 1; filter: hue-rotate(20deg) drop-shadow(0 0 20px #8a2be2); }
+    }
+    .neon-text-blue {
+      color: #00bfff;
+      text-shadow:
+        0 0 10px #00bfff,
+        0 0 20px #00bfff,
+        0 0 40px rgba(0, 191, 255, 0.5);
+      animation: text-flicker 3s infinite alternate;
+    }
+    .neon-text-purple {
+      color: #8a2be2;
+      text-shadow:
+        0 0 10px #8a2be2,
+        0 0 20px #8a2be2,
+        0 0 40px rgba(138, 43, 226, 0.5);
+    }
+    @keyframes text-flicker {
+      0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; }
+      20%, 24%, 55% { opacity: 0.8; }
+    }
+    .holo-button {
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s;
+    }
+    .holo-button::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(
+        45deg,
+        transparent,
+        rgba(0, 191, 255, 0.3),
+        transparent
+      );
+      transform: rotate(45deg);
+      animation: button-glow 3s linear infinite;
+    }
+    @keyframes button-glow {
+      0% { transform: translateX(-100%) rotate(45deg); }
+      100% { transform: translateX(100%) rotate(45deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="cyber-background"></div>
+  <div class="holo-rain"></div>
+  <div class="kanji-signs" id="kanjiContainer"></div>
+  <div class="scanlines"></div>
+  <div class="hologram-container">
+    <div class="hologram-card p-1 rounded-2xl">
+      <div class="flex flex-col items-center p-8 rounded-2xl">
+        <div class="hologram-avatar mb-6">
+          <img src="{{ url_for('static', filename='hologram.gif') }}" alt="Hologram GIF">
+        </div>
+        <h2 class="neon-text-blue text-3xl font-bold mb-1">SERINA AI</h2>
+        <p class="neon-text-purple text-lg mb-6">>> CYBER ASSISTANT </p>
+        <button onclick="goToHolo()" 
+          class="holo-button px-6 py-2 bg-transparent border-2 border-blue-400 text-blue-300 rounded-full font-mono hover:bg-blue-900/30 hover:border-violet-400 transition-all duration-300 hover:text-violet-300 relative overflow-hidden">
+          [ ACTIVATE_HOLO ]
+        </button>
+        <div class="mt-6 text-xs opacity-50 font-mono neon-text-purple">
+          01001000 01001111 01001100 01001111 01000111 01010010 01000001 01001101
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    const kanjiContainer = document.getElementById('kanjiContainer');
+    const kanjiChars = ['新', '宿', '東', '京', '電', '脳', '未', '来', 'コ', 'ド'];
+    for (let i = 0; i < 20; i++) {
+      const kanji = document.createElement('div');
+      kanji.className = 'kanji';
+      kanji.textContent = kanjiChars[Math.floor(Math.random() * kanjiChars.length)];
+      kanji.style.left = `${Math.random() * 100}%`;
+      kanji.style.animationDelay = `${Math.random() * 15}s`;
+      kanji.style.fontSize = `${Math.random() * 2 + 1}rem`;
+      kanjiContainer.appendChild(kanji);
+    }
+    document.body.addEventListener('mousemove', (e) => {
+      const x = (window.innerWidth / 2 - e.pageX) / 20;
+      const y = (window.innerHeight / 2 - e.pageY) / 20;
+      document.querySelector('.hologram-container').style.transform =
+        `rotateY(${x}deg) rotateX(${y}deg) translateY(-20px)`;
+      document.querySelector('.cyber-background').style.backgroundPosition =
+        `${x * 10}px ${y * 10}px, ${-x * 10}px ${-y * 10}px`;
+    });
+    document.addEventListener('click', () => {
+      document.body.style.filter = 'contrast(1.5)';
+      setTimeout(() => {
+        document.body.style.filter = 'none';
+      }, 100);
+    });
+    
+    function goToHolo() {
+      window.location.href = "/holo";
+    }
+  </script>
+</body>
+</html>

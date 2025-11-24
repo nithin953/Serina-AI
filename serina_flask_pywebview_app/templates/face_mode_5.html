@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Serina - Reality Control</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Courier New', monospace;
+        }
+
+        body {
+            background-color: #0a0a0a;
+            color: #c0c0c0;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            background-image: 
+                url('data:image/svg+xml;utf8,<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="none" stroke="%23101010" stroke-width="1"/></svg>');
+            background-size: 20px 20px;
+        }
+
+        /* CRT scanlines overlay */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+                linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        /* CRT glow */
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, transparent 0%, rgba(0, 30, 60, 0.15) 100%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            padding: 15px;
+            gap: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #111;
+            border: 1px solid #333;
+            padding: 10px 20px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .top-bar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+            animation: topBarShimmer 6s linear infinite;
+        }
+
+        @keyframes topBarShimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .brand-area {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .brand-logo {
+            width: 40px;
+            height: 40px;
+            background-color: #900;
+            border-radius: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: #fff;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+            animation: logoPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes logoPulse {
+            0%, 100% { box-shadow: 0 0 10px rgba(255, 0, 0, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(255, 0, 0, 0.8); }
+        }
+
+        .brand-info h1 {
+            font-size: 18px;
+            font-weight: bold;
+            color: #c00;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 3px;
+        }
+
+        .brand-info p {
+            font-size: 11px;
+            color: #666;
+        }
+
+        .system-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 15px;
+            background-color: #111;
+            border: 1px solid #333;
+            border-radius: 2px;
+            font-size: 12px;
+            color: #999;
+        }
+
+        .pulse-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #333;
+            position: relative;
+        }
+
+        .pulse-dot.online {
+            background: #0a0;
+            animation: dotPulse 2s ease-in-out infinite;
+            box-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+        }
+
+        .pulse-dot.offline {
+            background: #a00;
+            animation: dotPulse 1s ease-in-out infinite;
+            box-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
+        }
+
+        @keyframes dotPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 250px 1fr 250px;
+            gap: 15px;
+            flex: 1;
+        }
+
+        @media (max-width: 1200px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto auto;
+            }
+            
+            .side-panel:first-child {
+                order: 2;
+            }
+            
+            .central-viewer {
+                order: 1;
+            }
+            
+            .side-panel:last-child {
+                order: 3;
+            }
+        }
+
+        .side-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .control-panel {
+            background-color: #111;
+            border: 1px solid #333;
+            padding: 15px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #c00;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 8px;
+        }
+
+        .panel-icon {
+            font-size: 16px;
+        }
+
+        .tape-deck {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .tape {
+            background-color: #0a0a0a;
+            border: 1px solid #222;
+            padding: 10px;
+            font-size: 12px;
+            color: #999;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .tape::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background-color: #333;
+        }
+
+        .tape.active {
+            border-color: #c00;
+            color: #fff;
+            background-color: #111;
+        }
+
+        .tape.active::before {
+            background-color: #c00;
+        }
+
+        .tape-label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .tape-status {
+            font-size: 10px;
+            color: #666;
+        }
+
+        .logbook {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .log-entries {
+            flex: 1;
+            background-color: #0a0a0a;
+            border: 1px solid #222;
+            padding: 10px;
+            font-size: 12px;
+            color: #999;
+            overflow-y: auto;
+            margin-bottom: 10px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .log-entry {
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .log-time {
+            color: #666;
+            margin-right: 5px;
+        }
+
+        .log-message {
+            color: #ccc;
+        }
+
+        .log-input {
+            width: 100%;
+            padding: 10px;
+            background-color: #0a0a0a;
+            border: 1px solid #222;
+            color: #ccc;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            outline: none;
+        }
+
+        .log-input:focus {
+            border-color: #c00;
+            box-shadow: 0 0 5px rgba(200, 0, 0, 0.5);
+        }
+
+        .central-viewer {
+            background-color: #000;
+            border: 2px solid #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .monitor {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .monitor::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(rgba(0, 0, 0, 0.1) 50%, 
+                transparent 50%),
+                linear-gradient(90deg, 
+                    rgba(255, 0, 0, 0.1), 
+                    rgba(0, 255, 0, 0.1), 
+                    rgba(0, 0, 255, 0.1));
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .monitor-screen {
+            width: 80%;
+            height: 70%;
+            background-color: #000;
+            border: 1px solid #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .monitor-screen::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, transparent 0%, rgba(0, 30, 60, 0.1) 100%);
+            pointer-events: none;
+        }
+
+        .screen-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+        }
+
+        .screen-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .screen-status {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ccc;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .screen-substatus {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .monitor-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .control-btn {
+            padding: 8px 15px;
+            background-color: #111;
+            border: 1px solid #333;
+            color: #ccc;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .control-btn:hover {
+            border-color: #c00;
+            color: #fff;
+            box-shadow: 0 0 10px rgba(200, 0, 0, 0.5);
+        }
+
+        .control-btn.danger {
+            border-color: #300;
+            color: #c00;
+        }
+
+        .control-btn.danger:hover {
+            background-color: rgba(200, 0, 0, 0.1);
+            box-shadow: 0 0 10px rgba(200, 0, 0, 0.8);
+        }
+
+        .monitor-label {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 10px;
+            color: #c00;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .monitor-branding {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            font-size: 10px;
+            color: #666;
+            font-style: italic;
+        }
+
+        /* Scanning state */
+        .monitor-screen.scanning {
+            border-color: #0a0;
+            animation: screenScan 3s linear infinite;
+        }
+
+        .monitor-screen.scanning::before {
+            background: radial-gradient(circle at center, rgba(0, 255, 0, 0.1) 0%, transparent 70%);
+        }
+
+        .monitor-screen.scanning .screen-icon {
+            color: #0a0;
+            opacity: 0.8;
+        }
+
+        @keyframes screenScan {
+            0% { box-shadow: 0 0 5px rgba(0, 255, 0, 0.3); }
+            50% { box-shadow: 0 0 20px rgba(0, 255, 0, 0.6); }
+            100% { box-shadow: 0 0 5px rgba(0, 255, 0, 0.3); }
+        }
+
+        /* Error state */
+        .monitor-screen.error-state {
+            border-color: #c00;
+            animation: screenError 1.5s linear infinite;
+        }
+
+        .monitor-screen.error-state::before {
+            background: radial-gradient(circle at center, rgba(255, 0, 0, 0.1) 0%, transparent 70%);
+        }
+
+        .monitor-screen.error-state .screen-icon {
+            color: #c00;
+            opacity: 0.8;
+        }
+
+        @keyframes screenError {
+            0%, 100% { box-shadow: 0 0 10px rgba(255, 0, 0, 0.5); }
+            50% { box-shadow: 0 0 30px rgba(255, 0, 0, 0.8); }
+        }
+
+        /* Static effect */
+        .static {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(0deg, rgba(0, 0, 0, 0.9) 0%, transparent 20%),
+                repeating-linear-gradient(0deg, 
+                    rgba(0, 0, 0, 0.9) 0%, 
+                    rgba(0, 0, 0, 0.9) 2%, 
+                    rgba(255, 255, 255, 0.1) 3%, 
+                    rgba(0, 0, 0, 0.9) 5%),
+                repeating-linear-gradient(90deg, 
+                    rgba(0, 0, 0, 0.9) 0%, 
+                    rgba(0, 0, 0, 0.9) 2%, 
+                    rgba(255, 255, 255, 0.1) 3%, 
+                    rgba(0, 0, 0, 0.9) 5%);
+            opacity: 0.3;
+            pointer-events: none;
+            z-index: 3;
+        }
+
+        /* Accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation: none !important;
+                transition: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header class="top-bar">
+            <div class="brand-area">
+                <div class="brand-logo">📺</div>
+                <div class="brand-info">
+                    <h1>Serina Reality Control</h1>
+                    <p>Subject Monitoring Station v3.2.5</p>
+                </div>
+            </div>
+            <div class="system-indicator">
+                <span class="pulse-dot" id="systemDot"></span>
+                <span id="systemText">Initializing</span>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <aside class="side-panel">
+                <div class="control-panel">
+                    <div class="panel-header">
+                        <span class="panel-icon">📼</span>
+                        <span>Emotion Channels</span>
+                    </div>
+                    <div class="tape-deck">
+                        <div class="tape" id="channel-neutral">
+                            <div class="tape-label">CHANNEL 1: [NEUTRAL]</div>
+                            <div class="tape-status">No signal detected</div>
+                        </div>
+                        <div class="tape" id="channel-happy">
+                            <div class="tape-label">CHANNEL 2: [HAPPY]</div>
+                            <div class="tape-status">Standby</div>
+                        </div>
+                        <div class="tape" id="channel-sad">
+                            <div class="tape-label">CHANNEL 3: [SAD]</div>
+                            <div class="tape-status">Standby</div>
+                        </div>
+                        <div class="tape" id="channel-angry">
+                            <div class="tape-label">CHANNEL 4: [ANGRY]</div>
+                            <div class="tape-status">Standby</div>
+                        </div>
+                        <div class="tape" id="channel-surprised">
+                            <div class="tape-label">CHANNEL 5: [SURPRISED]</div>
+                            <div class="tape-status">Standby</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="control-panel">
+                    <div class="panel-header">
+                        <span class="panel-icon">⚙️</span>
+                        <span>System Controls</span>
+                    </div>
+                    <div style="font-size: 12px; color: #666; line-height: 1.6;">
+                        <div style="margin-bottom: 8px;">Feed Status: <span style="color: #666;" id="feed-status">OFFLINE</span></div>
+                        <div style="margin-bottom: 8px;">Audio Sync: <span style="color: #666;" id="audio-status">DISABLED</span></div>
+                        <div>Subject ID: <span style="color: #c00;">PRIMARY</span></div>
+                    </div>
+                </div>
+            </aside>
+
+            <main class="central-viewer">
+                <div class="monitor">
+                    <div class="monitor-screen" id="visionPortal">
+                        <div class="static"></div>
+                        <div class="monitor-label">LIVE FEED</div>
+                        <div class="monitor-branding">SERINA SYSTEMS</div>
+                        <div class="screen-content">
+                            <div class="screen-icon">📺</div>
+                            <div class="screen-status" id="primaryStatus">NO SIGNAL</div>
+                            <div class="screen-substatus" id="secondaryStatus">Awaiting subject engagement...</div>
+                        </div>
+                    </div>
+                    
+                    <div class="monitor-controls">
+                        <button class="control-btn" onclick="startFaceMode()">BEGIN BROADCAST</button>
+                        <button class="control-btn danger" onclick="goBack()">CUT FEED</button>
+                    </div>
+                </div>
+            </main>
+
+            <aside class="side-panel">
+                <div class="control-panel logbook">
+                    <div class="panel-header">
+                        <span class="panel-icon">📝</span>
+                        <span>Director's Log</span>
+                    </div>
+                    <div class="log-entries" id="logEntries">
+                        <div class="log-entry">
+                            <span class="log-time">[SYSTEM]</span>
+                            <span class="log-message">Initializing reality control interface...</span>
+                        </div>
+                        <div class="log-entry">
+                            <span class="log-time">[SYSTEM]</span>
+                            <span class="log-message">Awaiting subject engagement protocol...</span>
+                        </div>
+                    </div>
+                    <input type="text" class="log-input" id="messageInput" placeholder="Say your line. The world is listening...">
+                    <button class="control-btn" style="margin-top: 10px;" onclick="sendFaceChat()">TRANSMIT LINE</button>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <script>
+        let isActive = true;
+
+        // Start face mode automatically when page loads
+        window.addEventListener('load', function() {
+            startFaceMode();
+            addLogEntry("[SYSTEM]", "Reality control interface online. All systems nominal.");
+        });
+
+        function addLogEntry(sender, message) {
+            const logEntries = document.getElementById('logEntries');
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            
+            const timeSpan = document.createElement('span');
+            timeSpan.className = 'log-time';
+            timeSpan.textContent = `[${sender}]`;
+            
+            const messageSpan = document.createElement('span');
+            messageSpan.className = 'log-message';
+            messageSpan.textContent = message;
+            
+            entry.appendChild(timeSpan);
+            entry.appendChild(messageSpan);
+            logEntries.appendChild(entry);
+            
+            // Scroll to bottom
+            logEntries.scrollTop = logEntries.scrollHeight;
+        }
+
+        function startFaceMode() {
+            addLogEntry("DIRECTOR", "Initiating subject broadcast protocol...");
+            
+            fetch('/start-face', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Face mode started:', data);
+                    updateSystemStatus('SCANNING', 'Subject engagement detected...', 'scanning');
+                    addLogEntry("SYSTEM", "Broadcast initiated. Monitoring subject vitals.");
+                    
+                    // Update channel status
+                    document.getElementById('feed-status').textContent = "ONLINE";
+                    document.getElementById('feed-status').style.color = "#0a0";
+                    document.getElementById('audio-status').textContent = "SYNCED";
+                    document.getElementById('audio-status').style.color = "#0a0";
+                })
+                .catch(error => {
+                    console.error('Error starting face mode:', error);
+                    updateSystemStatus('ERROR', 'Broadcast failure', 'error-state');
+                    addLogEntry("SYSTEM", "CRITICAL: Broadcast initiation failed!");
+                });
+        }
+
+        function goBack() {
+            isActive = false;
+            addLogEntry("DIRECTOR", "Terminating subject broadcast...");
+            
+            fetch('/stop-face', { method: 'POST' })
+                .then(() => {
+                    updateSystemStatus("Disconnecting...", "Ending session...", "scanning");
+                    addLogEntry("SYSTEM", "Ending session and returning to main menu");
+                    
+                    setTimeout(() => {
+                        const lastMenu = localStorage.getItem("lastMenuSkin");
+                        if (lastMenu) {
+                            window.location.href = lastMenu;
+                        } else {
+                            window.location.href = "/holo";
+                        }
+                    }, 1000);
+                })
+                .catch(error => {
+                    console.error('Error stopping face mode:', error);
+                    addLogEntry("SYSTEM", "Failed to properly end session");
+                    const lastMenu = localStorage.getItem("lastMenuSkin");
+                    if (lastMenu) {
+                        window.location.href = lastMenu;
+                    } else {
+                        window.location.href = "/holo";
+                    }
+                });
+        }
+
+        function sendFaceChat() {
+            const input = document.getElementById('messageInput').value.trim();
+            if (!input) return;
+
+            addLogEntry("SUBJECT", input);
+            
+            fetch('/face-chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ user_input: input })
+            })
+            .then(res => res.json())
+            .then(data => {
+                updateSystemStatus("MONITORING", data.reply || "Subject response logged", 'scanning');
+                addLogEntry("DIRECTOR", data.reply || "Response logged to subject dialogue");
+            })
+            .catch(err => {
+                updateSystemStatus("ERROR", "Director unresponsive", 'error-state');
+                addLogEntry("SYSTEM", "WARNING: Director interface unresponsive!");
+                console.error(err);
+            });
+
+            document.getElementById('messageInput').value = '';
+        }
+
+        function updateSystemStatus(status, subtitle, state) {
+            const primaryStatus = document.getElementById('primaryStatus');
+            const secondaryStatus = document.getElementById('secondaryStatus');
+            const systemText = document.getElementById('systemText');
+            const systemDot = document.getElementById('systemDot');
+            const visionPortal = document.getElementById('visionPortal');
+
+            primaryStatus.textContent = status;
+            secondaryStatus.textContent = subtitle;
+            systemText.textContent = status;
+
+            // Reset classes
+            systemDot.className = 'pulse-dot';
+            visionPortal.className = 'monitor-screen';
+            
+            // Update all channels to inactive
+            document.querySelectorAll('.tape').forEach(tape => {
+                tape.classList.remove('active');
+            });
+
+            // Activate appropriate channel based on status
+            if (status.includes('HAPPY')) {
+                document.getElementById('channel-happy').classList.add('active');
+            } else if (status.includes('SAD')) {
+                document.getElementById('channel-sad').classList.add('active');
+            } else if (status.includes('ANGRY')) {
+                document.getElementById('channel-angry').classList.add('active');
+            } else if (status.includes('SURPRISED')) {
+                document.getElementById('channel-surprised').classList.add('active');
+            } else {
+                document.getElementById('channel-neutral').classList.add('active');
+            }
+
+            // Update status based on state
+            if (state === 'scanning') {
+                systemDot.classList.add('online');
+                visionPortal.classList.add('scanning');
+            } else if (state === 'error-state') {
+                systemDot.classList.add('offline');
+                visionPortal.classList.add('error-state');
+            }
+        }
+
+        // Poll face status every second
+        setInterval(() => {
+            if (isActive) {
+                fetch('/face-status')
+                    .then(response => response.json())
+                    .then(data => {
+                        updateSystemStatus(data.statusText || 'MONITORING', data.subtitle || 'Subject vitals nominal...', 'scanning');
+                    })
+                    .catch(error => {
+                        console.error('Error fetching face status:', error);
+                        updateSystemStatus('SIGNAL LOST', 'Subject feed interrupted', 'error-state');
+                    });
+            }
+        }, 1000);
+
+        // Handle page unload
+        window.addEventListener('beforeunload', function() {
+            if (isActive) {
+                fetch('/stop-face', { method: 'POST' });
+            }
+        });
+
+        // Allow pressing Enter to send chat message
+        document.getElementById('messageInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendFaceChat();
+            }
+        });
+    </script>
+</body>
+</html>

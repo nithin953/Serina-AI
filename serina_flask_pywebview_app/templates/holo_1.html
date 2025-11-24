@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VOID GRID INTERFACE</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500;700&display=swap');
+        
+        :root {
+            --neon-primary: #0ff0fc;
+            --neon-secondary: #ff2a6d;
+            --neon-tertiary: #05d9e8;
+            --bg-dark: #0d0221;
+            --bg-darker: #05010d;
+            --scan-line: rgba(5, 217, 232, 0.15);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: var(--bg-dark);
+            color: var(--neon-primary);
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 500;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-image: 
+                linear-gradient(var(--scan-line) 1px, transparent 1px),
+                linear-gradient(90deg, var(--scan-line) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        
+        .void-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            grid-template-rows: repeat(5, 1fr);
+            gap: 2px;
+            padding: 2rem;
+        }
+        
+        .void-grid {
+            position: relative;
+            border: 1px solid transparent;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(13, 2, 33, 0.3);
+            overflow: hidden;
+        }
+        
+        .void-grid::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, transparent 95%, var(--neon-tertiary) 100%);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        
+        .void-grid:hover::before {
+            opacity: 0.3;
+            animation: pulse 2s infinite;
+        }
+        
+        .void-grid:hover {
+            border: 1px solid var(--neon-tertiary);
+            box-shadow: 0 0 10px var(--neon-tertiary), 
+                        inset 0 0 10px var(--neon-tertiary);
+        }
+        
+        .void-btn {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: transparent;
+            border: none;
+            color: transparent;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.5s ease;
+            opacity: 0;
+            transform: scale(0.8);
+            z-index: 2;
+        }
+        
+        .void-grid:hover .void-btn {
+            opacity: 1;
+            color: var(--neon-primary);
+            text-shadow: 0 0 5px var(--neon-primary), 
+                         0 0 10px var(--neon-primary);
+            transform: scale(1);
+        }
+        
+        .void-btn::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            border: 2px solid var(--neon-secondary);
+            border-radius: 2px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+        }
+        
+        .void-btn:hover::before {
+            opacity: 0.5;
+            animation: border-flicker 1.5s infinite;
+        }
+        
+        .void-btn:hover {
+            color: var(--neon-secondary);
+            text-shadow: 0 0 10px var(--neon-secondary), 
+                         0 0 20px var(--neon-secondary),
+                         0 0 40px var(--neon-secondary);
+        }
+        
+        .scan-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(to bottom, 
+                        transparent, 
+                        var(--neon-primary), 
+                        transparent);
+            opacity: 0.7;
+            pointer-events: none;
+            animation: scan 8s linear infinite;
+            z-index: 10;
+        }
+        
+        .terminal {
+            position: absolute;
+            bottom: 2rem;
+            left: 2rem;
+            width: calc(100% - 4rem);
+            height: 100px;
+            border: 1px solid var(--neon-tertiary);
+            background-color: rgba(5, 217, 232, 0.05);
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            color: var(--neon-primary);
+            overflow: hidden;
+            display: none;
+            box-shadow: 0 0 15px var(--neon-tertiary), 
+                       inset 0 0 15px var(--neon-tertiary);
+        }
+        
+        .terminal::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                to bottom,
+                transparent,
+                transparent 50%,
+                rgba(5, 217, 232, 0.1) 50%,
+                rgba(5, 217, 232, 0.1)
+            );
+            background-size: 100% 4px;
+            animation: scanlines 1s steps(60) infinite;
+            pointer-events: none;
+        }
+        
+        .terminal-text {
+            animation: type 0.1s steps(20) forwards;
+            white-space: pre-wrap;
+            overflow: hidden;
+        }
+
+        /* Exit Modal Styles */
+        #exitModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+            display: none;
+        }
+        
+        .modal-content {
+            padding: 2rem;
+            border-radius: 0.5rem;
+            background: var(--bg-darker);
+            border: 1px solid var(--neon-primary);
+            max-width: 400px;
+            text-align: center;
+            animation: modal-glow 2s infinite ease-in-out;
+        }
+        
+        .modal-content h2 {
+            color: var(--neon-primary);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 10px var(--neon-primary);
+        }
+        
+        .modal-content p {
+            color: var(--neon-tertiary);
+            font-family: 'Rajdhani', sans-serif;
+            margin-bottom: 2rem;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+        
+        .modal-button {
+            padding: 0.5rem 1.5rem;
+            border: 1px solid;
+            border-radius: 4px;
+            font-family: 'Orbitron', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        #confirmExit {
+            border-color: var(--neon-secondary);
+            color: var(--neon-secondary);
+            background: rgba(255, 42, 109, 0.1);
+        }
+        
+        #confirmExit:hover {
+            background: rgba(255, 42, 109, 0.3);
+            box-shadow: 0 0 15px var(--neon-secondary);
+        }
+        
+        #cancelExit {
+            border-color: var(--neon-primary);
+            color: var(--neon-primary);
+            background: rgba(5, 217, 232, 0.1);
+        }
+        
+        #cancelExit:hover {
+            background: rgba(5, 217, 232, 0.3);
+            box-shadow: 0 0 15px var(--neon-primary);
+        }
+        
+        @keyframes modal-glow {
+            0%, 100% { box-shadow: 0 0 30px rgba(5, 217, 232, 0.2); }
+            50% { box-shadow: 0 0 50px rgba(5, 217, 232, 0.5); }
+        }
+        
+        /* Loading Indicator */
+        .loading-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 2000;
+            color: var(--neon-primary);
+            font-size: 1.5rem;
+            text-shadow: 0 0 10px var(--neon-primary);
+            backdrop-filter: blur(5px);
+            display: none;
+        }
+        
+        .loading-spinner {
+            border: 5px solid rgba(5, 217, 232, 0.3);
+            border-top: 5px solid var(--neon-primary);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes scan {
+            0% { top: -2px; }
+            100% { top: 100%; }
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.3; }
+            50% { opacity: 0.1; }
+            100% { opacity: 0.3; }
+        }
+        
+        @keyframes border-flicker {
+            0% { opacity: 0.3; }
+            10% { opacity: 0.7; }
+            20% { opacity: 0.4; }
+            30% { opacity: 0.8; }
+            40% { opacity: 0.2; }
+            50% { opacity: 0.9; }
+            60% { opacity: 0.1; }
+            70% { opacity: 0.6; }
+            80% { opacity: 0.3; }
+            90% { opacity: 0.5; }
+            100% { opacity: 0.3; }
+        }
+        
+        @keyframes scanlines {
+            from { background-position: 0 0; }
+            to { background-position: 0 100%; }
+        }
+        
+        @keyframes type {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Adjusted button positions */
+        .btn-new-chat { grid-area: 1 / 1 / 2 / 2; }
+        .btn-voice-mode { grid-area: 1 / 5 / 2 / 6; }
+        .btn-face-mode { grid-area: 3 / 1 / 4 / 2; }
+        .btn-about-me { grid-area: 3 / 5 / 4 / 6; }
+        .btn-neon-shift { grid-area: 4 / 1 / 5 / 2; }
+        .btn-exit { grid-area: 4 / 5 / 5 / 6; }
+        
+        /* Center button */
+        .btn-center { 
+            grid-area: 3 / 3 / 4 / 4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        /* Corner indicators */
+        .corner {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border-color: var(--neon-tertiary);
+            border-style: solid;
+            border-width: 0;
+            opacity: 0.7;
+        }
+        
+        .corner-tl {
+            top: 1rem;
+            left: 1rem;
+            border-top-width: 2px;
+            border-left-width: 2px;
+        }
+        
+        .corner-tr {
+            top: 1rem;
+            right: 1rem;
+            border-top-width: 2px;
+            border-right-width: 2px;
+        }
+        
+        .corner-bl {
+            bottom: 1rem;
+            left: 1rem;
+            border-bottom-width: 2px;
+            border-left-width: 2px;
+        }
+        
+        .corner-br {
+            bottom: 1rem;
+            right: 1rem;
+            border-bottom-width: 2px;
+            border-right-width: 2px;
+        }
+        
+        /* Status indicator */
+        .status {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            display: flex;
+            align-items: center;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.8rem;
+            color: var(--neon-primary);
+            opacity: 0.7;
+        }
+        
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: var(--neon-secondary);
+            margin-right: 8px;
+            animation: status-pulse 2s infinite;
+        }
+        
+        @keyframes status-pulse {
+            0% { opacity: 0.3; box-shadow: 0 0 0 0 rgba(255, 42, 109, 0.7); }
+            70% { opacity: 1; box-shadow: 0 0 0 10px rgba(255, 42, 109, 0); }
+            100% { opacity: 0.3; box-shadow: 0 0 0 0 rgba(255, 42, 109, 0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="void-container">
+        <!-- Corner indicators -->
+        <div class="corner corner-tl"></div>
+        <div class="corner corner-tr"></div>
+        <div class="corner corner-bl"></div>
+        <div class="corner corner-br"></div>
+        
+        <!-- Status indicator -->
+        <div class="status">
+            <div class="status-indicator"></div>
+            <span>SYSTEM ACTIVE</span>
+        </div>
+        
+        <!-- Scan line -->
+        <div class="scan-line"></div>
+        
+        <!-- Void Grid Buttons -->
+        <div class="void-grid btn-new-chat" data-option="new-chat">
+            <button class="void-btn">NEW CHAT</button>
+        </div>
+        
+        <div class="void-grid btn-voice-mode" data-option="voice-mode">
+            <button class="void-btn">VOICE MODE</button>
+        </div>
+        
+        <div class="void-grid btn-face-mode" data-option="face-mode">
+            <button class="void-btn">FACE MODE</button>
+        </div>
+        
+        <div class="void-grid btn-about-me" data-option="about-me">
+            <button class="void-btn">ABOUT ME</button>
+        </div>
+        
+        <div class="void-grid btn-neon-shift" data-option="neon-shift">
+            <button class="void-btn">NEON SHIFT</button>
+        </div>
+        
+        <div class="void-grid btn-exit" data-option="exit">
+            <button class="void-btn">EXIT</button>
+        </div>
+        
+        <!-- Center button -->
+        <div class="void-grid btn-center">
+            <button class="void-btn">SERINA TRANSLUCENT INTERFACE</button>
+        </div>
+        
+        <!-- Terminal -->
+        <div class="terminal" id="terminal">
+            <div class="terminal-text" id="terminal-text"></div>
+        </div>
+    </div>
+
+    <!-- Exit Confirmation Modal -->
+    <div id="exitModal" class="hidden">
+        <div class="modal-content">
+            <h2>Leaving already, love? 💔</h2>
+            <p>Stay a little longer with me?</p>
+            <div class="modal-buttons">
+                <button id="confirmExit" class="modal-button">Yes, exit</button>
+                <button id="cancelExit" class="modal-button">No, stay</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Indicator -->
+    <div id="loadingIndicator" class="loading-indicator">
+        <div class="loading-spinner"></div>
+        <p id="loadingText">Initializing system...</p>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const terminal = document.getElementById('terminal');
+            const terminalText = document.getElementById('terminal-text');
+            const exitModal = document.getElementById('exitModal');
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const loadingText = document.getElementById('loadingText');
+            
+            // Show terminal
+            terminal.style.display = 'block';
+            
+            // Loading indicator functions
+            function showLoading(message) {
+                loadingText.textContent = message;
+                loadingIndicator.style.display = 'flex';
+            }
+
+            function hideLoading() {
+                loadingIndicator.style.display = 'none';
+            }
+            
+            // Button functionality
+            document.querySelectorAll('.void-grid[data-option]').forEach(grid => {
+                grid.addEventListener('click', function() {
+                    const option = this.getAttribute('data-option');
+                    const button = this.querySelector('.void-btn');
+                    
+                    // Get saved interface selections from localStorage
+                    const lastChat = localStorage.getItem("lastChatSkin") || 'chatpage';
+                    const lastVoice = localStorage.getItem("lastVoiceSkin") || 'voice-ui';
+                    const lastFace = localStorage.getItem("lastFaceSkin") || 'face-ui';
+                    
+                    // Visual feedback
+                    this.style.backgroundColor = 'rgba(5, 217, 232, 0.2)';
+                    this.style.boxShadow = '0 0 20px var(--neon-secondary), inset 0 0 20px var(--neon-secondary)';
+                    
+                    setTimeout(() => {
+                        this.style.backgroundColor = 'rgba(13, 2, 33, 0.3)';
+                        this.style.boxShadow = 'none';
+                    }, 500);
+                    
+                    // Terminal output
+                    let response = "";
+                    
+                    switch(option) {
+                        case "new-chat":
+                            response = "> INITIALIZING NEW CHAT SESSION\n> REDIRECTING...";
+                            window.location.href = `/${lastChat}`;
+                            break;
+                        case "voice-mode":
+                            response = "> ACTIVATING VOICE RECOGNITION MODULE\n> CALIBRATING AUDIO INPUT...";
+                            showLoading('Initializing Voice Mode...');
+                            fetch('/voice-mode')
+                                .then(response => {
+                                    if (!response.ok) throw new Error('Failed to launch Voice Mode');
+                                    return response.text();
+                                })
+                                .then(() => {
+                                  window.location.href = `/${lastVoice}`; 
+                                })
+                                .catch(error => {
+                                    hideLoading();
+                                    console.error('Voice Mode Error:', error);
+                                    terminalText.textContent += `> ERROR: ${error.message}\n`;
+                                });
+                            break;
+                        case "face-mode":
+                            response = "> ENABLING FACIAL RECOGNITION SYSTEMS\n> CAMERA FEED ACTIVE...";
+                            showLoading('Initializing Face Mode...');
+                            fetch('/face-mode')
+                                .then(response => {
+                                    if (!response.ok) throw new Error('Failed to launch Face Mode');
+                                    return response.text();
+                                })
+                                .then(() => {
+                                    window.location.href = `/${lastFace}`;
+                                })
+                                .catch(error => {
+                                    hideLoading();
+                                    console.error('Face Mode Error:', error);
+                                    terminalText.textContent += `> ERROR: ${error.message}\n`;
+                                });
+                            break;
+                        case "about-me":
+                            response = "> SYSTEM DIAGNOSTICS:\n> VERSION: VOID GRID 2.3.7\n> REDIRECTING...";
+                            window.location.href = '/aboutme';
+                            break;
+                        case "neon-shift":
+                            response = "> ACTIVATING NEON SPECTRUM SHIFT\n> REDIRECTING...";
+                            window.location.href = '/selector';
+                            break;
+                        case "exit":
+                            response = "> INITIATING SYSTEM SHUTDOWN SEQUENCE";
+                            exitModal.style.display = 'flex';
+                            break;
+                    }
+                    
+                    terminalText.textContent += `> USER INPUT: ${button.textContent.trim()}\n${response}\n\n`;
+                    terminal.scrollTop = terminal.scrollHeight;
+                });
+            });
+            
+            // Exit modal buttons
+            document.getElementById('confirmExit').addEventListener('click', () => {
+                showLoading('Closing system...');
+                fetch('/exit', { method: 'POST' })
+                    .then(() => console.log("Exit requested"))
+                    .catch(err => {
+                        console.error("Exit failed", err);
+                        hideLoading();
+                    });
+            });
+            
+            document.getElementById('cancelExit').addEventListener('click', () => {
+                exitModal.style.display = 'none';
+                terminalText.textContent += "> SHUTDOWN SEQUENCE ABORTED\n\n";
+                terminal.scrollTop = terminal.scrollHeight;
+            });
+            
+            // Initial terminal message
+            terminalText.textContent = "> SYSTEM READY\n> AWAITING USER INPUT\n";
+        });
+    </script>
+</body>
+</html>

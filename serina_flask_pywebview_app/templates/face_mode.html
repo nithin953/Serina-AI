@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Serina - Face Mode</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f0f23 0%, #16213e 50%, #0f172a 100%);
+            color: #e2e8f0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated grid background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(59, 130, 246, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(59, 130, 246, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 20s linear infinite;
+            z-index: -2;
+        }
+
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        /* Floating orbs */
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            background: linear-gradient(45deg, rgba(59, 130, 246, 0.1), rgba(147, 51, 234, 0.1));
+            filter: blur(1px);
+            animation: floatOrb 15s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        .orb:nth-child(1) {
+            width: 200px;
+            height: 200px;
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .orb:nth-child(2) {
+            width: 150px;
+            height: 150px;
+            top: 60%;
+            right: 20%;
+            animation-delay: 5s;
+        }
+
+        .orb:nth-child(3) {
+            width: 100px;
+            height: 100px;
+            bottom: 20%;
+            left: 30%;
+            animation-delay: 10s;
+        }
+
+        @keyframes floatOrb {
+            0%, 100% { transform: translateY(0px) scale(1); opacity: 0.3; }
+            50% { transform: translateY(-30px) scale(1.1); opacity: 0.6; }
+        }
+
+        .main-container {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            grid-template-rows: auto 1fr auto;
+            min-height: 100vh;
+            padding: 20px;
+            gap: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header-panel {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 20px;
+            padding: 20px 30px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo-icon::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: shimmer 3s linear infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .logo-text {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .system-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #3b82f6;
+            position: relative;
+        }
+
+        .status-dot.active {
+            background: #10b981;
+            animation: statusPulse 2s ease-in-out infinite;
+        }
+
+        .status-dot.error {
+            background: #ef4444;
+            animation: statusPulse 1s ease-in-out infinite;
+        }
+
+        @keyframes statusPulse {
+            0%, 100% { opacity: 1; box-shadow: 0 0 0 0 currentColor; }
+            50% { opacity: 0.7; box-shadow: 0 0 0 10px transparent; }
+        }
+
+        .left-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .vision-card {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 20px;
+            padding: 25px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .vision-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #3b82f6, transparent);
+            opacity: 0.6;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #e2e8f0;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .main-display {
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid rgba(59, 130, 246, 0.4);
+            border-radius: 25px;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(25px);
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            position: relative;
+            min-height: 500px;
+        }
+
+        .face-scanner {
+            width: 200px;
+            height: 200px;
+            border: 3px solid #3b82f6;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 80px;
+            margin-bottom: 30px;
+            position: relative;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
+            transition: all 0.3s ease;
+        }
+
+        .face-scanner.active {
+            border-color: #10b981;
+            color: #10b981;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%);
+            animation: scannerActive 2s ease-in-out infinite;
+        }
+
+        .face-scanner.error {
+            border-color: #ef4444;
+            color: #ef4444;
+            background: radial-gradient(circle, rgba(239, 68, 68, 0.1) 0%, transparent 70%);
+            animation: scannerError 1s ease-in-out infinite;
+        }
+
+        @keyframes scannerActive {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+            50% { box-shadow: 0 0 0 20px rgba(16, 185, 129, 0); }
+        }
+
+        @keyframes scannerError {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+            50% { box-shadow: 0 0 0 20px rgba(239, 68, 68, 0); }
+        }
+
+        .scanner-rings {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+        }
+
+        .scanner-ring {
+            position: absolute;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 50%;
+            animation: ringExpand 3s ease-out infinite;
+        }
+
+        .scanner-ring:nth-child(1) {
+            width: 120%;
+            height: 120%;
+            top: -10%;
+            left: -10%;
+            animation-delay: 0s;
+        }
+
+        .scanner-ring:nth-child(2) {
+            width: 140%;
+            height: 140%;
+            top: -20%;
+            left: -20%;
+            animation-delay: 1s;
+        }
+
+        @keyframes ringExpand {
+            0% { opacity: 0.8; transform: scale(0.8); }
+            100% { opacity: 0; transform: scale(1.2); }
+        }
+
+        .status-display {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .main-status {
+            font-size: 28px;
+            font-weight: 700;
+            color: #e2e8f0;
+            margin-bottom: 10px;
+        }
+
+        .sub-status {
+            font-size: 16px;
+            color: #94a3b8;
+            line-height: 1.5;
+        }
+
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .control-panel {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 20px;
+            padding: 25px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .chat-section {
+            margin-bottom: 20px;
+        }
+
+        .chat-input {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            color: #e2e8f0;
+            font-family: inherit;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+        }
+
+        .chat-input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 15px 20px;
+            border: 1px solid rgba(59, 130, 246, 0.4);
+            border-radius: 12px;
+            background: rgba(59, 130, 246, 0.1);
+            color: #e2e8f0;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            border-color: #3b82f6;
+            background: rgba(59, 130, 246, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.2);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-danger {
+            border-color: rgba(239, 68, 68, 0.4);
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .btn-danger:hover {
+            border-color: #ef4444;
+            background: rgba(239, 68, 68, 0.2);
+            box-shadow: 0 10px 25px rgba(239, 68, 68, 0.2);
+        }
+
+        .footer-controls {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .footer-btn {
+            padding: 12px 25px;
+            border: 1px solid rgba(59, 130, 246, 0.4);
+            border-radius: 25px;
+            background: rgba(15, 23, 42, 0.8);
+            color: #e2e8f0;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(20px);
+        }
+
+        .footer-btn:hover {
+            border-color: #3b82f6;
+            background: rgba(59, 130, 246, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .footer-btn.danger {
+            border-color: rgba(239, 68, 68, 0.4);
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .footer-btn.danger:hover {
+            border-color: #ef4444;
+            background: rgba(239, 68, 68, 0.2);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto auto auto;
+                gap: 15px;
+            }
+            
+            .left-panel, .right-panel {
+                order: 2;
+            }
+            
+            .main-display {
+                order: 1;
+                min-height: 400px;
+                padding: 30px;
+            }
+            
+            .face-scanner {
+                width: 150px;
+                height: 150px;
+                font-size: 60px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 15px;
+            }
+            
+            .header-panel {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .face-scanner {
+                width: 120px;
+                height: 120px;
+                font-size: 48px;
+            }
+            
+            .main-status {
+                font-size: 24px;
+            }
+            
+            .footer-controls {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        /* Reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation: none !important;
+                transition: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="orb"></div>
+    <div class="orb"></div>
+    <div class="orb"></div>
+
+    <div class="main-container">
+        <header class="header-panel">
+            <div class="logo-section">
+                <div class="logo-icon">🤖</div>
+                <div>
+                    <div class="logo-text">Serina Neural Vision</div>
+                    <div style="font-size: 12px; color: #64748b; margin-top: 2px;">Advanced Face Recognition System</div>
+                </div>
+            </div>
+            <div class="system-status">
+                <span class="status-dot" id="headerStatusDot"></span>
+                <span id="headerStatus">Initializing</span>
+            </div>
+        </header>
+
+        <aside class="left-panel">
+            <div class="vision-card">
+                <div class="card-title">
+                    <span>🔍</span> Vision Analytics
+                </div>
+                <div style="font-size: 13px; color: #94a3b8; line-height: 1.6;">
+                    Real-time facial recognition and analysis powered by advanced neural networks.
+                </div>
+            </div>
+            
+            <div class="vision-card">
+                <div class="card-title">
+                    <span>⚡</span> System Status
+                </div>
+                <div style="font-size: 13px; color: #94a3b8;">
+                    <div style="margin-bottom: 8px;">Neural Engine: <span style="color: #10b981;">Active</span></div>
+                    <div style="margin-bottom: 8px;">Camera Feed: <span style="color: #10b981;">Connected</span></div>
+                    <div>Recognition Model: <span style="color: #10b981;">Loaded</span></div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-display">
+            <div class="face-scanner" id="faceScanner">
+                <div class="scanner-rings">
+                    <div class="scanner-ring"></div>
+                    <div class="scanner-ring"></div>
+                </div>
+                👁️
+            </div>
+            
+            <div class="status-display">
+                <div class="main-status" id="mainStatusText">Initializing...</div>
+                <div class="sub-status" id="subStatusText">Preparing facial recognition systems...</div>
+            </div>
+        </main>
+
+        <aside class="right-panel">
+            <div class="control-panel">
+                <div class="card-title">
+                    <span>💬</span> Chat Interface
+                </div>
+                <div class="chat-section">
+                    <input type="text" class="chat-input" id="chatInput" placeholder="Type your message to Serina...">
+                    <button class="btn" onclick="sendFaceChat()">Send Message</button>
+                </div>
+            </div>
+            
+            <div class="control-panel">
+                <div class="card-title">
+                    <span>⚙️</span> System Controls
+                </div>
+                <div class="action-buttons">
+                    <button class="btn" onclick="startFaceMode()">Restart Scanner</button>
+                    <button class="btn btn-danger" onclick="goBack()">← Exit Face Mode</button>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <script>
+        let isActive = true;
+
+        // Start face mode automatically when page loads
+        window.addEventListener('load', function() {
+            startFaceMode();
+        });
+
+        function startFaceMode() {
+            fetch('/start-face', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Face mode started:', data);
+                    updateSystemStatus('Scanning...', 'Neural matrix active...', 'active');
+                })
+                .catch(error => {
+                    console.error('Error starting face mode:', error);
+                    updateSystemStatus('Error', 'Failed to initialize neural matrix', 'error');
+                });
+        }
+
+        function goBack() {
+            isActive = false;
+            fetch('/stop-face', { method: 'POST' })
+                .then(() => {
+                    updateSystemStatus("Disconnecting...", "Ending session...", "active");
+                    
+                    setTimeout(() => {
+                        const lastMenu = localStorage.getItem("lastMenuSkin");
+                        if (lastMenu) {
+                            window.location.href = lastMenu;
+                        } else {
+                            window.location.href = "/holo";
+                        }
+                    }, 1000);
+                })
+                .catch(error => {
+                    console.error('Error stopping face mode:', error);
+                    const lastMenu = localStorage.getItem("lastMenuSkin");
+                    if (lastMenu) {
+                        window.location.href = lastMenu;
+                    } else {
+                        window.location.href = "/holo";
+                    }
+                });
+        }
+
+        function sendFaceChat() {
+            const input = document.getElementById('chatInput').value.trim();
+            if (!input) return;
+
+            fetch('/face-chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ user_input: input })
+            })
+            .then(res => res.json())
+            .then(data => {
+                updateSystemStatus("Serina", data.reply || "No response received", 'active');
+            })
+            .catch(err => {
+                updateSystemStatus("Connection Error", "Failed to communicate with Serina 💔", 'error');
+                console.error(err);
+            });
+
+            document.getElementById('chatInput').value = '';
+        }
+
+        function updateSystemStatus(status, subtitle, state) {
+            const mainStatusText = document.getElementById('mainStatusText');
+            const subStatusText = document.getElementById('subStatusText');
+            const headerStatus = document.getElementById('headerStatus');
+            const headerStatusDot = document.getElementById('headerStatusDot');
+            const faceScanner = document.getElementById('faceScanner');
+
+            mainStatusText.textContent = status;
+            subStatusText.textContent = subtitle;
+            headerStatus.textContent = status;
+
+            // Reset classes
+            headerStatusDot.className = 'status-dot';
+            faceScanner.className = 'face-scanner';
+
+            // Update status based on state
+            if (state === 'active') {
+                headerStatusDot.classList.add('active');
+                faceScanner.classList.add('active');
+            } else if (state === 'error') {
+                headerStatusDot.classList.add('error');
+                faceScanner.classList.add('error');
+            }
+        }
+
+        // Poll face status every second
+        setInterval(() => {
+            if (isActive) {
+                fetch('/face-status')
+                    .then(response => response.json())
+                    .then(data => {
+                        updateSystemStatus(data.statusText || 'Active', data.subtitle || 'Neural matrix operational...', 'active');
+                    })
+                    .catch(error => {
+                        console.error('Error fetching face status:', error);
+                        updateSystemStatus('Connection Lost', 'Unable to reach neural matrix', 'error');
+                    });
+            }
+        }, 1000);
+
+        // Handle page unload
+        window.addEventListener('beforeunload', function() {
+            if (isActive) {
+                fetch('/stop-face', { method: 'POST' });
+            }
+        });
+
+        // Allow pressing Enter to send chat message
+        document.getElementById('chatInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendFaceChat();
+            }
+        });
+    </script>
+</body>
+</html>

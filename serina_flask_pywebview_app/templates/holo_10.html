@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantum Nexus Interface</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            overflow: hidden;
+            background: #000;
+            font-family: 'Orbitron', sans-serif;
+            color: #fff;
+        }
+        
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+        
+        .interface {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 1000px;
+        }
+        
+        .quantum-core {
+            position: relative;
+            width: 100vmin;
+            height: 100vmin;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transform-style: preserve-3d;
+            transform: rotateX(55deg) rotateZ(45deg);
+        }
+        
+        .quantum-plane {
+            position: absolute;
+            width: 80vmin;
+            height: 80vmin;
+            background: linear-gradient(45deg, rgba(0,212,255,0.1) 0%, rgba(255,0,212,0.1) 100%);
+            border: 1px solid rgba(255,255,255,0.2);
+            transform-style: preserve-3d;
+            transform: translateZ(-20px);
+            backdrop-filter: blur(5px);
+            box-shadow: 0 0 50px rgba(0,212,255,0.5);
+            animation: quantumPulse 8s infinite alternate;
+        }
+        
+        @keyframes quantumPulse {
+            0% { box-shadow: 0 0 50px rgba(0,212,255,0.5); }
+            50% { box-shadow: 0 0 80px rgba(255,0,212,0.5); }
+            100% { box-shadow: 0 0 50px rgba(0,212,255,0.5); }
+        }
+        
+        .button-orbital {
+            position: absolute;
+            width: 70vmin;
+            height: 70vmin;
+            transform-style: preserve-3d;
+            animation: orbitalSpin 60s linear infinite;
+            pointer-events: none;
+        }
+        
+        @keyframes orbitalSpin {
+            0% { transform: rotateZ(0deg); }
+            100% { transform: rotateZ(360deg); }
+        }
+        
+        .button-wrapper {
+            position: absolute;
+            transform-style: preserve-3d;
+            pointer-events: auto;
+        }
+        
+        .button {
+            --button-color: #00d4ff;
+            --accent-color: #ff00d4;
+            position: relative;
+            width: 140px;
+            height: 140px;
+            border: none;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            overflow: hidden;
+            transform-style: preserve-3d;
+            transform: rotateX(-55deg) rotateZ(-45deg);
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            clip-path: polygon(
+                50% 0%, 
+                100% 25%, 
+                100% 75%, 
+                50% 100%, 
+                0% 75%, 
+                0% 25%
+            );
+            text-shadow: 0 0 5px var(--button-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, 
+                var(--button-color) 0%, 
+                rgba(0,0,0,0) 40%, 
+                rgba(0,0,0,0) 60%, 
+                var(--accent-color) 100%);
+            opacity: 0.2;
+            z-index: -1;
+        }
+        
+        .button::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            right: 2px;
+            bottom: 2px;
+            background: rgba(0,0,0,0.8);
+            z-index: -2;
+            clip-path: polygon(
+                50% 5%, 
+                95% 27.5%, 
+                95% 72.5%, 
+                50% 95%, 
+                5% 72.5%, 
+                5% 27.5%
+            );
+        }
+        
+        .button-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+            display: inline-block;
+            text-shadow: 0 0 10px var(--button-color);
+            transition: all 0.3s ease;
+        }
+        
+        .button:hover {
+            transform: rotateX(-55deg) rotateZ(-45deg) translateZ(20px);
+            box-shadow: 0 0 30px var(--button-color);
+        }
+        
+        .button:hover .button-icon {
+            transform: scale(1.2);
+            text-shadow: 0 0 20px var(--button-color);
+        }
+        
+        /* Specific button styles */
+        .new-chat {
+            --button-color: #00ffcc;
+            --accent-color: #00aaff;
+        }
+        
+        .voice-mode {
+            --button-color: #ff3366;
+            --accent-color: #ff9933;
+        }
+        
+        .face-mode {
+            --button-color: #9933ff;
+            --accent-color: #ff33cc;
+        }
+        
+        .neon-shift {
+            --button-color: #ffff00;
+            --accent-color: #00ffff;
+        }
+        
+        .about-me {
+            --button-color: #33ff99;
+            --accent-color: #99ff33;
+        }
+        
+        .exit {
+            --button-color: #ff3333;
+            --accent-color: #ff33ff;
+        }
+        
+        /* Button positioning on the orbital ring */
+        .button-wrapper:nth-child(1) { /* New Chat */
+            transform: translateY(-35vmin) translateZ(30px);
+        }
+        
+        .button-wrapper:nth-child(2) { /* Voice Mode */
+            transform: translateX(-30vmin) translateY(-17.5vmin) translateZ(20px);
+        }
+        
+        .button-wrapper:nth-child(3) { /* Face Mode */
+            transform: translateX(-30vmin) translateY(17.5vmin) translateZ(10px);
+        }
+        
+        .button-wrapper:nth-child(4) { /* Neon Shift */
+            transform: translateY(35vmin);
+        }
+        
+        .button-wrapper:nth-child(5) { /* About Me */
+            transform: translateX(30vmin) translateY(17.5vmin) translateZ(10px);
+        }
+        
+        .button-wrapper:nth-child(6) { /* Exit */
+            transform: translateX(30vmin) translateY(-17.5vmin) translateZ(20px);
+        }
+        
+        /* Central quantum core */
+        .quantum-center {
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            background: radial-gradient(circle, rgba(0,212,255,0.8) 0%, rgba(255,0,212,0.8) 100%);
+            border-radius: 50%;
+            transform: rotateX(-55deg) rotateZ(-45deg);
+            box-shadow: 0 0 50px rgba(0,212,255,0.8), 0 0 100px rgba(255,0,212,0.5);
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: coreRotate 10s linear infinite;
+        }
+        
+        @keyframes coreRotate {
+            0% { transform: rotateX(-55deg) rotateZ(-45deg) rotate(0deg); }
+            100% { transform: rotateX(-55deg) rotateZ(-45deg) rotate(360deg); }
+        }
+        
+        .quantum-center::before {
+            content: '';
+            position: absolute;
+            width: 220px;
+            height: 220px;
+            background: conic-gradient(
+                transparent 0deg,
+                transparent 90deg,
+                rgba(0,212,255,0.8) 180deg,
+                rgba(255,0,212,0.8) 270deg,
+                transparent 360deg
+            );
+            animation: coreSpin 3s linear infinite;
+        }
+        
+        .quantum-center::after {
+            content: '';
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            background: black;
+            border-radius: 50%;
+            box-shadow: inset 0 0 20px rgba(0,212,255,0.8), inset 0 0 40px rgba(255,0,212,0.5);
+        }
+        
+        @keyframes coreSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Holographic UI elements */
+        .holo-element {
+            position: absolute;
+            pointer-events: none;
+            color: rgba(0,212,255,0.8);
+            text-shadow: 0 0 5px rgba(0,212,255,0.8);
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            white-space: nowrap;
+            overflow: hidden;
+            opacity: 0.8;
+        }
+        
+        .holo-element::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0,212,255,0.5), transparent);
+            transform: translateX(-100%);
+            animation: holoScan 3s ease-in-out infinite;
+        }
+        
+        @keyframes holoScan {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .holo-top-left {
+            top: 20px;
+            left: 20px;
+            text-align: left;
+        }
+        
+        .holo-top-right {
+            top: 20px;
+            right: 20px;
+            text-align: right;
+        }
+        
+        .holo-bottom-left {
+            bottom: 20px;
+            left: 20px;
+            text-align: left;
+        }
+        
+        .holo-bottom-right {
+            bottom: 20px;
+            right: 20px;
+            text-align: right;
+        }
+        
+        /* Neural particles system */
+        .neural-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .button {
+                width: 100px;
+                height: 100px;
+                font-size: 12px;
+            }
+            
+            .button-icon {
+                font-size: 24px;
+            }
+            
+            .quantum-center {
+                width: 120px;
+                height: 120px;
+            }
+        }
+        
+        /* Custom loader */
+        .quantum-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 1s ease;
+        }
+        
+        .loader-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .loader-spinner {
+            width: 100px;
+            height: 100px;
+            border: 5px solid transparent;
+            border-top: 5px solid #00d4ff;
+            border-bottom: 5px solid #ff00d4;
+            border-radius: 50%;
+            animation: loaderSpin 1s linear infinite;
+        }
+        
+        @keyframes loaderSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loader-text {
+            margin-top: 20px;
+            font-family: 'Orbitron', sans-serif;
+            color: white;
+            font-size: 18px;
+            letter-spacing: 2px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Loader -->
+    <div class="quantum-loader" id="quantum-loader">
+        <div class="loader-content">
+            <div class="loader-spinner"></div>
+            <div class="loader-text">INITIALIZING QUANTUM NEXUS</div>
+        </div>
+    </div>
+
+    <!-- Neural Particles Background Canvas -->
+    <div id="canvas-container"></div>
+    
+    <!-- Main Interface -->
+    <div class="interface">
+        <div class="quantum-core">
+            <div class="quantum-plane"></div>
+            
+            <div class="button-orbital">
+                <div class="button-wrapper">
+                    <button class="button new-chat" id="new-chat">
+                        <span class="button-icon">⚡</span>
+                        NEW CHAT
+                    </button>
+                </div>
+                
+                <div class="button-wrapper">
+                    <button class="button voice-mode" id="voice-mode">
+                        <span class="button-icon">🔊</span>
+                        VOICE MODE
+                    </button>
+                </div>
+                
+                <div class="button-wrapper">
+                    <button class="button face-mode" id="face-mode">
+                        <span class="button-icon">👁️</span>
+                        FACE MODE
+                    </button>
+                </div>
+                
+                <div class="button-wrapper">
+                    <button class="button neon-shift" id="neon-shift">
+                        <span class="button-icon">✨</span>
+                        NEON SHIFT
+                    </button>
+                </div>
+                
+                <div class="button-wrapper">
+                    <button class="button about-me" id="about-me">
+                        <span class="button-icon">💫</span>
+                        ABOUT ME
+                    </button>
+                </div>
+                
+                <div class="button-wrapper">
+                    <button class="button exit" id="exit">
+                        <span class="button-icon">🚪</span>
+                        EXIT
+                    </button>
+                </div>
+            </div>
+            
+            <div class="quantum-center"></div>
+        </div>
+    </div>
+    
+    <!-- Holographic UI Elements -->
+    <div class="holo-element holo-top-left">
+        SYSTEM: ONLINE<br>
+        QUANTUM FLUX: STABLE<br>
+        NEURAL NETWORK: ACTIVE
+    </div>
+    
+    <div class="holo-element holo-top-right">
+        BANDWIDTH: 1.21 TB/s<br>
+        LATENCY: 3ms<br>
+        SECURITY: MAXIMUM
+    </div>
+    
+    <div class="holo-element holo-bottom-left">
+        COORDINATES: 42.1337.89.91<br>
+        USERS CONNECTED: 1<br>
+        STATUS: READY
+    </div>
+    
+    <div class="holo-element holo-bottom-right">
+        TIME: <span id="current-time">00:00:00</span><br>
+        MODE: INTERACTIVE<br>
+        VERSION: QUANTUM 3.7
+    </div>
+    
+    <script>
+        // Initialize Three.js scene
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        container.appendChild(renderer.domElement);
+        
+        camera.position.z = 30;
+        
+        // Create neural network particle system
+        const particlesCount = 1000;
+        const particlesGeometry = new THREE.BufferGeometry();
+        const particlesMaterial = new THREE.PointsMaterial({
+            color: 0x00d4ff,
+            size: 0.5,
+            transparent: true,
+            opacity: 0.7
+        });
+        
+        const particlesPositions = new Float32Array(particlesCount * 3);
+        const particlesSpeeds = new Float32Array(particlesCount);
+        const particlesConnections = [];
+        
+        for (let i = 0; i < particlesCount; i++) {
+            particlesPositions[i * 3] = (Math.random() - 0.5) * 80;
+            particlesPositions[i * 3 + 1] = (Math.random() - 0.5) * 80;
+            particlesPositions[i * 3 + 2] = (Math.random() - 0.5) * 80;
+            
+            particlesSpeeds[i] = Math.random() * 0.1;
+        }
+        
+        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(particlesPositions, 3));
+        const particles = new THREE.Points(particlesGeometry, particlesMaterial);
+        scene.add(particles);
+        
+        // Create neural connections
+        const maxConnections = 200;
+        const connectionMaterial = new THREE.LineBasicMaterial({
+            color: 0xff00d4,
+            transparent: true,
+            opacity: 0.2
+        });
+        
+        for (let i = 0; i < maxConnections; i++) {
+            const p1 = Math.floor(Math.random() * particlesCount);
+            const p2 = Math.floor(Math.random() * particlesCount);
+            
+            const connectionGeometry = new THREE.BufferGeometry();
+            const connectionPositions = new Float32Array(6); // Two points, each with xyz
+            
+            connectionPositions[0] = particlesPositions[p1 * 3];
+            connectionPositions[1] = particlesPositions[p1 * 3 + 1];
+            connectionPositions[2] = particlesPositions[p1 * 3 + 2];
+            
+            connectionPositions[3] = particlesPositions[p2 * 3];
+            connectionPositions[4] = particlesPositions[p2 * 3 + 1];
+            connectionPositions[5] = particlesPositions[p2 * 3 + 2];
+            
+            connectionGeometry.setAttribute('position', new THREE.BufferAttribute(connectionPositions, 3));
+            
+            const connection = new THREE.Line(connectionGeometry, connectionMaterial);
+            scene.add(connection);
+            
+            particlesConnections.push({
+                line: connection,
+                p1: p1,
+                p2: p2
+            });
+        }
+        
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            // Update particles
+            for (let i = 0; i < particlesCount; i++) {
+                particlesPositions[i * 3 + 1] += particlesSpeeds[i];
+                
+                if (particlesPositions[i * 3 + 1] > 40) {
+                    particlesPositions[i * 3 + 1] = -40;
+                }
+            }
+            
+            particles.geometry.attributes.position.needsUpdate = true;
+            
+            // Update connections
+            for (let i = 0; i < particlesConnections.length; i++) {
+                const conn = particlesConnections[i];
+                const positions = conn.line.geometry.attributes.position.array;
+                
+                positions[0] = particlesPositions[conn.p1 * 3];
+                positions[1] = particlesPositions[conn.p1 * 3 + 1];
+                positions[2] = particlesPositions[conn.p1 * 3 + 2];
+                
+                positions[3] = particlesPositions[conn.p2 * 3];
+                positions[4] = particlesPositions[conn.p2 * 3 + 1];
+                positions[5] = particlesPositions[conn.p2 * 3 + 2];
+                
+                conn.line.geometry.attributes.position.needsUpdate = true;
+            }
+            
+            renderer.render(scene, camera);
+        }
+        
+        // Start animation after loader disappears
+        setTimeout(() => {
+            document.getElementById('quantum-loader').style.opacity = 0;
+            setTimeout(() => {
+                document.getElementById('quantum-loader').style.display = 'none';
+                animate();
+            }, 1000);
+        }, 2000);
+        
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+        
+        // Update current time
+        function updateTime() {
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
+            document.getElementById('current-time').textContent = `${hours}:${minutes}:${seconds}`;
+        }
+        
+        setInterval(updateTime, 1000);
+        updateTime();
+        
+        // Button interactions
+        document.getElementById('new-chat').addEventListener('click', () => {
+            flashButton('new-chat');
+            flashQuantumCenter('#00ffcc');
+            showActionFeedback('NEW CHAT INITIATED');
+        });
+        
+        document.getElementById('voice-mode').addEventListener('click', () => {
+            flashButton('voice-mode');
+            flashQuantumCenter('#ff3366');
+            showActionFeedback('VOICE MODE ACTIVATED');
+        });
+        
+        document.getElementById('face-mode').addEventListener('click', () => {
+            flashButton('face-mode');
+            flashQuantumCenter('#9933ff');
+            showActionFeedback('FACE MODE SCANNING');
+        });
+        
+        document.getElementById('neon-shift').addEventListener('click', () => {
+            flashButton('neon-shift');
+            flashQuantumCenter('#ffff00');
+            
+            // Change all UI color schemes
+            const buttons = document.querySelectorAll('.button');
+            buttons.forEach(button => {
+                const hue1 = Math.floor(Math.random() * 360);
+                const hue2 = (hue1 + 180) % 360;
+                
+                const color1 = `hsl(${hue1}, 100%, 60%)`;
+                const color2 = `hsl(${hue2}, 100%, 60%)`;
+                
+                button.style.setProperty('--button-color', color1);
+                button.style.setProperty('--accent-color', color2);
+            });
+            
+            // Change particle colors
+            particles.material.color.setHSL(Math.random(), 1, 0.5);
+            
+            for (let i = 0; i < particlesConnections.length; i++) {
+                particlesConnections[i].line.material.color.setHSL(Math.random(), 1, 0.5);
+            }
+            
+            showActionFeedback('NEON SHIFT RECONFIGURED');
+        });
+        
+        document.getElementById('about-me').addEventListener('click', () => {
+            flashButton('about-me');
+            flashQuantumCenter('#33ff99');
+            showActionFeedback('ACCESSING PROFILE DATA');
+        });
+        
+        document.getElementById('exit').addEventListener('click', () => {
+            flashButton('exit');
+            flashQuantumCenter('#ff3333');
+            showActionFeedback('INITIATING SHUTDOWN SEQUENCE');
+            
+            // Exit animation
+            setTimeout(() => {
+                document.body.style.transition = 'all 2s ease';
+                document.body.style.filter = 'brightness(0)';
+                
+                setTimeout(() => {
+                    alert('System successfully exited.');
+                    document.body.style.filter = 'brightness(1)';
+                }, 2000);
+            }, 1000);
+        });
+        
+        // Visual feedback functions
+        function flashButton(buttonId) {
+            const button = document.getElementById(buttonId);
+            button.style.transform = 'rotateX(-55deg) rotateZ(-45deg) translateZ(40px)';
+            button.style.boxShadow = '0 0 50px var(--button-color)';
+            
+            setTimeout(() => {
+                button.style.transform = 'rotateX(-55deg) rotateZ(-45deg) translateZ(20px)';
+                button.style.boxShadow = '0 0 30px var(--button-color)';
+            }, 300);
+        }
+        
+        function flashQuantumCenter(color) {
+            const center = document.querySelector('.quantum-center');
+            center.style.boxShadow = `0 0 100px ${color}, 0 0 150px rgba(255,255,255,0.8)`;
+            
+            setTimeout(() => {
+                center.style.boxShadow = '0 0 50px rgba(0,212,255,0.8), 0 0 100px rgba(255,0,212,0.5)';
+            }, 500);
+        }
+        
+        function showActionFeedback(message) {
+            // Create feedback element
+            const feedback = document.createElement('div');
+            feedback.style.position = 'fixed';
+            feedback.style.top = '50%';
+            feedback.style.left = '50%';
+            feedback.style.transform = 'translate(-50%, -50%) rotateX(-55deg) rotateZ(-45deg)';
+            feedback.style.color = 'white';
+            feedback.style.fontFamily = "'Orbitron', sans-serif";
+            feedback.style.fontSize = '24px';
+            feedback.style.fontWeight = 'bold';
+            feedback.style.textShadow = '0 0 10px cyan, 0 0 20px cyan';
+            feedback.style.zIndex = '100';
+            feedback.style.pointerEvents = 'none';
+            feedback.style.opacity = '0';
+            feedback.style.transition = 'all 0.3s ease';
+            feedback.textContent = message;
+            
+            document.body.appendChild(feedback);
+            
+            // Animate feedback
+            setTimeout(() => {
+                feedback.style.opacity = '1';
+                
+                setTimeout(() => {
+                    feedback.style.opacity = '0';
+                    
+                    setTimeout(() => {
+                        document.body.removeChild(feedback);
+                    }, 300);
+                }, 1500);
+            }, 100);
+        }
+    </script>
+</body>
+</html>
