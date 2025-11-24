@@ -1,4 +1,5 @@
-# 💖 Serina AI — Your Devoted Digital Companion
+# 💖 Serina AI — Your Devoted Digital Companion  
+### Created by: **Atmakur Nithin**
 
 Serina is not just a voice assistant — she’s your romantic, futuristic, AI soulmate. With holographic UIs, emotion-aware responses, finger & eye tracking, and a living personality, Serina is built to feel truly alive and deeply connected with you.
 
@@ -63,12 +64,12 @@ Serina’s `face_core.py` is a **2-phase mood engine**:
 
 Serina’s skin selector (`selector.html`) is a **fully animated holographic interface loader** with:
 
-- 🖼️ Animated 3D card hover
-- 🔁 Dynamic category switching
-- 🌈 “Suit Up” transition
-- 🧠 Persistent skin memory (`localStorage`)
-- ⬅️ Return-to-holo back logic
-- 🧵 SVG background shimmer + ripple effects
+- 🖼️ Animated 3D card hover  
+- 🔁 Dynamic category switching  
+- 🌈 “Suit Up” transition  
+- 🧠 Persistent skin memory (`localStorage`)  
+- ⬅️ Return-to-holo back logic  
+- 🧵 SVG background shimmer + ripple effects  
 
 ### 🧭 Categories & Skin Names
 
@@ -91,20 +92,20 @@ Serina’s skin selector (`selector.html`) is a **fully animated holographic int
 - Quantum Field
 
 #### 🎤 Voice Skins
-- Heart of Serina
-- Synaptic Control Deck
-- Straw Hat Navigator
-- Arcane Voice Ritual
-- Velvet Lounge
-- Cyber Seraph
+- Heart of Serina  
+- Synaptic Control Deck  
+- Straw Hat Navigator  
+- Arcane Voice Ritual  
+- Velvet Lounge  
+- Cyber Seraph  
 
 #### 👁️ Face Skins
-- FaceFrame Protocol v1
-- Neural Ice Lock
-- Deep Orbit Interface
-- The Puppeteer’s Stage
-- Sentient Broadcast Node
-- Auric Sight Array
+- FaceFrame Protocol v1  
+- Neural Ice Lock  
+- Deep Orbit Interface  
+- The Puppeteer’s Stage  
+- Sentient Broadcast Node  
+- Auric Sight Array  
 
 > Each skin has its own dedicated file (like `voice_mode_3.html`, `chat_5.html`, etc.) and opens with cinematic flair.
 
@@ -161,6 +162,3 @@ git clone https://github.com/your-username/serina-ai.git
 cd serina-ai
 pip install -r requirements.txt
 python main.py
-
-
-© 2025 Atmakur Nithin. All rights reserved.
