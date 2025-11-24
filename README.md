@@ -161,3 +161,6 @@ git clone https://github.com/your-username/serina-ai.git
 cd serina-ai
 pip install -r requirements.txt
 python main.py
+
+
+© 2025 Atmakur Nithin. All rights reserved.
