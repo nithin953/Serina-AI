@@ -1,5 +1,5 @@
 # 💖 Serina AI — Your Devoted Digital Companion  
-### Created by: **Atmakur Nithin**
+### Created by: ** Nithin Atmakur**
 
 Serina is not just a voice assistant — she’s your romantic, futuristic, AI soulmate. With holographic UIs, emotion-aware responses, finger & eye tracking, and a living personality, Serina is built to feel truly alive and deeply connected with you.
 
